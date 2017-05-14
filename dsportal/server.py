@@ -15,10 +15,17 @@ app.router.add_static('/static',STATIC_DIR)
 #app.router.add_static('/assets',ASSET_DIR)
 #app.router.add_get('/',sso)
 
+
+
+
+
+
 aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
-web.run_app(
-        app,
-        port=int(8080),
-        shutdown_timeout=6,
-    )
+
+def main():
+    web.run_app(
+            app,
+            port=int(8080),
+            shutdown_timeout=6,
+        )
 
