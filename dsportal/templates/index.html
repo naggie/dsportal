@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<ul class="tabs">
+    <li class="selected"><a href=".">Services</a></li>
+    <li class="bad"><a href="hosts.html">Hosts</a></li>
+    <li><a href="about.html">About</a></li>
+</ul>
+<ul class="entities">
+    {% for site in sites %}
+        <li class="service" title="Powered by {{site.powered_by}}">
+            <a href="{{site.url}}" target="_blank">
+                <div class="indicator"></div>
+                <div class="title">{{site.title}}</div>
+                <img class="screenshot" src="{{site.screenshot_url}}" width="{{site.screenshot_width}}" height="{{site.screenshot_height}}"/>
+                <div class="description">{{site.description}}</div>
+            </a>
+        </li>
+    {% endfor %}
+    <li class="service hidden" style="width:384px;">Dummy to left/center align</li>
+    <li class="service hidden" style="width:384px;">Dummy to left/center align</li>
+</ul>
+{% endblock content %}

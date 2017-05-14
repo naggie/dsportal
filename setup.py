@@ -24,9 +24,9 @@ setup(
     #scripts = ['dsblog/dsblog.py'],
     entry_points = {
         'console_scripts': [
-            'dsportal-server = monitorlizard.server:main',
-            'dsportal-worker = monitorlizard.worker:main',
-            'dsportal-screenshot = monitorlizard.screenshot:main',
+            'dsportal-server = dsportal.server:main',
+            'dsportal-worker = dsportal.worker:main',
+            'dsportal-screenshot = dsportal.screenshot:main',
             ],
         },
     install_requires = packages,

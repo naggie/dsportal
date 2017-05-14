@@ -1,0 +1,266 @@
+html {
+    /* always show a scrollbar to prevent tabs jumping around */
+    overflow-y: scroll;
+}
+body {
+    font-family:Sans-serif;
+    margin-top:20px;
+    text-align:center;
+    user-select:none;
+}
+
+#content {
+    max-width:1280px;
+    margin:auto;
+}
+
+h1,h2,h3 {
+    font-weight:normal;
+}
+
+h1.main {
+    color:#444;
+    font-size:32px;
+    text-align:center;
+    width:100%;
+    -webkit-appearance: none;
+    max-width:600px;
+    display:inline-block;
+}
+
+.powered_by {
+    font-size:12px;
+    font-style: italic;
+    margin:5px;
+}
+
+.screenshot {
+    border-top:1px solid #eee;
+    border-bottom:1px solid #eee;
+    margin:7px 0;
+    background:white;
+}
+
+.service {
+    display:inline-block;
+    padding:10px 0;
+    margin:0;
+    background:white;
+    text-align:center;
+}
+
+.service a:visited, .service a {
+    text-decoration:none;
+    color:black;
+}
+
+.title {
+    margin:6px;
+    font-size:20px;
+    text-align:center;
+}
+
+footer {
+    margin:50px 0;
+}
+
+.hidden {
+    visibility:hidden;
+}
+
+.header {
+    color:#555;
+}
+
+.indicator {
+    background:#eee;
+    border:1px solid #ddd;
+    width:4px;
+    height:4px;
+    position:absolute;
+    right:0;
+    top:0;
+    margin:4px;
+}
+
+.description {
+    color:#666;
+}
+
+ul.tabs {
+    list-style:none;
+    border-bottom:1px solid #ddd;
+    text-align:left;
+    cursor:pointer;
+    padding:0;
+    margin:50px 20px 30px 50px;
+}
+
+
+ul.tabs li {
+    display:inline-block;
+    position:relative;
+    padding:10px;
+    top:1px;
+    color:grey;
+    border:1px solid rgba(0,0,0,0);
+    border-bottom:1px solid #ddd;
+}
+
+ul.tabs li.bad div.title {
+    color:#dd0000 !important;
+}
+
+ul.tabs li.selected {
+    color:#666;
+    border-top:1px solid #ddd;
+    border-left:1px solid #ddd;
+    border-right:1px solid #ddd;
+    border-bottom:1px solid white;
+    border-radius:3px 3px 0 0;
+    display:inline-block;
+}
+
+ul.tabs a:visited, .tabs a {
+    text-decoration:none;
+    color:inherit;
+}
+
+ul.entities {
+    padding:0;
+    list-style:none;
+}
+
+.entities li {
+    list-style:none;
+    display:inline-block;
+    margin:18px;
+    vertical-align:top;
+    box-sizing: border-box;
+    box-shadow:0 -3px 0 0 #ddd;
+    border-left:1px solid #ddd;
+    border-right:1px solid #ddd;
+    border-bottom:1px solid #ddd;
+    position:relative;
+}
+
+
+/* simulate a butt-joint top border */
+ul.entities li.good {
+    box-shadow:0 -3px 0 0 #00dd00;
+}
+
+ul.entities li.bad {
+    color:#dd0000;
+    box-shadow:0 -3px 0 0 #dd0000;
+    border-left:1px solid #dd0000;
+    border-right:1px solid #dd0000;
+    border-bottom:1px solid #dd0000;
+}
+
+article {
+    text-align:left;
+    max-width:800px;
+    margin:80px auto;
+    color:#444;
+}
+
+li.host {
+    width:100%;
+    min-width:384px;
+    max-width:598px;
+    text-align:left;
+}
+
+li.host div.title {
+    margin:15px 0;
+}
+
+@media (max-width: 1280px) {
+    ul.tabs {
+        margin-left:0;
+        margin-right:0;
+    }
+}
+
+@media (max-width: 800px) {
+    .entities li {
+        margin-left:0;
+        margin-right:0;
+    }
+}
+
+table.metrics {
+    width:100%;
+    border-collapse:separate;
+    table-layout:fixed;
+    color:#888;
+    margin-top:10px;
+    border-top:1px solid #ddd;
+    padding:10px;
+}
+
+table.metrics td {
+    padding:5px 0;
+}
+
+table.metrics th {
+    padding-left:4px;
+    overflow:hidden;
+    font-weight:normal;
+    color:#555;
+}
+
+table.metrics td.key {
+}
+
+table.metrics td.value {
+    width:60px;
+}
+
+table.metrics td.min {
+    text-align:right;
+    width:30px;
+    color:#999;
+    font-size:11px;
+}
+
+table.metrics td.max {
+    width:40px;
+    color:#999;
+    font-size:11px;
+}
+
+table.metrics div.meter {
+    border:1px solid #ddd;
+    width:92%;
+    height:10px;
+    margin:0 4% 1px 4%;
+}
+
+table.metrics div.meter div.bar {
+    width:80%;
+    background:#ddd;
+    height:100%;
+}
+
+table.metrics tr.bad * {
+    color:#dd0000;
+}
+
+table.metrics tr.bad div.meter {
+    border:1px solid #dd0000;
+}
+
+table.metrics tr.bad div.meter div.bar {
+    background:#dd0000;
+}
+
+@media (max-width: 500px) {
+    table.metrics td.max,
+    table.metrics td.min {
+        /* instead of display:none so colspan still works */
+        width:0;
+        overflow:hidden;
+    }
+}

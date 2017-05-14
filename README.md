@@ -12,3 +12,19 @@ checks to the applications and hosting platforms beneath.
 ## Health checks
 
 ## Workers
+
+
+
+# Installation
+
+Server:
+1. Install via pip
+2. Set up nginx reverse proxy, preferably with SSL. Optionally serve static
+   files via nginx.
+2. Add systemd template to run dsportal-server.
+
+Of course, the same but (2) applies to set up a worker.
+
+`sudo pip install .` (python 3 pip!)
+
+For development, `pip install -e .` will link a global install.

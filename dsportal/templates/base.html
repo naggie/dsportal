@@ -1,0 +1,23 @@
+{# TODO put tab nav links in here, selected like dsblog #}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{name}}</title>
+        <meta name="viewport" content="width=400,user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="stylesheet" type="text/css" href="style.css">
+        {# no favicon/similar requests with empty PNG! #}
+        <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
+        {% if css %} <style> {{css}} </style> {% endif %}
+    </head>
+    <body>
+        <div id="content">
+            {{header}}
+            {% block content %}
+            {% endblock content %}
+        </div>
+        <footer>{{footer}}</footer>
+    </body>
+</html>
