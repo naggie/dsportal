@@ -34,7 +34,7 @@ class RAMUsage(Metric):
         # TODO set human values
 
 
-class CPUUsageCheck(Metric):
+class CPUUsage(Metric):
     description = "Checks CPU load is nominal."
 
     def run(self):
