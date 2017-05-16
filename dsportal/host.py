@@ -6,7 +6,7 @@ from util import get_ups_data
 class Host(Entity):
     description = "A server"
 
-class RAMUsage(Metric):
+class RAMUsageCheck(Metric):
     description = "Checks RAM usage is less than 90%. Does not count cache and buffers."
     raw_min = 0
     units = 'bytes'
@@ -34,7 +34,7 @@ class RAMUsage(Metric):
         # TODO set human values
 
 
-class CPUUsage(Metric):
+class CPUUsageCheck(Metric):
     description = "Checks CPU load is nominal."
 
     def run(self):
@@ -120,5 +120,5 @@ class GPUTemperatureCheck(Metric):
             pass
 
 
-class BtrfsPoolMonitor(Metric):
+class BTRFSPoolCheck(Metric):
     description = "Checks BTRFS health"
