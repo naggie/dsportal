@@ -1,0 +1,20 @@
+# example systemd service file to autostart worker after network
+# copy to /lib/systemd/system/
+# 0644 permissions
+#
+# sudo systemctl daemon-reload
+# sudo systemctl enable dsportal-worker.service
+# ....after reboot or manual service start
+# sudo systemctl status dsportal-worker.service
+
+
+[Unit]
+Description=dsportal worker
+After=network-online.target
+
+[Service]
+Type=idle
+ExecStart=/usr/local/bin/dsportal-worker
+
+[Install]
+WantedBy=multi-user.target
