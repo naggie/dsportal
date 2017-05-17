@@ -45,7 +45,10 @@ class ScreenshotGrabber(object):
         png = b64decode(base64_png)
         img = Image.open(BytesIO(png))
 
-        width = 384
+        return img
+
+    @staticmethod
+    def resize(img,width=384):
         height = int(img.height / (img.width/width))
 
         img = img.resize((width,height),resample=Image.LANCZOS)
@@ -86,19 +89,25 @@ copy('templates/style.css',output_dir)
 # annotate
 with ScreenshotGrabber() as s:
     for item in context['sites']:
-        filepath = join(screenshot_dir, '%s') % slug(item['title']) +'.png'
-        item['screenshot_url'] = 'screenshots/%s' % slug(item['title']) +'.png'
+        slug_title = slug(item['title'])
+        filepath_original = join(screenshot_dir, '%s-original.png') % slug_title
+        filepath_1x = join(screenshot_dir, '%s.png') % slug_title
+        filepath_2x = join(screenshot_dir, '%s-2x.png') % slug_title
+        item['screenshot_url'] = 'screenshots/%s.png' % slug_title
+        item['screenshot_url_2x'] = 'screenshots/%s-2x.png' % slug_title
 
-        if not isfile(filepath):
+        if not isfile(filepath_original):
             img = s.grab_screenshot(item['url'],item.get('settle_time',3))
-            img.save(filepath)
+            img.save(filepath_original)
         else:
-            img = Image.open(filepath)
+            img = Image.open(filepath_original)
 
-        width,height = img.size
-
+        scaled_img = s.resize(img,384)
+        width,height = scaled_img.size
         item['screenshot_width'] = width
         item['screenshot_height'] = height
+
+        s.resize(img,768).save(filepath_2x)
 
         item['class'] = 'good'
 
