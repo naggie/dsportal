@@ -17,13 +17,7 @@ from base64 import b64encode
 from base64 import b64decode
 from mimetypes import guess_type
 
-# TODO grab driver.title?
-# TODO http auth params with --disable-web-security
-# TODO meta tagsfor oneboxing -- generate screenshot for it!
-
-
-# pip install selenium pillow pyyaml jinja2
-# brew install chromeself.driver
+# brew install chromedriver
 
 class ScreenshotGrabber(object):
     def __enter__(self):
