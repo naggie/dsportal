@@ -12,6 +12,7 @@ from os import path
 import jinja2
 import aiohttp_jinja2
 import yaml
+import manager
 
 if len(sys.argv) < 2:
     print(__doc__ % sys.argv[0])
