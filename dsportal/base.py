@@ -1,15 +1,23 @@
 from __future__ import division # TODO just use py3
+from uuid import uuid4
 
 class Entity(object):
+    ''' description of the real world thing this instance represents'''
+
     version = 0
 
-    def __init__(self,id,description):
+    def __init__(self,name,description,tab,worker):
         # Aggregate of all health checks
-        self.healthy = None
-        self.id = id
+        self.id = str(uuid4)
+        self.tab = tab
 
-        # description of the real world thing this Entity represents
-        self.description = ""
+        # description of the real world thing this instance represents
+        self.description = description
+
+        self.healthy = None
+
+    def configure(self):
+        raise NotImplemented('Define this method to accept Entity-specific parameters and initialise.')
 
 
 class HealthCheck(ouject):
