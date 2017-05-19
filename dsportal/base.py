@@ -69,8 +69,10 @@ class HealthCheck(object):
 
     def set_patch(self,patch):
         for k,v in patch.items():
-            if k in self.__dict__:
-                super(HealthCheck,self).__setattr__(k,v)
+            if k not in self.__dict__:
+                raise AttributeError('Patch contained unknown key')
+
+            super(HealthCheck,self).__setattr__(k,v)
 
 
 class Metric(HealthCheck):
