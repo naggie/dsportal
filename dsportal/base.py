@@ -1,9 +1,6 @@
-from __future__ import division # TODO just use py3
 from uuid import uuid4
 
 class Entity(object):
-    ''' description of the real world thing this instance represents'''
-
     def __init__(self,name,description,tab,worker):
         # Used for DOM ID as well
         self.id = str(uuid4())
@@ -17,14 +14,16 @@ class Entity(object):
         # Unknown, yet
         self.healthy = None
 
-        self.health_checks = health_checks
-
+        self.healthChecks = list()
 
         raise NotImplemented('Define this method to accept Entity-specific parameters and initialise.')
 
+    def add_HealthCheck_instance(self,instance):
+        self.HealthChecks.append(instance)
+
+
 
 class HealthCheck(object):
-    '''Description of what this health check does'''
     # seconds *between* tests. Timer starts after execution such that overruns
     # are impossible. Consider it a rest time.
     interval = 60
@@ -76,7 +75,7 @@ class HealthCheck(object):
                 super(HealthCheck,self).__setattr__(k,v)
 
 
-class Metric(HealthCheck):
+class MetricCheck(HealthCheck):
     description = "A generic health check with associated metric"
     # unit with no magnitude
     unit = '%'

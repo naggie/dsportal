@@ -1,10 +1,5 @@
-from __future__ import division # TODO just use py3
-from base import Entity,HealthCheck,Metric,DummyCheck
-from os import statvfs
+from base import HealthCheck,MetricCheck,DummyCheck
 from util import get_ups_data
-
-class Host(Entity):
-    description = "A server"
 
 class RAMUsageCheck(Metric):
     description = "Checks RAM usage is less than 90%. Does not count cache and buffers."
@@ -122,3 +117,10 @@ class GPUTemperatureCheck(Metric):
 
 class BTRFSPoolCheck(Metric):
     description = "Checks BTRFS health"
+
+class HTTPStatusCheck(HealthCheck):
+    description = "Checks service returns 200 OK"
+
+class CertificateExpiryCheck(HealthCheck):
+    description = "Checks certificate isn't near expiry"
+    # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
