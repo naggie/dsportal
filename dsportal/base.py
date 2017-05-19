@@ -4,27 +4,27 @@ from uuid import uuid4
 class Entity(object):
     ''' description of the real world thing this instance represents'''
 
-    version = 0
-
     def __init__(self,name,description,tab,worker):
-        # Aggregate of all health checks
-        self.id = str(uuid4)
+        # Used for DOM ID as well
+        self.id = str(uuid4())
+
         self.tab = tab
 
         # description of the real world thing this instance represents
         self.description = description
 
+        # Aggregate of all health checks belonging to this entity
+        # Unknown, yet
         self.healthy = None
 
-    def configure(self):
+        self.health_checks = health_checks
+
+
         raise NotImplemented('Define this method to accept Entity-specific parameters and initialise.')
 
 
-class HealthCheck(ouject):
-    version = 0
-    # description of what this health check does
-    description = "A generic health check"
-
+class HealthCheck(object):
+    '''Description of what this health check does'''
     # seconds *between* tests. Timer starts after execution such that overruns
     # are impossible. Consider it a rest time.
     interval = 60
@@ -33,13 +33,17 @@ class HealthCheck(ouject):
     # restarted)
     timeout = 600
 
-    def __init__(self,
-            id,
-            on_health_change = lambda x: None,
-            ):
+    def __init__(self):
+        # used to record changes to attributes for DOM updates and object sync
+        # call super __setattr__ so local doesn't trigger
+        super(HealthCheck,self).__setattr__('_patch', dict())
+
+        # Used for DOM ID as well
+        self.id = str(uuid4())
         self.healthy = None
-        self.id = id
         self.error_message = None
+        self.last_attempt_time = 0
+
 
     # TODO decide on returning a patch or calling a publish to the EventBus
     def run():
@@ -48,15 +52,25 @@ class HealthCheck(ouject):
         that raises any exception."""
         return {}
 
-    def update(diff):
-        """Update state from output of run(). Used to synchronise a remote
-        instance. Must all self.on_health_change if state changes"""
-        return False
 
     # TODO could automate this with get/setattr hooks
     # TODO make this enumerable to include some derived value methods? Or require overriding?
-    def _patch(self,patch):
-        self.eventBus.patch(self.id,value)
+
+
+    # record patches for object sync and DOM updates
+    def __setattr__(self, name, value):
+        self._patch[name] = value
+        super(HealthCheck,self).__setattr__(name, value)
+
+    def get_patch(self):
+        patch = self._patch
+        super(HealthCheck,self).__setattr__('_patch', dict())
+        return patch
+
+    def set_patch(self,patch):
+        for k,v in patch.items():
+            if k in self.__dict__:
+                super(HealthCheck,self).__setattr__(k,v)
 
 
 class Metric(HealthCheck):
