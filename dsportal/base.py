@@ -72,7 +72,8 @@ class HealthCheck(object):
             if k not in self.__dict__:
                 raise AttributeError('Patch contained unknown key')
 
-            super(HealthCheck,self).__setattr__(k,v)
+            if k != self.__dict__[k]:
+                super(HealthCheck,self).__setattr__(k,v)
 
 
 class Metric(HealthCheck):
