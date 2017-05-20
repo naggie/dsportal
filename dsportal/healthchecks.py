@@ -1,7 +1,7 @@
 from base import HealthCheck,MetricCheck,DummyCheck
 from util import get_ups_data
 
-class RAMUsageCheck(Metric):
+class RAMUsageCheck(MetricCheck):
     description = "Checks RAM usage is less than 90%. Does not count cache and buffers."
     raw_min = 0
     units = 'bytes'
@@ -29,7 +29,7 @@ class RAMUsageCheck(Metric):
         # TODO set human values
 
 
-class CPUUsageCheck(Metric):
+class CPUUsageCheck(MetricCheck):
     description = "Checks CPU load is nominal."
 
     def run(self):
@@ -41,20 +41,20 @@ class CPUUsageCheck(Metric):
 
 
 
-class DiskUsageCheck(Metric):
+class DiskUsageCheck(MetricCheck):
     description = "Inspects used and available blocks on given mount points."
     def run(self):
         s = statvfs(self.mountpoint)
         free = s.f_bsize * s.f_bavail
         total = s.f_bsize * s.f_blocks
 
-class UKMainsVoltageCheck(Metric):
+class UKMainsVoltageCheck(MetricCheck):
     description = "Checks mains voltage falls within UK legal limits of 230V +10% -6%"
 
-class UPSLoadCheck(Metric):
+class UPSLoadCheck(MetricCheck):
     description = "Checks UPS is not overloaded"
 
-class BatteryLevelCheck(Metric):
+class BatteryLevelCheck(MetricCheck):
     description = "Checks estimated time remaining and percentage"
 
     def run(self):
@@ -84,10 +84,10 @@ class UptimeCheck(DummyCheck):
         self._patch({'value':self.value})
 
 
-class CPUTemperatureCheck(Metric):
+class CPUTemperatureCheck(MetricCheck):
     description = "Checks CPU Temperature is nominal"
 
-class GPUTemperatureCheck(Metric):
+class GPUTemperatureCheck(MetricCheck):
     interval = 60
     description = "Checks GPU Temperature is nominal"
 
@@ -108,14 +108,14 @@ class GPUTemperatureCheck(Metric):
         int(state['GPU Current Temp'][:-2])
 
         try:
-            ... int(state['GPU Shutdown Temp'][:-2])
-            ..... int(state['GPU Slowdown Temp'][:-2])
+            int(state['GPU Shutdown Temp'][:-2])
+            int(state['GPU Slowdown Temp'][:-2])
         except ValueError:
             # not specified, so dot change the defaults
             pass
 
 
-class BTRFSPoolCheck(Metric):
+class BTRFSPoolCheck(MetricCheck):
     description = "Checks BTRFS health"
 
 class HTTPStatusCheck(HealthCheck):

@@ -18,7 +18,10 @@ class Entity(object):
 
         raise NotImplemented('Define this method to accept Entity-specific parameters and initialise.')
 
-    def add_HealthCheck_instance(self,instance):
+    def add_healthcheck(self,instance):
+        if not isinstance(instance,HealthCheck):
+            raise ValueError('Instance or HealthCheck required')
+
         self.HealthChecks.append(instance)
 
 
