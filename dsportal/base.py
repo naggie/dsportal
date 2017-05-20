@@ -24,7 +24,11 @@ class Entity(object):
 
         self.HealthChecks.append(instance)
 
-
+# TODO -- __init__ is run on server not worker! Communicate that somehow.
+# TODO alternative to overriding __init__? Initial state patch + kwargs copy to __dict__?
+# or just allow __init__? Actually, it would prevent anything done in iinit
+# for docs, I guess.
+# TODO additional rules -- attributes must be immutable else they won't be synced
 
 class HealthCheck(object):
     # seconds *between* tests. Timer starts after execution such that overruns
@@ -55,10 +59,6 @@ class HealthCheck(object):
         return {}
 
 
-    # TODO could automate this with get/setattr hooks
-    # TODO make this enumerable to include some derived value methods? Or require overriding?
-
-
     # record patches for object sync and DOM updates
     def __setattr__(self, name, value):
         self._patch[name] = value
@@ -76,6 +76,14 @@ class HealthCheck(object):
 
             if k != self.__dict__[k]:
                 super(HealthCheck,self).__setattr__(k,v)
+
+    # TODO tentative --- init both ends instead?
+    @classmethod
+    def from_initial_patch(cls,patch):
+        # bypass __init__
+        instance = cls.__new__()
+        instance.set_patch(patch)
+        return instance
 
 
 class MetricCheck(HealthCheck):

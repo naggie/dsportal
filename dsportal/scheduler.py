@@ -14,6 +14,7 @@ for name, obj in inspect.getmembers(healthchecks):
     if inspect.isclass(obj) and healthchecks.HealthCheck in inspect.getmro(obj):
         HEALTHCHECK_CLASSES[obj.__name__] = obj
 
+
 class Scheduler(object):
     def __init__(self,worker='localhost'):
         # worker this scheduler is on
@@ -25,11 +26,8 @@ class Scheduler(object):
         self.healthchecks = list()
 
 
-    def instantiate(name,description,tab,worker,healthchecks,**kwargs):
-        # TODO enumerate
-        EntityClass = ENTITY_CLASSES[cls]
-
-        entity = EntityClass(
+    def instantiate_entity(name,description,tab,worker,healthchecks,**kwargs):
+        entity = ENTITY_CLASSES[cls](
             name=name,
             description=description,
             tab=tab,
@@ -43,3 +41,11 @@ class Scheduler(object):
 
         # add tabs and entities in order of definition!
         self.tabs[tab].append(entity)
+
+
+    def instantiate_healthcheck(cls,**kwargs):
+        for h in healthchecks:
+            instance = HEALTHCHECK_CLASSES[h](**kwargs)
+            # used to deserialise on worker
+            initial_patch = instance.get_patch()
+

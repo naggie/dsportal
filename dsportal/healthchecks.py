@@ -124,3 +124,6 @@ class HTTPStatusCheck(HealthCheck):
 class CertificateExpiryCheck(HealthCheck):
     description = "Checks certificate isn't near expiry"
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
+
+class S3BackupChecker(HealthCheck):
+    description = "Checks to see that a backup was made in the last 25 hours"
