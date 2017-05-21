@@ -3,7 +3,7 @@ Dsportal: a monitoring portal
 
 Usage: %s <config.yml>
 
-Dsportal listens on port 8080. Use a reverse proxy to provide HTTPS
+Dsportal server listens on port 8080. Use a reverse proxy to provide HTTPS
 termination.
 """
 from aiohttp import web

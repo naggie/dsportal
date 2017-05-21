@@ -47,11 +47,13 @@ class Scheduler(object):
         self.tabs[tab].append(entity)
 
 
-    def instantiate_healthcheck(cls,**kwargs):
         for h in healthchecks:
             instance = HEALTHCHECK_CLASSES[h](**kwargs)
             # used to deserialise on worker
             initial_patch = instance.get_patch()
+
+            self.healthchecks.append(instance)
+
 
     def start_workers(self,count=4):
         for x in range(count):
