@@ -16,7 +16,7 @@ HOST = argv[1]
 KEY = argv[2]
 
 session = aiohttp.ClientSession()
-async with session.ws_connect('http://example.org/websocket') as ws:
+async with session.ws_connect(HOST) as ws:
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
             if msg.data == 'close cmd':

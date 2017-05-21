@@ -39,7 +39,7 @@ class HealthCheck(object):
 
     # seconds to wait before reporting a stuck worker (process will need to be
     # restarted)
-    timeout = 600
+    timeout = 6
 
     def __init__(self):
         # used to record changes to attributes for DOM updates and object sync
@@ -55,7 +55,9 @@ class HealthCheck(object):
         # periodic stampedes
         #self.last_attempt_time = 0
         t = int(time())
-        self.last_attempt_time = randint(t-interval,t)
+        # warm up over interval, max 1 min
+        warmup = max(self.interval,60)
+        self.last_attempt_time = randint(t-warmup,t)
 
 
     # record patches for object sync and DOM updates
