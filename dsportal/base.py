@@ -37,14 +37,22 @@ class HealthCheck(object):
     # are impossible. Consider it a rest time.
     interval = 60
 
-    # seconds to wait before reporting a stuck worker (process will need to be
-    # restarted)
-    timeout = 6
+    # defaults for kwarg copy
+    defaults = {}
 
-    def __init__(self):
+    def __init__(self,**kwargs):
+        # Don't override.
         # used to record changes to attributes for DOM updates and object sync
         # call super __setattr__ so local doesn't trigger
         super(HealthCheck,self).__setattr__('_patch', dict())
+
+        for k,v in self.defaults.values():
+            setattr(self,k,v)
+
+        for k,v in kwargs.values():
+            if k not in self.defaults:
+                raise KeyError('Unexpected key given as parameter')
+            setattr(self,k,v)
 
         # Used for DOM ID as well
         self.id = str(uuid4())
