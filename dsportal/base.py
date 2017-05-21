@@ -1,4 +1,5 @@
 from uuid import uuid4
+from time import time
 
 class Entity(object):
     def __init__(self,name,description,tab,worker):
@@ -51,11 +52,10 @@ class HealthCheck(object):
         self.last_attempt_time = 0
 
 
-    # TODO decide on returning a patch or calling a publish to the EventBus
     def run():
         """Run health check and updates metrics. Must return dictionary of new
-        changed values. Absolutely MUST not hand forever. Implement a timeout
-        that raises any exception."""
+        changed values. Absolutely MUST NOT hang. Implement a timeout that
+        raises any exception."""
         return {}
 
 
@@ -76,6 +76,17 @@ class HealthCheck(object):
 
             if k != self.__dict__[k]:
                 super(HealthCheck,self).__setattr__(k,v)
+
+
+
+    # used by scheduler to decide when to put job on queue
+    def must_run(self):
+        t = time()
+        if self.last_attempt_time + self.interval <= t:
+            self.last_attempt_time = t
+            return True
+        else:
+            return False
 
     # TODO tentative --- init both ends instead?
     @classmethod
