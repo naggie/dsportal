@@ -2,6 +2,8 @@ from collections import OrderedDict
 import inspect
 import entities
 import healthchecks
+import sleep
+import queue
 
 ENTITY_CLASSES = dict()
 HEALTHCHECK_CLASSES = dict()
@@ -24,6 +26,8 @@ class Scheduler(object):
         self.tabs = OrderedDict()
         self.entities = list()
         self.healthchecks = list()
+
+        self.work_queue = queue.Queue(maxsize=10)
 
 
     def instantiate_entity(name,description,tab,worker,healthchecks,**kwargs):
@@ -49,3 +53,28 @@ class Scheduler(object):
             # used to deserialise on worker
             initial_patch = instance.get_patch()
 
+    def start_workers(self,count=4):
+        for x in range(count):
+            t = Thread()
+            t = Thread(target=self._worker)
+            t.daemon = True
+            t.start()
+
+        return t
+
+    def start(self):
+        # TODO this should be async and in aiohttp event loop
+        for h in self.healthchecks:
+            if h.must_run():
+                try:
+                    self.work_queue.add(h)
+                except queue.Full:
+                    # drop check
+                    pass
+
+
+    def _worker(self):
+        while True:
+            h = self.work_queue.get(block=True)
+            h.run_check() # wraps exceptions
+            self.work_queue.task_done()

@@ -51,17 +51,11 @@ class HealthCheck(object):
         self.healthy = None
         self.error_message = None
 
-        # randomise for uniform distribution of health checks
+        # randomise for uniform distribution of health checks rather than
+        # periodic stampedes
         #self.last_attempt_time = 0
         t = int(time())
         self.last_attempt_time = randint(t-interval,t)
-
-
-    def run():
-        """Run health check and updates metrics. Must return dictionary of new
-        changed values. Absolutely MUST NOT hang. Implement a timeout that
-        raises any exception."""
-        return {}
 
 
     # record patches for object sync and DOM updates
@@ -83,7 +77,6 @@ class HealthCheck(object):
                 super(HealthCheck,self).__setattr__(k,v)
 
 
-
     # used by scheduler to decide when to put job on queue
     def must_run(self):
         t = time()
@@ -101,6 +94,23 @@ class HealthCheck(object):
         instance.set_patch(patch)
         return instance
 
+    def run_check(self):
+        try:
+            self.run()
+            self.healthy = True
+        except BaseException as e:
+            e.error_message = str(e)
+            self.healthy = False
+            raise
+
+
+    def check(self):
+        """Run health check and updates metrics. Absolutely MUST NOT hang. If
+        method runs without raising an exception, the state is assumed to be
+        healthy, else unhealthy."""
+        pass
+
+
 
 class MetricCheck(HealthCheck):
     description = "A generic health check with associated metric"
@@ -115,9 +125,9 @@ class MetricCheck(HealthCheck):
         self.raw_min = 0
 
         # human values have dynamic magnitude and units attached
-        self.human_value = ''
-        self.human_max = '100%'
-        self.human_min = '0%'
+        self.display_value = ''
+        self.display_max = '100%'
+        self.display_min = '0%'
 
 
     def percent_bar(self):
