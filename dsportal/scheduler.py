@@ -80,3 +80,14 @@ class Scheduler(object):
             h = self.work_queue.get(block=True)
             h.run_check() # wraps exceptions
             self.work_queue.task_done()
+
+
+    
+        # randomise for uniform distribution of health checks rather than
+        # periodic stampedes
+        #self.last_attempt_time = 0
+        t = int(time())
+        # warm up over interval, max 1 min
+        warmup = max(self.interval,60)
+        self.last_attempt_time = randint(t-warmup,t)
+
