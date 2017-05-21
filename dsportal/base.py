@@ -1,5 +1,6 @@
 from uuid import uuid4
 from time import time
+from random import randint
 
 class Entity(object):
     def __init__(self,name,description,tab,worker):
@@ -49,7 +50,11 @@ class HealthCheck(object):
         self.id = str(uuid4())
         self.healthy = None
         self.error_message = None
-        self.last_attempt_time = 0
+
+        # randomise for uniform distribution of health checks
+        #self.last_attempt_time = 0
+        t = int(time())
+        self.last_attempt_time = randint(t-interval,t)
 
 
     def run():
