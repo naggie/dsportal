@@ -28,15 +28,15 @@ class Entity(object):
         self.HealthChecks.append(instance)
 
 
-
-
-
 # TODO strict templating, requiring certain attrs for bar min/max etc? (OOB class?)
 def healthcheck(fn):
     '''Registers healthcheck, wraps exceptions and validates I/O'''
 
     if not f.__doc__:
         raise ValueError('__doc__ describing purpose must be defined for healthcheck.')
+
+    if not f.interval:
+        f.interval = 60
 
     @wraps(fn) # preserve __doc__ among other things
     def _fn(**kwargs):
