@@ -3,6 +3,8 @@ from time import time
 from random import randint
 from functools import wraps
 
+# hm....
+
 HEALTHCHECKS = dict()
 
 class Entity(object):
@@ -36,11 +38,11 @@ def healthcheck(fn):
     be used to .update() the state dict to preserve object references and may
     be recorded in a time-series.'''
 
-    if not f.__doc__:
+    if not fn.__doc__:
         raise ValueError('__doc__ describing purpose must be defined for healthcheck.')
 
-    if not f.interval:
-        f.interval = 60
+    if not getattr(fn,'interval',None):
+        fn.interval = 60
 
     HEALTHCHECKS[fn.__name__] = fn
 
@@ -74,17 +76,19 @@ def healthcheck(fn):
 # TODO just an idea atm.
 class HealthCheckManager(object):
     def __init__(self,fn,interval=None,**config):
-        self.id = str(uuid4())
 
-        if fn.__name__ not in HEALTHCHECKS:
+        if fn not in HEALTHCHECKS:
             raise KeyError('fn is not a regular healthcheck')
 
         self.fn_name = fn
+        self.fn = HEALTHCHECKS[fn]
+
+        self.id = str(uuid4())
 
         # kwargs to pass to healthcheck
         self.fn_kwargs = config
 
-        self.interval = interval or fn.interval
+        self.interval = interval or self.fn.interval
 
         self.state = {
                 "healthy": None,
