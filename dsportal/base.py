@@ -77,6 +77,7 @@ def healthcheck(fn):
 class HealthCheckManager(object):
     def __init__(self,fn_name,interval=None,**config):
 
+        # validate fn_name
         if fn_name not in HEALTHCHECKS:
             raise KeyError('Given fn_name is not a known healthcheck')
 

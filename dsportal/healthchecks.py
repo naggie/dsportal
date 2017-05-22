@@ -63,7 +63,7 @@ def batterylevelcheck():
 
 
 @healthcheck
-def uptimecheck(dummycheck):
+def uptimecheck():
     "Specify uptime in days"
 
     with open('/proc/uptime', 'r') as f:
@@ -115,14 +115,23 @@ def btrfspoolcheck():
     "Checks BTRFS health"
 
 @healthcheck
-def httpstatuscheck(healthcheck):
+def httpstatuscheck():
     "Checks service returns 200 OK"
 
 @healthcheck
-def certificateexpirycheck(healthcheck):
+def certificateexpirycheck():
     "Checks certificate isn't near expiry"
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
 @healthcheck
-def s3backupchecker(healthcheck):
+def s3backupchecker():
     "Checks to see that a backup was made in the last 25 hours"
+
+@healthcheck
+def papouchth2e_temperature(url,
+        min_temp=10,
+        max_temp=35,
+        min_hum=20,
+        max_hum=80):
+    """Check the temperature reported by a Papouch TH2E"""
+
