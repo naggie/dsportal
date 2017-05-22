@@ -1,6 +1,7 @@
 from base import healthcheck
 from util import get_ups_data
 
+@healthcheck
 def ramusagecheck():
     "Checks RAM usage is less than 90%. Does not count cache and buffers."
     # http://www.linuxatemyram.com/
@@ -23,6 +24,7 @@ def ramusagecheck():
     self.raw_value = used * 1024
 
 
+@healthcheck
 def cpuusagecheck():
     "Checks CPU load is nominal."
     #"return normalised % load (avg num of processes waiting per processor)"
@@ -32,18 +34,22 @@ def cpuusagecheck():
 
 
 
+@healthcheck
 def diskusagecheck():
     "Inspects used and available blocks on given mount points."
     s = statvfs(self.mountpoint)
     free = s.f_bsize * s.f_bavail
     total = s.f_bsize * s.f_blocks
 
+@healthcheck
 def ukmainsvoltagecheck():
     "Checks mains voltage falls within UK legal limits of 230V +10% -6%"
 
+@healthcheck
 def upsloadcheck():
     "Checks UPS is not overloaded"
 
+@healthcheck
 def batterylevelcheck():
     "Checks estimated time remaining and percentage"
 
@@ -56,6 +62,7 @@ def batterylevelcheck():
     }
 
 
+@healthcheck
 def uptimecheck(dummycheck):
     "Specify uptime in days"
 
@@ -70,9 +77,11 @@ def uptimecheck(dummycheck):
     self._patch({'value':self.value})
 
 
+@healthcheck
 def cputemperaturecheck():
     "Checks CPU Temperature is nominal"
 
+@healthcheck
 def gputemperaturecheck():
     "Checks GPU Temperature is nominal"
 
@@ -101,15 +110,19 @@ def gputemperaturecheck():
 gputemperaturecheck.interval = 60
 
 
+@healthcheck
 def btrfspoolcheck():
     "Checks BTRFS health"
 
+@healthcheck
 def httpstatuscheck(healthcheck):
     "Checks service returns 200 OK"
 
+@healthcheck
 def certificateexpirycheck(healthcheck):
     "Checks certificate isn't near expiry"
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
+@healthcheck
 def s3backupchecker(healthcheck):
     "Checks to see that a backup was made in the last 25 hours"
