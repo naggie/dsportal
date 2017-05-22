@@ -3,6 +3,8 @@ from time import time
 from random import randint
 from functools import wraps
 
+HEALTHCHECKS = dict()
+
 class Entity(object):
     def __init__(self,name,description,tab,worker):
         # Used for DOM ID as well
@@ -40,6 +42,8 @@ def healthcheck(fn):
     if not f.interval:
         f.interval = 60
 
+    HEALTHCHECKS[fn.__name__] = fn
+
     @wraps(fn) # preserve __doc__ among other things
     def _fn(**kwargs):
 
@@ -66,6 +70,45 @@ def healthcheck(fn):
 
     return _fn
 
+
+# TODO just an idea atm.
+class HealthCheckManager(object):
+    def __init__(self,fn,interval=None,**config):
+        self.id = str(uuid4())
+
+        if fn.__name__ not in HEALTHCHECKS:
+            raise KeyError('fn is not a regular healthcheck')
+
+        self.fn_name = fn
+
+        # kwargs to pass to healthcheck
+        self.fn_kwargs = config
+
+        self.interval = interval or fn.interval
+
+        self.state = {
+                "healthy": None,
+                }
+
+        # randomise for uniform distribution of health checks rather than
+        # periodic stampedes
+        #self.last_attempt_time = 0
+        t = int(time())
+        # warm up over interval, max 1 min
+        warmup = max(self.interval,60)
+        self.last_attempt_time = randint(t-warmup,t)
+
+    def update(self,state):
+        self.state.update(state)
+
+    # used by scheduler to decide when to put job on queue
+    def must_run(self):
+        t = time()
+        if self.last_attempt_time + self.interval <= t:
+            self.last_attempt_time = t
+            return True
+        else:
+            return False
 
 
 
