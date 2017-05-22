@@ -3,18 +3,12 @@ import inspect
 import entities
 import healthchecks
 import sleep
-import queue
 
 ENTITY_CLASSES = dict()
-HEALTHCHECK_CLASSES = dict()
 
 for name, obj in inspect.getmembers(entities):
     if inspect.isclass(obj) and entities.Entity in inspect.getmro(obj):
         ENTITY_CLASSES[obj.__name__] = obj
-
-for name, obj in inspect.getmembers(healthchecks):
-    if inspect.isclass(obj) and healthchecks.HealthCheck in inspect.getmro(obj):
-        HEALTHCHECK_CLASSES[obj.__name__] = obj
 
 
 class Scheduler(object):
@@ -27,7 +21,6 @@ class Scheduler(object):
         self.entities = list()
         self.healthchecks = list()
 
-        self.work_queue = queue.Queue(maxsize=10)
 
 
     def instantiate_entity(name,description,tab,worker,healthchecks,**kwargs):
@@ -53,41 +46,4 @@ class Scheduler(object):
             initial_patch = instance.get_patch()
 
             self.healthchecks.append(instance)
-
-
-    def start_workers(self,count=4):
-        for x in range(count):
-            t = Thread()
-            t = Thread(target=self._worker)
-            t.daemon = True
-            t.start()
-
-        return t
-
-    def start(self):
-        # TODO this should be async and in aiohttp event loop
-        for h in self.healthchecks:
-            if h.must_run():
-                try:
-                    self.work_queue.add(h)
-                except queue.Full:
-                    # drop check
-                    pass
-
-
-    def _worker(self):
-        while True:
-            h = self.work_queue.get(block=True)
-            h.run_check() # wraps exceptions
-            self.work_queue.task_done()
-
-
-    
-        # randomise for uniform distribution of health checks rather than
-        # periodic stampedes
-        #self.last_attempt_time = 0
-        t = int(time())
-        # warm up over interval, max 1 min
-        warmup = max(self.interval,60)
-        self.last_attempt_time = randint(t-warmup,t)
 

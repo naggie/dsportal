@@ -75,20 +75,20 @@ def healthcheck(fn):
 
 # TODO just an idea atm.
 class HealthCheckManager(object):
-    def __init__(self,fn,interval=None,**config):
+    def __init__(self,fn_name,interval=None,**config):
 
-        if fn not in HEALTHCHECKS:
-            raise KeyError('fn is not a regular healthcheck')
+        if fn_name not in HEALTHCHECKS:
+            raise KeyError('Given fn_name is not a known healthcheck')
 
-        self.fn_name = fn
-        self.fn = HEALTHCHECKS[fn]
+        self.fn_name = fn_name
+        self.fn = HEALTHCHECKS[fn_name]
 
         self.id = str(uuid4())
 
         # kwargs to pass to healthcheck
         self.fn_kwargs = config
 
-        self.interval = interval or self.fn.interval
+        self.interval = interval or fn.interval
 
         self.state = {
                 "healthy": None,
