@@ -28,9 +28,11 @@ class Entity(object):
         self.HealthChecks.append(instance)
 
 
-# TODO strict templating, requiring certain attrs for bar min/max etc? (OOB class?)
+# TODO strict classification? requiring certain attrs for bar min/max etc? (OOB class?)
 def healthcheck(fn):
-    '''Registers healthcheck, wraps exceptions and validates I/O'''
+    '''Registers healthcheck, wraps exceptions and validates I/O. Result will
+    be used to .update() the state dict to preserve object references and may
+    be recorded in a time-series.'''
 
     if not f.__doc__:
         raise ValueError('__doc__ describing purpose must be defined for healthcheck.')
@@ -46,7 +48,7 @@ def healthcheck(fn):
         except Exception as e:
             return {
                     "healthy" : False,
-                    "message" : "{e.__class__.__name__}: {e}".format(e=e),
+                    "error_message" : "{e.__class__.__name__}: {e}".format(e=e),
                 }
 
         if type(result) != dict:
@@ -56,7 +58,11 @@ def healthcheck(fn):
             raise ValueError('Heathcheck result must have `healthy` key, a bool or None.')
 
         if type(result['healthy']) != bool and result['healthy'] != None:
-            raise ValueError('Heathcheck result must have `healthy` key, a bool or None. None means unknown-yet or not-applicable.')
+            raise ValueError('''Heathcheck result must have `healthy` key, a
+                    bool or None. None means unknown-yet or not-applicable.''')
+
+        if not result['healthy'] and not result['error_message']:
+            raise ValueError('error_message must be set if healthy is False')
 
     return _fn
 
