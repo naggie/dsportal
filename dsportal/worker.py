@@ -58,13 +58,14 @@ async def websocket_client(loop,host,key):
                 },
             )
 
-    async with session.ws_connect(host) as ws:
+    async with session.ws_connect(url) as ws:
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 if msg.data == 'close cmd':
                     await ws.close()
                     break
                 else:
+                    print(msg.data)
                     ws.send_str(msg.data + '/answer')
             elif msg.type == aiohttp.WSMsgType.CLOSED:
                 break

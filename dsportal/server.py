@@ -29,6 +29,7 @@ TEMPLATES_DIR = path.join(SCRIPT_DIR,'templates')
 async def worker_websocket(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
+    ws.send_str('hello')
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
@@ -40,7 +41,7 @@ async def worker_websocket(request):
             print('ws connection closed with exception %s' %
                     ws.exception())
 
-            print('websocket connection closed')
+    print('websocket connection closed')
 
     return ws
 
