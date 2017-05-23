@@ -7,8 +7,9 @@ Usage: %s <server address> <key>
 import sys
 from os import path
 import aiohttp
-from thread import Thread
-import healthchecks
+import asyncio
+from threading import Thread
+#import healthchecks
 import queue
 
 
@@ -48,18 +49,16 @@ class Worker(object):
                 pass
 
 
+async def websocket_client(loop,host,key):
+    url = path.join(host,'worker-websocket')
+    session = aiohttp.ClientSession(
+            loop=loop,
+            headers={
+                'Authorization':'Token ' + key,
+                },
+            )
 
-
-def main():
-    # run as executable, must be remote worker
-    if len(sys.argv) < 2:
-        print(__doc__ % sys.argv[0])
-        sys.exit(1)
-    HOST = argv[1]
-    KEY = argv[2]
-
-    session = aiohttp.ClientSession()
-    async with session.ws_connect(HOST) as ws:
+    async with session.ws_connect(host) as ws:
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 if msg.data == 'close cmd':
@@ -67,8 +66,22 @@ def main():
                     break
                 else:
                     ws.send_str(msg.data + '/answer')
-                elif msg.type == aiohttp.WSMsgType.CLOSED:
-                    break
-                elif msg.type == aiohttp.WSMsgType.ERROR:
-                    break
+            elif msg.type == aiohttp.WSMsgType.CLOSED:
+                break
+            elif msg.type == aiohttp.WSMsgType.ERROR:
+                break
 
+
+
+
+def main():
+    # run as executable, must be remote worker
+    if len(sys.argv) < 2:
+        print(__doc__ % sys.argv[0])
+        sys.exit(1)
+
+    host = sys.argv[1]
+    key = sys.argv[2]
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(websocket_client(loop,host,key))
