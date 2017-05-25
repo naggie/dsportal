@@ -49,7 +49,7 @@ class Worker(object):
                 pass
 
 
-async def websocket_client(loop,host,key):
+async def websocket_client(loop,worker,host,key):
     url = path.join(host,'worker-websocket')
     session = aiohttp.ClientSession(
             loop=loop,
@@ -58,18 +58,23 @@ async def websocket_client(loop,host,key):
                 },
             )
 
+    connection = session.ws_connect(
+            url=url,
+            autoping=True,
+            heartbeat=10,
+        )
+
+
     async with session.ws_connect(url) as ws:
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
-                if msg.data == 'close cmd':
-                    await ws.close()
-                    break
-                else:
-                    print(msg.data)
-                    ws.send_str(msg.data + '/answer')
+                jobspec = msg.json()
+                worker.enqueue(jobspec)
             elif msg.type == aiohttp.WSMsgType.CLOSED:
+                print('error')
                 break
             elif msg.type == aiohttp.WSMsgType.ERROR:
+                print('closed')
                 break
 
 
@@ -84,5 +89,8 @@ def main():
     host = sys.argv[1]
     key = sys.argv[2]
 
+    worker = Worker()
+
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(websocket_client(loop,host,key))
+    client = websocket_client(loop,host,key)
+    loop.run_until_complete(client)

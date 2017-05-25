@@ -6,7 +6,7 @@ Usage: %s <config.yml>
 Dsportal server listens on port 8080. Use a reverse proxy to provide HTTPS
 termination.
 """
-from aiohttp import web
+import aiohttp
 import sys
 from os import path
 import jinja2
@@ -27,16 +27,12 @@ TEMPLATES_DIR = path.join(SCRIPT_DIR,'templates')
 
 
 async def worker_websocket(request):
-    ws = web.WebSocketResponse()
+    ws = aiohttp.web.WebSocketResponse()
     await ws.prepare(request)
     ws.send_str('hello')
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
-            if msg.data == 'close':
-                await ws.close()
-            else:
-                ws.send_str(msg.data + '/answer')
         elif msg.type == aiohttp.WSMsgType.ERROR:
             print('ws connection closed with exception %s' %
                     ws.exception())
@@ -47,7 +43,7 @@ async def worker_websocket(request):
 
 
 
-app = web.Application(debug=True)
+app = aiohttp.web.Application(debug=True)
 app.router.add_static('/static',STATIC_DIR) # TODO nginx static overlay
 #app.router.add_static('/assets',ASSET_DIR)
 #app.router.add_get('/',sso)
@@ -55,8 +51,14 @@ app.router.add_get('/worker-websocket',worker_websocket)
 #app.router.add_get('/client-websocket',sso)
 aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
+# Make scheduler available to request handlers
+# See https://aiohttp.readthedocs.io/en/stable/web.html#data-sharing-aka-no-singletons-please
+# directly in request dict-like onject!
+#app['scheduler'] = TODO
+
+
 def main():
-    web.run_app(
+    aiohttp.web.run_app(
             app,
             port=int(8080),
             shutdown_timeout=6,
