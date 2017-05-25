@@ -39,6 +39,11 @@ class Worker(object):
             self.work_queue.put((id,fn,kwargs),block=False)
             log.debug('Check enqueued: %s',fn_name)
         except queue.Full:
+            self.result_queue.put((id,{
+                    'id':id,
+                    'healthy': None,
+                    'error_message' : 'Worker was too busy.',
+                }))
             log.warn('Check dropped, too busy: %s',fn_name)
             pass
 
