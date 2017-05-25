@@ -2,9 +2,10 @@ from dsportal.base import healthcheck
 from dsportal.util import get_ups_data,percent_bar
 import os
 import multiprocessing
+import requests
 
 @healthcheck
-def ram_usage():
+def ram_usage(max_percent=90):
     "Checks RAM usage is less than 90%. Does not count cache and buffers."
     # http://www.linuxatemyram.com/
     with open('/proc/meminfo') as f:
@@ -20,10 +21,18 @@ def ram_usage():
 
     used = info['MemTotal'] - info['MemFree'] - info['Buffers'] - info['Cached']
 
-    self.raw_total = info['MemTotal'] * 1024
+    total = info['MemTotal'] * 1024
 
     # used by applications, not cache/buffers
-    self.raw_value = used * 1024
+    value = used * 1024
+
+    return {
+            "value": value,
+            "min_bar": '0',
+            "max_bar": human_bytes(total),
+            "percentage": percent_bar(value,total),
+            "healthy": value < (max_percent*total)/100,
+            }
 
 
 @healthcheck
@@ -77,9 +86,12 @@ def uptime():
     seconds = line.partition(' ')[0]
     seconds = float(seconds)
 
-    self.value = int(seconds)
+    days = int(round(seconds/86400))
 
-    self._patch({'value':self.value})
+    return {
+        "healthy": True,
+        "value": '%s days' % days,
+        }
 
 
 @healthcheck
@@ -119,8 +131,15 @@ def btrfs_pool():
     "Checks BTRFS health"
 
 @healthcheck
-def http_status(url):
+def http_status(url,timeout=10):
     "Checks service returns 200 OK"
+
+    r = requests.get(url,timeout=timeout)
+    r.raise_for_status()
+
+    return {
+            "healthy": True,
+            }
 
 @healthcheck
 def broken_links(url,ignore):
@@ -132,7 +151,7 @@ def certificate_expiry():
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
 @healthcheck
-def s3_backup_checker():
+def s3_backup_checker(bucket,date_key):
     "Checks to see that a backup was made in the last 25 hours"
 
 @healthcheck

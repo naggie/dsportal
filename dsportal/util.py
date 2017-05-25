@@ -41,3 +41,7 @@ def setup_logging(debug=False):
     logger = colorlog.getLogger()
     logger.setLevel(logging.DEBUG if debug else logging.INFO)
     logger.addHandler(handler)
+
+
+def human_bytes(b):
+    return b

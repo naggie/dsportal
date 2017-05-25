@@ -21,7 +21,8 @@ log = logging.getLogger(__name__)
 class Worker(object):
     def __init__(self):
         self.work_queue = queue.Queue(maxsize=10)
-        self.result_queue = queue.Queue()
+        # checks should not pile up
+        self.result_queue = queue.Queue(maxsize=1)
 
     def start_workers(self,count=4):
         for x in range(count):
@@ -42,15 +43,16 @@ class Worker(object):
             self.result_queue.put((id,{
                     'id':id,
                     'healthy': None,
-                    'error_message' : 'Worker was too busy.',
+                    'error_message' : 'Worker was too busy to run this health check',
                 }))
-            log.warn('Check dropped, too busy: %s',fn_name)
+            log.warn('Check dropped: %s',fn_name)
             pass
 
 
     def _worker(self):
         while True:
             id,fn,kwargs = self.work_queue.get(block=True)
+            log.debug('Processing check: %s',fn_name)
             result = fn(**kwargs)
             self.work_queue.task_done()
             try:
