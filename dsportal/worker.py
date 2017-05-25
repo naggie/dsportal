@@ -12,13 +12,16 @@ from threading import Thread
 from dsportal import healthchecks
 from dsportal import base
 import queue
+import logging
+from dsportal.util import setup_logging
 
-
+setup_logging(debug=False)
+log = logging.getLogger(__name__)
 
 class Worker(object):
     def __init__(self):
-        self.work_queue =   queue.Queue(maxsize=10)
-        self.result_queue = queue.Queue(maxsize=10)
+        self.work_queue = queue.Queue(maxsize=10)
+        self.result_queue = queue.Queue()
 
     def start_workers(self,count=4):
         for x in range(count):
@@ -31,10 +34,12 @@ class Worker(object):
 
     def enqueue(self,id,fn_name,**kwargs):
         try:
+            log.debug
             fn = base.HEALTHCHECKS[fn_name]
-            self.work_queue.put((id,fn,kwargs))
+            self.work_queue.put((id,fn,kwargs),block=False)
+            log.debug('Check enqueued: %s',fn_name)
         except queue.Full:
-            # drop check
+            log.warn('Check dropped, too busy: %s',fn_name)
             pass
 
 
@@ -47,7 +52,6 @@ class Worker(object):
                 self.result_queue.put((id,result))
                 print (result)
             except queue.Full:
-                # drop check
                 pass
 
 

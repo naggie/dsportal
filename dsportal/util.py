@@ -1,3 +1,7 @@
+import logging
+import colorlog
+
+from os import path
 
 def get_ups_data():
     "Get UPS stats from apcupsd via apcaccess"
@@ -31,3 +35,9 @@ def percent_bar(value,_max,_min=0):
     return val
 
 
+def setup_logging(debug=False):
+    handler = colorlog.StreamHandler()
+    handler.setFormatter(colorlog.ColoredFormatter('%(asctime)s  %(log_color)s%(levelname)s%(reset)s %(name)s: %(message)s'))
+    logger = colorlog.getLogger()
+    logger.setLevel(logging.DEBUG if debug else logging.INFO)
+    logger.addHandler(handler)

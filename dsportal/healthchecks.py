@@ -39,10 +39,6 @@ def cpu_usage(_max=200):
             "healthy": value < _max,
             }
 
-
-
-
-
 @healthcheck
 def disk_usage():
     "Inspects used and available blocks on given mount points."
@@ -140,7 +136,8 @@ def s3_backup_checker():
     "Checks to see that a backup was made in the last 25 hours"
 
 @healthcheck
-def papouch_th2e_temperature(url,
+def papouch_th2e_temperature(
+        url,
         min_temp=10,
         max_temp=35,
         min_hum=20,

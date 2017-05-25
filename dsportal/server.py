@@ -6,12 +6,19 @@ Usage: %s <config.yml>
 Dsportal server listens on port 8080. Use a reverse proxy to provide HTTPS
 termination.
 """
+import asyncio
 import aiohttp
 import sys
 from os import path
 import jinja2
 import aiohttp_jinja2
 import yaml
+import logging
+from dsportal.util import setup_logging
+
+setup_logging()
+log = logging.getLogger(__name__)
+
 
 if len(sys.argv) < 2:
     print(__doc__ % sys.argv[0])
@@ -35,6 +42,13 @@ async def worker_websocket(request):
         'id':'foobar',
         'fn_name':'cpu_usage',
         })
+
+    for x in range(5000):
+        ws.send_json({
+            'id':'foobar',
+            'fn_name':'cpu_usage',
+            })
+
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
