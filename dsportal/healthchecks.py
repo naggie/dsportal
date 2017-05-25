@@ -1,8 +1,10 @@
-from base import healthcheck
-from util import get_ups_data
+from dsportal.base import healthcheck
+from dsportal.util import get_ups_data,percent_bar
+import os
+import multiprocessing
 
 @healthcheck
-def ramusage():
+def ram_usage():
     "Checks RAM usage is less than 90%. Does not count cache and buffers."
     # http://www.linuxatemyram.com/
     with open('/proc/meminfo') as f:
@@ -25,12 +27,19 @@ def ramusage():
 
 
 @healthcheck
-def cpu_usage():
+def cpu_usage(_max=200):
     "Checks CPU load is nominal."
     #"return normalised % load (avg num of processes waiting per processor)"
     load = os.getloadavg()[0]
     load = load / multiprocessing.cpu_count()
-    return int(load * 100)
+    value = int(load*100)
+    return {
+            "value": value,
+            "percentage": percent_bar(value,100),
+            "healthy": value < _max,
+            }
+
+
 
 
 
@@ -107,7 +116,6 @@ def gpu_temperature():
         # not specified, so dot change the defaults
         pass
 
-gputemperaturecheck.interval = 60
 
 
 @healthcheck

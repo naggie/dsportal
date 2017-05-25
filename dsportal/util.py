@@ -19,3 +19,15 @@ def get_ups_data():
             info[m.group(1)] = int(m.group(2))
 
     return info
+
+
+def percent_bar(value,_max,_min=0):
+    'Return a value, capped integer 0-100 to render a bar chart'
+    val = (value-_min) / (_max-_min)
+    val *= 100
+    val = int(val)
+    val = min(val,100)
+    val = max(val,0)
+    return val
+
+

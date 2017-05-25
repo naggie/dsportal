@@ -114,16 +114,3 @@ class HealthCheckManager(object):
             return True
         else:
             return False
-
-
-
-def percent_bar(self,_min,_max,value):
-    'Return a value, capped integer 0-100 to render a bar chart'
-    val = (value-_min) / (_max-_min)
-    val *= 100
-    val = int(val)
-    val = min(val,100)
-    val = max(val,0)
-    return val
-
-

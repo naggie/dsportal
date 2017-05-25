@@ -26,7 +26,7 @@ setup(
         'console_scripts': [
             'dsportal-server = dsportal.server:main',
             'dsportal-worker = dsportal.worker:main',
-            'dsportal-screenshot = dsportal.screenshot:main',
+            'dsportal-screenshots = dsportal.screenshots:main',
             ],
         },
     install_requires = packages,

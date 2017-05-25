@@ -29,10 +29,16 @@ TEMPLATES_DIR = path.join(SCRIPT_DIR,'templates')
 async def worker_websocket(request):
     ws = aiohttp.web.WebSocketResponse()
     await ws.prepare(request)
-    ws.send_str('hello')
+    #ws.send_str('hello')
+
+    ws.send_json({
+        'id':'foobar',
+        'fn_name':'cpu_usage',
+        })
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
+            print('what')
         elif msg.type == aiohttp.WSMsgType.ERROR:
             print('ws connection closed with exception %s' %
                     ws.exception())

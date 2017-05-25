@@ -9,7 +9,8 @@ from os import path
 import aiohttp
 import asyncio
 from threading import Thread
-#import healthchecks
+from dsportal import healthchecks
+from dsportal import base
 import queue
 
 
@@ -30,8 +31,8 @@ class Worker(object):
 
     def enqueue(self,id,fn_name,**kwargs):
         try:
-            fn = healthchecks.base.HEALTHCHECKS[fn_name]
-            self.work_queue.add((id,fn,kwargs))
+            fn = base.HEALTHCHECKS[fn_name]
+            self.work_queue.put((id,fn,kwargs))
         except queue.Full:
             # drop check
             pass
@@ -43,7 +44,8 @@ class Worker(object):
             result = fn(**kwargs)
             self.work_queue.task_done()
             try:
-                self.result_queue.add((id,result))
+                self.result_queue.put((id,result))
+                print (result)
             except queue.Full:
                 # drop check
                 pass
@@ -69,7 +71,7 @@ async def websocket_client(loop,worker,host,key):
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 jobspec = msg.json()
-                worker.enqueue(jobspec)
+                worker.enqueue(**jobspec)
             elif msg.type == aiohttp.WSMsgType.CLOSED:
                 print('error')
                 break
@@ -77,7 +79,7 @@ async def websocket_client(loop,worker,host,key):
                 print('closed')
                 break
 
-
+# TODO reconnect forever
 
 
 def main():
@@ -90,7 +92,8 @@ def main():
     key = sys.argv[2]
 
     worker = Worker()
+    worker.start_workers()
 
     loop = asyncio.get_event_loop()
-    client = websocket_client(loop,host,key)
+    client = websocket_client(loop,worker,host,key)
     loop.run_until_complete(client)
