@@ -85,19 +85,38 @@ async def websocket_client(loop,worker,host,key):
         )
 
 
-    async with session.ws_connect(url) as ws:
-        async for msg in ws:
-            if msg.type == aiohttp.WSMsgType.TEXT:
-                jobspec = msg.json()
-                worker.enqueue(**jobspec)
-            elif msg.type == aiohttp.WSMsgType.CLOSED:
-                print('error')
-                break
-            elif msg.type == aiohttp.WSMsgType.ERROR:
-                print('closed')
-                break
+    async with connection as ws:
+        # TODO consider this implementation
+        # https://aiohttp.readthedocs.io/en/v2.1.0/faq.html#how-to-receive-an-incoming-events-from-different-sources-in-parallel
+
+        task = loop.create_task(read_results(worker,ws))
+
+        try:
+            async for msg in ws:
+                if msg.type == aiohttp.WSMsgType.TEXT:
+                    jobspec = msg.json()
+                    worker.enqueue(**jobspec)
+                elif msg.type == aiohttp.WSMsgType.CLOSED:
+                    print('error')
+                    break
+                elif msg.type == aiohttp.WSMsgType.ERROR:
+                    print('closed')
+                    break
+        finally:
+            task.cancel()
 
 # TODO reconnect forever
+
+async def read_results(worker,ws):
+    # TODO there's got to be a better way
+    while True:
+        try:
+            result = worker.result_queue.get(block=False)
+            ws.send_json(result)
+        except queue.Empty:
+            pass
+
+        await asyncio.sleep(0.01)
 
 
 def main():

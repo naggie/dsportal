@@ -52,7 +52,7 @@ async def worker_websocket(request):
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
-            print('what')
+            print (msg.json())
         elif msg.type == aiohttp.WSMsgType.ERROR:
             print('ws connection closed with exception %s' %
                     ws.exception())

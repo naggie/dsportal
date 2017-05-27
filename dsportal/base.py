@@ -110,6 +110,7 @@ class HealthCheckManager(object):
         self.state.update(state)
 
     # used by scheduler to decide when to put job on queue
+    # TODO probably replace with async sleep loop and asyncio create_task (or gather? or ensure_future?)
     def must_run(self):
         t = time()
         if self.last_attempt_time + self.interval <= t:
