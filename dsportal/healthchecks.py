@@ -145,7 +145,7 @@ def http_status(url,timeout=10):
 def broken_links(url,ignore):
     "Crawls website for broken links"
     # https://wummel.github.io/linkchecker/ but use git to install latest revision
-    # example linkchecker --ignore-url 'xmlrpc.php' --user-agent 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.  110 Safari/537.36' https://cydarmedical.com
+    # example linkchecker --check-html --check-css --ignore-url 'xmlrpc.php' --user-agent 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.  110 Safari/537.36' https://cydarmedical.com
 
 # run time -- 5 mins or so for small website
 # run every 5 hours

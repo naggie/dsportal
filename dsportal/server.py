@@ -43,7 +43,7 @@ async def worker_websocket(request):
         'fn_name':'cpu_usage',
         })
 
-    for x in range(1):
+    for x in range(100):
         ws.send_json({
             'id':'foobar',
             'fn_name':'ram_usage',

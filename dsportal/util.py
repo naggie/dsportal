@@ -1,6 +1,7 @@
 import logging
 import colorlog
-
+import queue
+from time import monotonic
 from os import path
 
 def get_ups_data():
@@ -45,3 +46,29 @@ def setup_logging(debug=False):
 
 def human_bytes(b):
     return b
+
+
+
+class TTLQueue(queue.Queue):
+    def __init__(self,*args,ttl=5,**kwargs):
+        super(TTLQueue,self).__init__(*args,**kwargs)
+        self.ttl = ttl
+
+    def put_nowait(self,item):
+        expiry = monotonic() + self.ttl
+        super(TTLQueue,self).put((item,expiry),block=False,timeout=False)
+
+    def get_nowait(self):
+        item,expiry = super(TTLQueue,self).get(block=False,timeout=False)
+
+        if monotonic() > expiry:
+            self.task_done()
+            raise queue.Empty('Item expired')
+
+        return item
+
+    def put(self,*args,**kwargs):
+        raise NotImplementedError('use put_nowait')
+
+    def get(self,*args,**kwargs):
+        raise NotImplementedError('use get_nowait')
