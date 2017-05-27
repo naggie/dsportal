@@ -7,6 +7,7 @@ import requests
 @healthcheck
 def ram_usage(max_percent=90):
     "Checks RAM usage is less than 90%. Does not count cache and buffers."
+    from time import sleep; sleep(0.5)
     # http://www.linuxatemyram.com/
     with open('/proc/meminfo') as f:
         lines = f.readlines()

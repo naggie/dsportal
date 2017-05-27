@@ -47,7 +47,10 @@ def setup_logging(debug=False):
 def human_bytes(b):
     return b
 
-
+class ItemExpired(Exception):
+    def __init__(self,item,*args,**kwargs):
+        super(ItemExpired,self).__init__(*args,**kwargs)
+        self.item = item
 
 class TTLQueue(queue.Queue):
     def __init__(self,*args,ttl=5,**kwargs):
@@ -56,14 +59,26 @@ class TTLQueue(queue.Queue):
 
     def put_nowait(self,item):
         expiry = monotonic() + self.ttl
-        super(TTLQueue,self).put((item,expiry),block=False,timeout=False)
+        super(TTLQueue,self).put((item,expiry),block=False)
 
     def get_nowait(self):
-        item,expiry = super(TTLQueue,self).get(block=False,timeout=False)
+        item,expiry = super(TTLQueue,self).get(block=False)
 
         if monotonic() > expiry:
             self.task_done()
-            raise queue.Empty('Item expired')
+            raise ItemExpired(item)
+
+        return item
+
+    def get_wait(self):
+        while True:
+            item,expiry = super(TTLQueue,self).get(block=True)
+
+            if monotonic() > expiry:
+                self.task_done()
+                raise ItemExpired(item)
+
+            break
 
         return item
 

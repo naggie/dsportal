@@ -15,14 +15,16 @@ import queue
 import logging
 from dsportal.util import setup_logging
 from dsportal.util import TTLQueue
+from dsportal.util import ItemExpired
 
 setup_logging(debug=False)
 log = logging.getLogger(__name__)
 
 class Worker(object):
     def __init__(self):
-        self.work_queue = queue.Queue(maxsize=10)
-        # checks should not pile up
+        # drop items if workers are too busy -- time not number of items
+        self.work_queue = TTLQueue(maxsize=1000,ttl=5)
+        # connection problems should not result in old results coming backk
         self.result_queue = TTLQueue(maxsize=1000,ttl=5)
 
     def start_workers(self,count=4):
@@ -35,24 +37,26 @@ class Worker(object):
         return t
 
     def enqueue(self,id,fn_name,**kwargs):
-        try:
-            log.debug
-            fn = base.HEALTHCHECKS[fn_name]
-            self.work_queue.put_nowait((id,fn,kwargs))
-            log.debug('Check enqueued: %s',fn_name)
-        except queue.Full:
-            self.result_queue.put_nowait({
-                    'id':id,
-                    'healthy': None,
-                    'error_message' : 'Worker was too busy to run this health check',
-                })
-            log.warn('Check dropped: %s',fn_name)
-            pass
+        fn = base.HEALTHCHECKS[fn_name]
+        self.work_queue.put_nowait((id,fn,kwargs))
+        log.debug('Check enqueued: %s',fn_name)
+
 
 
     def _worker(self):
         while True:
-            id,fn,kwargs = self.work_queue.get(block=True)
+            try:
+                id,fn,kwargs = self.work_queue.get_wait()
+            except ItemExpired as e:
+                id,fn,kwargs = e.item
+                self.result_queue.put_nowait({
+                        'id':id,
+                        'healthy': None,
+                        'error_message' : 'Worker was too busy to run this health check in time',
+                    })
+                log.warn('Check dropped: %s',fn.__name__)
+                continue
+
             log.debug('Processing check: %s',fn.__name__)
             result = fn(**kwargs)
             self.work_queue.task_done()
@@ -64,12 +68,10 @@ class Worker(object):
             else:
                 log.warn('Check error: %s %s %',fn.__name__,kwargs,result['error_message'])
 
-            try:
-                # TODO when should id be annotated and by what?
-                result['id'] = id
-                self.result_queue.put_nowait(result)
-            except queue.Full:
-                log.error('Could not report result, blocked.')
+            # TODO when should id be annotated and by what?
+            result['id'] = id
+            self.result_queue.put_nowait(result)
+
 
     def drain(self):
         try:
@@ -125,6 +127,8 @@ async def read_results(worker,ws):
                 result = worker.result_queue.get_nowait()
                 ws.send_json(result)
         except queue.Empty:
+            pass
+        except ItemExpired:
             pass
 
         await asyncio.sleep(0.01)
