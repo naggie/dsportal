@@ -67,7 +67,7 @@ def healthcheck(fn):
                     bool or None. None means unknown-yet or not-applicable.''')
 
         if not result['healthy'] and not result['error_message']:
-            raise ValueError('error_message must be set if healthy is False')
+            raise ValueError('error_message must be set if healthy is False or None')
 
         return result
 

@@ -59,9 +59,9 @@ class Worker(object):
             if result['healthy']:
                 log.info('Check passed: %s %s',fn.__name__,kwargs)
             elif result['healthy'] == False:
-                log.warn('Check failed: %s %s',fn.__name__,kwargs)
+                log.warn('Check failed: %s %s %s',fn.__name__,kwargs,result['error_message'])
             else:
-                log.warn('Check error: %s %s',fn.__name__,kwargs)
+                log.warn('Check error: %s %s %',fn.__name__,kwargs,result['error_message'])
 
             try:
                 self.result_queue.put((id,result),block=False)
