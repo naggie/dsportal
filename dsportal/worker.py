@@ -52,14 +52,13 @@ class Worker(object):
     def _worker(self):
         while True:
             id,fn,kwargs = self.work_queue.get(block=True)
-            log.debug('Processing check: %s',fn_name)
+            log.debug('Processing check: %s',fn.__name__)
             result = fn(**kwargs)
             self.work_queue.task_done()
             try:
-                self.result_queue.put((id,result))
-                print (result)
+                self.result_queue.put((id,result),block=False)
             except queue.Full:
-                pass
+                log.error('Could not report result, blocked.')
 
 
 async def websocket_client(loop,worker,host,key):

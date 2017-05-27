@@ -144,6 +144,12 @@ def http_status(url,timeout=10):
 @healthcheck
 def broken_links(url,ignore):
     "Crawls website for broken links"
+    # https://wummel.github.io/linkchecker/ but use git to install latest revision
+    # example linkchecker --ignore-url 'xmlrpc.php' --user-agent 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.  110 Safari/537.36' https://cydarmedical.com
+
+# run time -- 5 mins or so for small website
+# run every 5 hours
+broken_links.interval = 5*60*60
 
 @healthcheck
 def certificate_expiry():
@@ -151,8 +157,9 @@ def certificate_expiry():
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
 @healthcheck
-def s3_backup_checker(bucket,date_key):
+def s3_backup_checker(bucket,hours=25):
     "Checks to see that a backup was made in the last 25 hours"
+    # list keys in bucket and check the latest upload was < 25 hours ago.
 
 @healthcheck
 def papouch_th2e_temperature(

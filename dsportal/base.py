@@ -44,7 +44,6 @@ def healthcheck(fn):
     if not getattr(fn,'interval',None):
         fn.interval = 60
 
-    HEALTHCHECKS[fn.__name__] = fn
 
     @wraps(fn) # preserve __doc__ among other things
     def _fn(**kwargs):
@@ -69,6 +68,10 @@ def healthcheck(fn):
 
         if not result['healthy'] and not result['error_message']:
             raise ValueError('error_message must be set if healthy is False')
+
+        return result
+
+    HEALTHCHECKS[fn.__name__] = _fn
 
     return _fn
 
