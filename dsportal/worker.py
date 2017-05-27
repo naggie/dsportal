@@ -55,6 +55,14 @@ class Worker(object):
             log.debug('Processing check: %s',fn.__name__)
             result = fn(**kwargs)
             self.work_queue.task_done()
+
+            if result['healthy']:
+                log.info('Check passed: %s %s',fn.__name__,kwargs)
+            elif result['healthy'] == False:
+                log.warn('Check failed: %s %s',fn.__name__,kwargs)
+            else:
+                log.warn('Check error: %s %s',fn.__name__,kwargs)
+
             try:
                 self.result_queue.put((id,result),block=False)
             except queue.Full:
