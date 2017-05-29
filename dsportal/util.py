@@ -26,7 +26,7 @@ def get_ups_data():
     return info
 
 
-def percent_bar(value,_max,_min=0):
+def bar_percentage(value,_max,_min=0):
     'Return a value, capped integer 0-100 to render a bar chart'
     val = (value-_min) / (_max-_min)
     val *= 100

@@ -1,11 +1,11 @@
 from dsportal.base import healthcheck
-from dsportal.util import get_ups_data,percent_bar
+from dsportal.util import get_ups_data,bar_percentage
 import os
 import multiprocessing
 import requests
 
 @healthcheck
-def ram_usage(max_percent=90):
+def ram_usage():
     "Checks RAM usage is less than 90%. Does not count cache and buffers."
     from time import sleep; sleep(0.5)
     # http://www.linuxatemyram.com/
@@ -29,10 +29,10 @@ def ram_usage(max_percent=90):
 
     return {
             "value": value,
-            "min_bar": '0',
-            "max_bar": human_bytes(total),
-            "percentage": percent_bar(value,total),
-            "healthy": value < (max_percent*total)/100,
+            "bar_min": "0MB",
+            "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
+            "bar_percentage": bar_percentage(value,total),
+            "healthy": value < (0.9*total)/100,
             }
 
 
@@ -45,7 +45,9 @@ def cpu_usage(_max=200):
     value = int(load*100)
     return {
             "value": value,
-            "percentage": percent_bar(value,100),
+            "bar_min":"0%",
+            "bar_max":"100%",
+            "bar_percentage": bar_percentage(value,100),
             "healthy": value < _max,
             }
 
@@ -55,14 +57,39 @@ def disk_usage():
     s = statvfs(self.mountpoint)
     free = s.f_bsize * s.f_bavail
     total = s.f_bsize * s.f_blocks
+    usage = total - free
+
+    return {
+            "value": value,
+            "bar_min": "0MB",
+            "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
+            "bar_percentage": bar_percentage(usage,total),
+            "healthy": usage < (0.8*total)/100,
+            }
 
 @healthcheck
 def mains_voltage(_min=216,_max=253):
     "Checks mains voltage falls within UK legal limits of 230V +10% -6%"
+    info = util.get_ups_data()
+    return {
+        "bar_min":'%sV' % _min,
+        "bar_max":'%sV' % _max,
+        'bar_percentage': bar_percentage(info['LINEV'],_max,_min),
+        'value': info['LINEV'],
+        "healthy": (info['LINEV'] < _max) and (info['LINEV'] > _max),
+    }
 
 @healthcheck
 def ups_load():
     "Checks UPS is not overloaded"
+    info = util.get_ups_data()
+    return {
+        "bar_min":"0%",
+        "bar_max":"100%",
+        'bar_percentage': info['LOADPCT'],
+        'value': '%s%%' % info['LOADPCT'],
+        "healthy": info['LOADPCT'] < 90,
+    }
 
 @healthcheck
 def battery_level():
@@ -70,10 +97,11 @@ def battery_level():
 
     info = util.get_ups_data()
     return {
-        'battery_percent': info['BCHARGE'],
-        'battery_minutes': info['TIMELEFT'],
-        'line_voltage': info['LINEV'],
-        'ups_load_percent': info['LOADPCT'],
+        "bar_min":"0%",
+        "bar_max":"100%",
+        'bar_percentage': info['BCHARGE'],
+        'value': info['TIMELEFT'], # ???
+        "healthy": info['TIMELEFT'] < 300,
     }
 
 
