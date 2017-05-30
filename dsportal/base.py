@@ -4,8 +4,8 @@ from random import randint
 from functools import wraps
 from collections import OrderedDict,defaultdict
 import inspect
-import entities
-import healthchecks
+import dsportal.entities
+import dsportal.healthchecks
 import sleep
 
 HEALTHCHECKS = dict()

@@ -202,3 +202,24 @@ def papouch_th2e_temperature(
         max_hum=80):
     """Check the temperature reported by a Papouch TH2E"""
 
+@healthcheckfn
+def ssllabs_report(host,min_grade="A+"):
+    grades = ['A+','A','A-','B','C','D','E','F','T','M']
+
+    for x in range(100):
+        report = requests.get('https://api.ssllabs.com/api/v2/analyze',params={
+            "host": host,
+            },timeout=5)
+        sleep(2)
+        print(report)
+
+        if report['status'] == 'READY':
+            break
+    else:
+        raise TimeoutError('SSL labs test took too long')
+
+    grade = report['endpoints'][0]['grade']
+
+    return {
+        'healthy': grades[grade] <= grades[min_grade],
+            }

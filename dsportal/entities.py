@@ -1,4 +1,4 @@
-from base import Entity
+from dsportal.base import Entity
 import markdown
 
 class Host(Entity):
