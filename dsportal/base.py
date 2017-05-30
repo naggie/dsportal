@@ -3,8 +3,6 @@ from time import time
 from random import randint
 from functools import wraps
 
-# hm....
-
 HEALTHCHECKS = dict()
 
 class Entity(object):
