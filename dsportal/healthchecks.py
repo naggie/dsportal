@@ -205,21 +205,29 @@ def papouch_th2e_temperature(
 @healthcheckfn
 def ssllabs_report(host,min_grade="A+"):
     grades = ['A+','A','A-','B','C','D','E','F','T','M']
+    grades = dict(zip(grades,range(len(grades)))) # grade -> score
 
     for x in range(100):
-        report = requests.get('https://api.ssllabs.com/api/v2/analyze',params={
+        response = requests.get('https://api.ssllabs.com/api/v2/analyze',params={
             "host": host,
             },timeout=5)
+        response.raise_for_status()
+        report = response.json()
         sleep(2)
-        print(report)
 
         if report['status'] == 'READY':
             break
+
+        if report['status'] == 'ERROR':
+            raise Exception(report['statusMessage'])
     else:
         raise TimeoutError('SSL labs test took too long')
 
     grade = report['endpoints'][0]['grade']
 
+    if grades[grade] >= grades[min_grade]:
+        raise Exception('Grade %s not acheived, got %s.' % (min_grade,grade))
+
     return {
-        'healthy': grades[grade] <= grades[min_grade],
+        'healthy': True,
             }
