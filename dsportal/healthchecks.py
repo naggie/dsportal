@@ -1,10 +1,10 @@
-from dsportal.base import healthcheck
+from dsportal.base import healthcheckfn
 from dsportal.util import get_ups_data,bar_percentage
 import os
 import multiprocessing
 import requests
 
-@healthcheck
+@healthcheckfn
 def ram_usage():
     "Checks RAM usage is less than 90%. Does not count cache and buffers."
     from time import sleep; sleep(0.5)
@@ -35,8 +35,11 @@ def ram_usage():
             "healthy": value < (0.9*total)/100,
             }
 
+# TODO maybe this should be a (stateless) class
+ram_usage.label = 'RAM usage'
 
-@healthcheck
+
+@healthcheckfn
 def cpu_usage(_max=200):
     "Checks CPU load is nominal."
     #"return normalised % load (avg num of processes waiting per processor)"
@@ -51,7 +54,7 @@ def cpu_usage(_max=200):
             "healthy": value < _max,
             }
 
-@healthcheck
+@healthcheckfn
 def disk_usage():
     "Inspects used and available blocks on given mount points."
     s = statvfs(self.mountpoint)
@@ -67,8 +70,8 @@ def disk_usage():
             "healthy": usage < (0.8*total)/100,
             }
 
-@healthcheck
-def mains_voltage(_min=216,_max=253):
+@healthcheckfn
+def ups_voltage(_min=216,_max=253):
     "Checks mains voltage falls within UK legal limits of 230V +10% -6%"
     info = util.get_ups_data()
     return {
@@ -79,7 +82,7 @@ def mains_voltage(_min=216,_max=253):
         "healthy": (info['LINEV'] < _max) and (info['LINEV'] > _max),
     }
 
-@healthcheck
+@healthcheckfn
 def ups_load():
     "Checks UPS is not overloaded"
     info = util.get_ups_data()
@@ -91,8 +94,8 @@ def ups_load():
         "healthy": info['LOADPCT'] < 90,
     }
 
-@healthcheck
-def battery_level():
+@healthcheckfn
+def ups_battery():
     "Checks estimated time remaining and percentage"
 
     info = util.get_ups_data()
@@ -105,7 +108,7 @@ def battery_level():
     }
 
 
-@healthcheck
+@healthcheckfn
 def uptime():
     "Specify uptime in days"
 
@@ -123,11 +126,11 @@ def uptime():
         }
 
 
-@healthcheck
+@healthcheckfn
 def cpu_temperature():
     "Checks CPU Temperature is nominal"
 
-@healthcheck
+@healthcheckfn
 def gpu_temperature():
     "Checks GPU Temperature is nominal"
 
@@ -155,11 +158,11 @@ def gpu_temperature():
 
 
 
-@healthcheck
+@healthcheckfn
 def btrfs_pool():
     "Checks BTRFS health"
 
-@healthcheck
+@healthcheckfn
 def http_status(url,timeout=10):
     "Checks service returns 200 OK"
 
@@ -170,7 +173,7 @@ def http_status(url,timeout=10):
             "healthy": True,
             }
 
-@healthcheck
+@healthcheckfn
 def broken_links(url,ignore):
     "Crawls website for broken links"
     # https://wummel.github.io/linkchecker/ but use git to install latest revision
@@ -180,17 +183,17 @@ def broken_links(url,ignore):
 # run every 5 hours
 broken_links.interval = 5*60*60
 
-@healthcheck
+@healthcheckfn
 def certificate_expiry():
     "Checks certificate isn't near expiry"
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
-@healthcheck
+@healthcheckfn
 def s3_backup_checker(bucket,hours=25):
     "Checks to see that a backup was made in the last 25 hours"
     # list keys in bucket and check the latest upload was < 25 hours ago.
 
-@healthcheck
+@healthcheckfn
 def papouch_th2e_temperature(
         url,
         min_temp=10,
