@@ -1,5 +1,6 @@
 from dsportal.base import healthcheckfn
 from dsportal.util import get_ups_data,bar_percentage
+import socket
 import os
 import multiprocessing
 import requests
@@ -230,7 +231,7 @@ class PapouchTh2eTemperature(HealthCheck)
 
 
 class SsllabsReport(HealthCheck):
-    title = "SSL implementation"
+    label = "SSL implementation"
     description = "Checks SSL implementation using ssllabs.org"
     @staticmethod
     def check(host,min_grade='A+'):
@@ -262,6 +263,19 @@ class SsllabsReport(HealthCheck):
             'healthy': True,
                 }
 
-    class PortScan(open_ports=[22,80,443],limit=1024):
-        '''asserts that the given ports are listening and no others are.'''
-        pass
+    class PortScan(HealthCheck):
+        label = "Firewall"
+        description = "Scans host to check ports are closed. Synchronous so relatively quiet/slow."
+        @staticmethod
+        def check(host,open_ports=[22,80,443],limit=65535,wait=0.5):
+            for port in range(1,limit+1):
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                try:
+                    sock.settimeout(0.5)
+                    result = sock.connect_ex((host, port))
+                    if result == 0 and port not in open_ports:
+                        raise Exception('At least port %s is open but should not be' % port)
+                except:
+                    raise
+                finally:
+                    sock.close()
