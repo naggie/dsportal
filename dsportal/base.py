@@ -42,9 +42,9 @@ def validate_result(result):
         raise ValueError('error_message must be set if healthy is False')
 
 
-
+# TODO default and way for user to override label and for constructor to modify
 class HealthCheck(object):
-    title = "The name of this value"
+    label = "The name of this value"
     description = "What this health check does"
 
     interval = 60 # default, can be overridden in configuration
@@ -57,6 +57,7 @@ class HealthCheck(object):
         # kwargs to pass to check
         self.fn_kwargs = config
 
+        # TODO WARN this is a class var not instance FIXME
         self.interval = interval or self.interval
 
         self.state = {
