@@ -87,3 +87,29 @@ class TTLQueue(queue.Queue):
 
     def get(self,*args,**kwargs):
         raise NotImplementedError('use get_nowait')
+
+
+def extract_classes(module,Class):
+    classes = dict()
+
+    for name, obj in inspect.getmembers(module):
+        if inspect.isclass(obj) and Class in inspect.getmro(obj):
+            classes[obj.__name__] = obj
+
+    return classes
+
+
+def validate_result(result):
+    if type(result) != dict:
+        raise ValueError('Healthcheck result must be a dict')
+
+    if 'healthy' not in result:
+        raise ValueError('Heathcheck result must have `healthy` key: a bool or None.')
+
+    if type(result['healthy']) != bool and result['healthy'] != None:
+        raise ValueError('`healthy` key must be bool or None. None means unknown-yet or not-applicable.')
+
+    if not result['healthy'] == False and not result['error_message']:
+        raise ValueError('error_message must be set if healthy is False')
+
+
