@@ -57,10 +57,13 @@ class CpuUsage(HealthCheck):
                 }
 
 
-# TODO mountpoint needs to be in label FIXME
 class DiskUsage(HealthCheck):
     label = "Disk Usage"
     description = "Inspects used and available blocks on given mount points."
+    def __init__(self,*args,**kwargs):
+        super(DiskUsage,self).__init__(*args,**kwargs)
+        self.label = '%s usage' % kwargs['mountpoint']
+
     @staticmethod
     def check(mountpoint='/'):
         s = statvfs(mountpoint)

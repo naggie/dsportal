@@ -57,7 +57,6 @@ class HealthCheck(object):
         # kwargs to pass to check
         self.fn_kwargs = config
 
-        # TODO WARN this is a class var not instance FIXME
         self.interval = interval or self.interval
 
         self.state = {
