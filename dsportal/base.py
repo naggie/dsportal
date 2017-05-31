@@ -26,75 +26,38 @@ class Entity(object):
 
         self.healthChecks = list()
 
-        raise NotImplemented('Define this method to accept Entity-specific parameters and initialise.')
-
-    def add_healthcheck(self,instance):
-        if not isinstance(instance,HealthCheck):
-            raise ValueError('Instance or HealthCheck required')
-
-        self.HealthChecks.append(instance)
 
 
-# TODO strict classification? requiring certain attrs for bar min/max etc? (OOB class?)
-def healthcheckfn(fn):
-    '''Registers healthcheck, wraps exceptions and validates I/O. Result will
-    be used to .update() the state dict to preserve object references and may
-    be recorded in a time-series.'''
+def validate_result(result):
+    if type(result) != dict:
+        raise ValueError('Healthcheck result must be a dict')
 
-    if not fn.__doc__:
-        raise ValueError('__doc__ describing purpose must be defined for healthcheck.')
+    if 'healthy' not in result:
+        raise ValueError('Heathcheck result must have `healthy` key: a bool or None.')
 
-    if not getattr(fn,'interval',None):
-        fn.interval = 60
+    if type(result['healthy']) != bool and result['healthy'] != None:
+        raise ValueError('`healthy` key must be bool or None. None means unknown-yet or not-applicable.')
 
-
-    @wraps(fn) # preserve __doc__ among other things
-    def _fn(**kwargs):
-
-        try:
-            result = fn(**kwargs)
-        except Exception as e:
-            return {
-                    "healthy" : False,
-                    "error_message" : "{e.__class__.__name__}: {e}".format(e=e),
-                }
-
-        if type(result) != dict:
-            raise ValueError('Healthcheck result must be a dict')
-
-        if 'healthy' not in result:
-            raise ValueError('Heathcheck result must have `healthy` key: a bool or None.')
-
-        if type(result['healthy']) != bool and result['healthy'] != None:
-            raise ValueError('`healthy` key must be bool or None. None means unknown-yet or not-applicable.')
-
-        if not result['healthy'] == False and not result['error_message']:
-            raise ValueError('error_message must be set if healthy is False')
-
-        return result
-
-    HEALTHCHECKS[fn.__name__] = _fn
-
-    return _fn
+    if not result['healthy'] == False and not result['error_message']:
+        raise ValueError('error_message must be set if healthy is False')
 
 
-# effectively wraps a healthcheckfn recording state
+
 class HealthCheck(object):
-    def __init__(self,fn_name,interval=None,**config):
+    title = "The name of this value"
+    description = "What this health check does"
 
-        # validate fn_name
-        if fn_name not in HEALTHCHECKS:
-            raise KeyError('Given fn_name is not a known healthcheck')
+    interval = 60 # default, can be overridden in configuration
 
-        self.fn_name = fn_name
-        self.fn = HEALTHCHECKS[fn_name]
-
+    def __init__(self,cls,interval=None,worker=None,**config):
         self.id = str(uuid4())
 
-        # kwargs to pass to healthcheck
+        self.worker = worker
+
+        # kwargs to pass to check
         self.fn_kwargs = config
 
-        self.interval = interval or fn.interval
+        self.interval = interval or self.interval
 
         self.state = {
                 "healthy": None,
@@ -102,24 +65,53 @@ class HealthCheck(object):
 
         # randomise for uniform distribution of health checks rather than
         # periodic stampedes
-        #self.last_attempt_time = 0
-        t = int(time())
         # warm up over interval, max 1 min
-        warmup = max(self.interval,60)
-        self.last_attempt_time = randint(t-warmup,t)
+        self.delay = randint(0,max(self.interval,60))
 
-    def update(self,state):
-        self.state.update(state)
 
-    # used by scheduler to decide when to put job on queue
-    # TODO probably replace with async sleep loop and asyncio create_task (or gather? or ensure_future?)
-    def must_run(self):
-        t = time()
-        if self.last_attempt_time + self.interval <= t:
-            self.last_attempt_time = t
-            return True
-        else:
-            return False
+    def update(self,result):
+        validate_result(result)
+        self.state = result
+
+    @staticmethod
+    def check():
+        '''Run healthcheck. Must be stateless. Must not be run directly. Use
+        run(). Exceptions will be caught and treated as failures'''
+        raise NotImplemented()
+
+
+    @staticmethod
+    def run_check(**kwargs):
+        '''Run check in exception wrapper'''
+        try:
+            result = self.check(**kwargs)
+        except Exception as e:
+            return {
+                    "healthy" : False,
+                    "error_message" : "{e.__class__.__name__}: {e}".format(e=e),
+                }
+        validate_result(result)
+        return result
+
+
+    async def loop(self,callback):
+        """Callback at interval. Add to event loop as guarded task."""
+        await asyncio.sleep(self.delay)
+
+        while True:
+            callback(self.kwargs)
+            await asyncio.sleep(self.interval)
+
+
+#    # used by scheduler to decide when to put job on queue
+#    # TODO probably replace with async sleep loop and asyncio create_task (or gather? or ensure_future?)
+#    def must_run(self):
+#        t = time()
+#        if self.last_attempt_time + self.interval <= t:
+#            self.last_attempt_time = t
+#            return True
+#        else:
+#            return False
 
 ENTITY_CLASSES = dict()
 
@@ -136,9 +128,9 @@ class Index(object):
         self.entities_by_tab = OrderedDict()
         self.entities_by_id = dict()
 
-        self.healthcheck_states = list()
-        self.healthcheck_state_by_worker = defaultdict(list)
-        self.healthcheck_state_by_id = dict()
+        self.healthchecks = list()
+        self.healthcheck_by_worker = defaultdict(list)
+        self.healthcheck_by_id = dict()
 
 
     def add_entity(self,entity):
@@ -154,10 +146,10 @@ class Index(object):
             self.entities_by_tab[entity.tab] = [entity]
 
 
-        for hcs in entity.healthcheck_states:
-            self.healthcheck_states.append(hcs)
-            self.healthcheck_state_by_worker[hcs.worker].append(hcs)
-            self.healthcheck_state_by_id[hcs.id] = hcs
+        for hcs in entity.healthchecks:
+            self.healthchecks.append(hcs)
+            self.healthcheck_by_worker[hcs.worker].append(hcs)
+            self.healthcheck_by_id[hcs.id] = hcs
 
 
 #    def instantiate_entity(name,description,tab,worker,healthchecks,**kwargs):
