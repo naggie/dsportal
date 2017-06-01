@@ -25,7 +25,9 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 
-CONFIG = yaml.load(sys.argv[1])
+with open(sys.argv[1]) as f:
+    CONFIG = yaml.load(f.read())
+
 CONFIG_DIR = path.realpath(sys.argv[1])
 ASSET_DIR = path.join(CONFIG_DIR,'assets')
 SCRIPT_DIR = path.dirname(path.realpath(__file__))
@@ -34,13 +36,26 @@ TEMPLATES_DIR = path.join(SCRIPT_DIR,'templates')
 
 
 async def worker_websocket(request):
+
+    if "Authorization" not in request.headers:
+        return aiohttp.web.Response(text="Authorization Token required",status=403)
+
+    token = request.headers["Authorization"][6:]
+
+    workers = {v: k for k, v in CONFIG['workers'].items()}
+
+    try:
+        worker = workers[token]
+    except KeyError:
+        return aiohttp.web.Response(text="Incorrect token",status=403)
+
     ws = aiohttp.web.WebSocketResponse()
     await ws.prepare(request)
     #ws.send_str('hello')
 
     ws.send_json(('CpuUsage','foobar',{}))
 
-    for x in range(100):
+    for x in range(10):
         ws.send_json(('RamUsage','foobar',{}))
 
     async for msg in ws:

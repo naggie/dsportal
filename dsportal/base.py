@@ -53,7 +53,7 @@ class HealthCheck(object):
         self.worker = worker
 
         # kwargs to pass to check
-        self.fn_kwargs = kwargs
+        self.check_kwargs = kwargs
 
         self.interval = interval or self.interval
 
@@ -100,12 +100,12 @@ class HealthCheck(object):
 
 
     async def loop(self,callback):
-        """Callback at interval. Add to event loop as guarded task."""
+        """Callback (cls,id,kwargs) at interval. Add to event loop as guarded task."""
         await asyncio.sleep(self.delay)
 
         while True:
             self.last_start = monotonic()
-            callback(self.kwargs)
+            callback((self.cls,self.id,self.check_kwargs))
             await asyncio.sleep(self.interval)
 
 
