@@ -88,6 +88,7 @@ class HealthCheck(object):
             log.debug('Check passed: %s %s',self.cls,self.check_kwargs)
         else:
             log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result.get('exception_msg',''))
+            log.debug('Result: %s',result)
 
 
     @staticmethod
@@ -112,6 +113,7 @@ class HealthCheck(object):
 
         if not result['healthy']:
             log.warn('Check failed: %s %s %s',CLASS.__name__,kwargs,result.get('exception_msg',''))
+            log.debug('Result: %s',result)
 
         return result
 

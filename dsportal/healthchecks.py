@@ -41,7 +41,7 @@ class RamUsage(HealthCheck):
                 "bar_min": "0MB",
                 "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
                 "bar_percentage": bar_percentage(value,total),
-                "healthy": value < (0.9*total)/100,
+                "healthy": value < 0.9*total,
                 }
 
 class CpuUsage(HealthCheck):
@@ -82,7 +82,7 @@ class DiskUsage(HealthCheck):
                 "bar_min": "0MB",
                 "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
                 "bar_percentage": bar_percentage(usage,total),
-                "healthy": usage < (0.8*total)/100,
+                "healthy": usage < 0.8*total,
                 }
 
 
