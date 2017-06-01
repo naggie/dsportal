@@ -56,12 +56,8 @@ async def worker_websocket(request):
     #ws.send_json(('CpuUsage','foobar',{}))
 
 
-    h = request.app['index'].healthchecks[0]
-    h = request.app['index'].healthchecks[1]
-    h = request.app['index'].healthchecks[2]
-    h = request.app['index'].healthchecks[3]
-    ws.send_json((h.cls,h.id,h.check_kwargs))
-
+    for h in request.app['index'].healthchecks:
+        ws.send_json((h.cls,h.id,h.check_kwargs))
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:

@@ -102,14 +102,14 @@ class HealthCheck(object):
         try:
             result = CLASS.check(**kwargs)
         except Exception as e:
-            return {
+            result = {
                     "healthy" : False,
                     "error_message" : "{e.__class__.__name__}: {e}".format(e=e),
                 }
         validate_result(result)
 
         if not result['healthy']:
-            log.warn('Check failed: %s %s %s',CLASS.__name__,self.kwargs,result['error_message'])
+            log.warn('Check failed: %s %s %s',CLASS.__name__,kwargs,result['error_message'])
 
         return result
 
@@ -122,6 +122,10 @@ class HealthCheck(object):
             self.last_start = monotonic()
             callback((self.cls,self.id,self.check_kwargs))
             await asyncio.sleep(self.interval)
+
+
+    def __str__(self):
+        return '{cls} {check_kwargs}'.format(**self.__dict__)
 
 
 #    # used by scheduler to decide when to put job on queue

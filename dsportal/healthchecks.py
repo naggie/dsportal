@@ -185,9 +185,11 @@ class HttpStatus(HealthCheck):
     label = "HTTP check"
     description = "Checks service returns 200 OK"
     @staticmethod
-    def check(url,timeout=10):
+    def check(url,status_code=200,timeout=10):
         r = requests.get(url,timeout=timeout)
-        r.raise_for_status()
+        if r.status_code != status_code:
+            r.raise_for_status()
+            raise Exception('Unexpected HTTP 200 received')
 
         return {
                 "healthy": True,
