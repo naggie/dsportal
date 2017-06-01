@@ -85,11 +85,11 @@ class HealthCheck(object):
         raise NotImplemented()
 
 
-    @staticmethod
-    def run_check(**kwargs):
+    @classmethod
+    def run_check(CLASS,**kwargs):
         '''Run check in exception wrapper'''
         try:
-            result = self.check(**kwargs)
+            result = CLASS.check(**kwargs)
         except Exception as e:
             return {
                     "healthy" : False,

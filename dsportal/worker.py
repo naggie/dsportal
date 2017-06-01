@@ -17,7 +17,6 @@ from dsportal.util import setup_logging
 from dsportal.util import TTLQueue
 from dsportal.util import ItemExpired
 from dsportal.util import extract_classes
-from dsportal.util import validate_request
 from dsportal.base import HealthCheck
 
 
@@ -43,41 +42,36 @@ class Worker(object):
 
         return t
 
-    def enqueue(self,id,cls,**kwargs):
-        fn = self.hclasses[cls].run_check
-        self.work_queue.put_nowait((id,fn,kwargs))
+    def enqueue(self,cls,id,**kwargs):
+        self.work_queue.put_nowait((cls,id,kwargs))
         log.debug('Check enqueued: %s',cls)
-
 
 
     def _worker(self):
         while True:
             try:
-                id,fn,kwargs = self.work_queue.get_wait()
+                cls,id,kwargs = self.work_queue.get_wait()
             except ItemExpired as e:
-                id,fn,kwargs = e.item
-                self.result_queue.put_nowait({
-                        'id':id,
+                cls,id,kwargs = e.item
+                self.result_queue.put_nowait((id,{
                         'healthy': None,
                         'error_message' : 'Worker was too busy to run this health check in time',
-                    })
-                log.warn('Check dropped: %s',fn.__name__)
+                    }))
+                log.warn('Check dropped: %s',cls)
                 continue
 
-            log.debug('Processing check: %s',fn.__name__)
-            result = fn(**kwargs)
+            log.debug('Processing check: %s',cls)
+            result = self.hclasses[cls].run_check(**kwargs)
             self.work_queue.task_done()
 
             if result['healthy']:
-                log.info('Check passed: %s %s',fn.__name__,kwargs)
+                log.info('Check passed: %s %s',cls)
             elif result['healthy'] == False:
-                log.warn('Check failed: %s %s %s',fn.__name__,kwargs,result['error_message'])
+                log.warn('Check failed: %s %s %s',cls,kwargs,result['error_message'])
             else:
-                log.warn('Check error: %s %s %',fn.__name__,kwargs,result['error_message'])
+                log.warn('Check error: %s %s %',cls,kwargs,result['error_message'])
 
-            # TODO when should id be annotated and by what?
-            result['id'] = id
-            self.result_queue.put_nowait(result)
+            self.result_queue.put_nowait((id,result))
 
 
     def drain(self):
@@ -114,8 +108,8 @@ async def websocket_client(loop,worker,host,key):
         try:
             async for msg in ws:
                 if msg.type == aiohttp.WSMsgType.TEXT:
-                    jobspec = msg.json()
-                    worker.enqueue(**jobspec)
+                    cls,id,kwargs = msg.json()
+                    worker.enqueue(cls,id,**kwargs)
                 elif msg.type == aiohttp.WSMsgType.CLOSED:
                     print('error')
                     break
@@ -131,8 +125,8 @@ async def read_results(worker,ws):
     while True:
         try:
             while True:
-                result = worker.result_queue.get_nowait()
-                ws.send_json(result)
+                response = worker.result_queue.get_nowait()
+                ws.send_json(response)
         except queue.Empty:
             pass
         except ItemExpired:

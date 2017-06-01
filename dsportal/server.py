@@ -38,17 +38,10 @@ async def worker_websocket(request):
     await ws.prepare(request)
     #ws.send_str('hello')
 
-    ws.send_json({
-        'id':'foobar',
-        'fn_name':'cpu_usage',
-        })
+    ws.send_json(('CpuUsage','foobar',{}))
 
     for x in range(100):
-        ws.send_json({
-            'id':'foobar',
-            'fn_name':'ram_usage',
-            })
-
+        ws.send_json(('RamUsage','foobar',{}))
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:

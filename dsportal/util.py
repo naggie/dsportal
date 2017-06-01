@@ -103,17 +103,6 @@ def extract_classes(module_path,Class):
     return classes
 
 
-def validate_request(request):
-    if type(result) != dict:
-        raise ValueError('Healthcheck request must be a dict')
-
-    if 'id' not in request:
-        raise ValueError('Heathcheck request must contain `id` which is the healthcheck instance ID')
-
-    if 'cls' not in request:
-        raise ValueError('Heathcheck request must contain `cls` which is the healthcheck class name')
-
-
 def validate_result(result):
     if type(result) != dict:
         raise ValueError('Healthcheck result must be a dict')
