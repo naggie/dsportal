@@ -35,8 +35,8 @@ class Entity(object):
 
         for h in healthchecks:
             cls = h.pop('cls')
-            h['worker'] = h['worker'] or worker
-            HCLASSES[cls](**h)
+            h['worker'] = h.get('worker',worker)
+            healthCheck = HCLASSES[cls](**h) # TODO handle keyerror here
             self.healthChecks.append(healthCheck)
 
 
@@ -47,7 +47,7 @@ class HealthCheck(object):
 
     interval = 60 # default, can be overridden in configuration
 
-    def __init__(self,cls,interval=None,worker=None,**kwargs):
+    def __init__(self,interval=None,worker=None,**kwargs):
         self.id = str(uuid4())
 
         self.worker = worker
@@ -133,6 +133,8 @@ class Index(object):
         self.healthcheck_by_worker = defaultdict(list)
         self.healthcheck_by_id = dict()
 
+        self.ECLASSES = extract_classes('dsportal.entities',Entity)
+
 
     def _index_entity(self,entity):
         if not isinstance(entity,Entity):
@@ -148,16 +150,14 @@ class Index(object):
             self.entities_by_tab[entity.tab] = [entity]
 
 
-        for hcs in entity.healthchecks:
+        for hcs in entity.healthChecks:
             self.healthchecks.append(hcs)
             self.healthcheck_by_worker[hcs.worker].append(hcs)
             self.healthcheck_by_id[hcs.id] = hcs
 
 
-    def instantiate_entity(self,**config):
-        entity = ENTITY_CLASSES[cls](**config)
+    def instantiate_entity(self,cls,**config):
+        entity = self.ECLASSES[cls](**config)
         self._index_entity(entity)
 
 
-
-#ENTITY_CLASSES = extract_classes(entities,Entity)

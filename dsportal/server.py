@@ -15,6 +15,7 @@ import aiohttp_jinja2
 import yaml
 import logging
 from dsportal.util import setup_logging
+from dsportal import base
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -60,10 +61,12 @@ async def worker_websocket(request):
 
     async for msg in ws:
         if msg.type == aiohttp.WSMsgType.TEXT:
-            print (msg.json())
-        elif msg.type == aiohttp.WSMsgType.ERROR:
-            print('ws connection closed with exception %s' %
-                    ws.exception())
+            id,result = msg.json()
+            request.app['index'].healthcheck_by_id[id].update(result)
+
+#        elif msg.type == aiohttp.WSMsgType.ERROR:
+#            print('ws connection closed with exception %s' %
+#                    ws.exception())
 
     print('websocket connection closed')
 
@@ -86,6 +89,11 @@ aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
 
 def main():
+    app['index'] = base.Index()
+
+    for e in CONFIG['entities']:
+        app['index'].instantiate_entity(**e)
+
     aiohttp.web.run_app(
             app,
             port=int(8080),

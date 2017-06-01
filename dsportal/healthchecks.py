@@ -62,7 +62,7 @@ class DiskUsage(HealthCheck):
     description = "Inspects used and available blocks on given mount points."
     def __init__(self,*args,**kwargs):
         super(DiskUsage,self).__init__(*args,**kwargs)
-        self.label = '%s usage' % kwargs['mountpoint']
+        self.label = '%s usage' % kwargs.get('mountpoint','/')
 
     @staticmethod
     def check(mountpoint='/'):
