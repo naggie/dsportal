@@ -17,6 +17,7 @@ from dsportal.util import setup_logging
 from dsportal.util import TTLQueue
 from dsportal.util import ItemExpired
 from dsportal.util import extract_classes
+from dsportal.util import validate_request
 from dsportal.base import HealthCheck
 
 
