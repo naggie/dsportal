@@ -36,7 +36,7 @@ class Entity(object):
         for h in healthchecks:
             cls = h.pop('cls')
             h['worker'] = h['worker'] or worker
-            HEALTHCHECKS[cls](**h)
+            HEALTHCHECK_CLASSES[cls](**h)
             self.healthChecks.append(healthCheck)
 
 
@@ -134,13 +134,14 @@ class Index(object):
         self.healthcheck_by_id = dict()
 
 
-    def add_entity(self,entity):
+    def _index_entity(self,entity):
         if not isinstance(entity,Entity):
             raise ValueError('Instance of an Entity (subclass) required')
 
         self.entities.append(entity)
         self.entities_by_id[entity.id] = entity
 
+        # in order of definition!
         if entity.tab in self.entities_by_tab:
             self.entities_by_tab[entity.tab].append(entity)
         else:
@@ -153,23 +154,11 @@ class Index(object):
             self.healthcheck_by_id[hcs.id] = hcs
 
 
-#    def instantiate_entity(name,description,tab,worker,healthchecks,**kwargs):
-#        entity = ENTITY_CLASSES[cls](
-#            name=name,
-#            description=description,
-#            tab=tab,
-#            worker=worker,
-#            **kwargs)
-#
-#        self.entities.append(entity)
-#
-#        if tab not in self.tabs:
-#            self.tabs[tab] = list()
-#
-#        # add tabs and entities in order of definition!
-#        self.tabs[tab].append(entity)
+    def instantiate_entity(self,**config):
+        entity = ENTITY_CLASSES[cls](**config)
+        self._index_entity(entity)
 
 
 
-HEALTHCHECK_CLASSES= extract_classes(healthchecks,Healthcheck)
+HEALTHCHECK_CLASSES = extract_classes(healthchecks,Healthcheck)
 ENTITY_CLASSES = extract_classes(entities,Entity)
