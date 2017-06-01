@@ -52,7 +52,7 @@ class Worker(object):
                 cls,id,kwargs = e.item
                 self.result_queue.put_nowait((id,{
                         'healthy': None,
-                        'error_message' : 'Worker was too busy to run this health check in time',
+                        'exception_msg' : 'Worker was too busy to run this health check in time',
                     }))
                 log.warn('Check dropped: %s',cls)
                 continue

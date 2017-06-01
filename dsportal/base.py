@@ -85,7 +85,7 @@ class HealthCheck(object):
         self.last_finish = monotonic()
 
         if not result['healthy']:
-            log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result['error_message'])
+            log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result.get('exception_msg',''))
 
 
     @staticmethod
@@ -104,12 +104,12 @@ class HealthCheck(object):
         except Exception as e:
             result = {
                     "healthy" : False,
-                    "error_message" : "{e.__class__.__name__}: {e}".format(e=e),
+                    "exception_msg" : "{e.__class__.__name__}: {e}".format(e=e),
                 }
         validate_result(result)
 
         if not result['healthy']:
-            log.warn('Check failed: %s %s %s',CLASS.__name__,kwargs,result['error_message'])
+            log.warn('Check failed: %s %s %s',CLASS.__name__,kwargs,result.get('exception_msg',''))
 
         return result
 

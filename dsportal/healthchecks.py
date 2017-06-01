@@ -41,7 +41,6 @@ class RamUsage(HealthCheck):
                 "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
                 "bar_percentage": bar_percentage(value,total),
                 "healthy": value < (0.9*total)/100,
-                "error_message": error_message,
                 }
 
 class CpuUsage(HealthCheck):
