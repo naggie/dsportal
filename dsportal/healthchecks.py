@@ -2,6 +2,7 @@ from dsportal.base import HealthCheck
 from dsportal.util import get_ups_data
 from dsportal.util import bar_percentage
 import socket
+import re
 import os
 import multiprocessing
 import requests

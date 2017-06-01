@@ -5,6 +5,8 @@ from time import monotonic
 from os import path
 import importlib
 import inspect
+from subprocess import run,PIPE
+import re
 
 def get_ups_data():
     "Get UPS stats from apcupsd via apcaccess"
@@ -12,18 +14,20 @@ def get_ups_data():
     if not path.exists('/sbin/apcaccess'):
         raise RuntimeError('/sbin/apcaccess not found')
 
-    dump = commands.getstatusoutput('/sbin/apcaccess')
-
-    if dump[0]:
-        raise RuntimeError('Failed to run apcaccess command')
-
-    lines = string.split(dump[1], "\n")
+    # timeout greater than APCUPSD connection timeout, if UPS is not connected
+    dump = run(['/sbin/apcaccess'],timeout=10,check=True,stdout=PIPE).stdout
 
     info = {}
-    for line in lines:
-        m = re.search('(\w+)\s*:\s*(\d+)', line)
+    for line in dump.decode().split('\n'):
+        m = re.search('(\w+)\s*:\s*(\w+)', line)
         if m:
-            info[m.group(1)] = int(m.group(2))
+            try:
+                info[m.group(1)] = int(m.group(2))
+            except ValueError:
+                info[m.group(1)] = str(m.group(2))
+
+    if info['STATUS'] == "COMMLOST":
+        raise IOError('Could not communicate with UPS')
 
     return info
 
