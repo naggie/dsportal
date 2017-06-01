@@ -1,8 +1,6 @@
 """
-Dsportal: a monitoring portal
-
-Usage: %s <server address> <key>
-
+Runs stateless healthchecks scheduled by a dsportal server.
+Usage: %s <server address> <token>
 """
 import sys
 from os import path
@@ -142,7 +140,7 @@ async def read_results(worker,ws):
 
 def main():
     # run as executable, must be remote worker
-    if len(sys.argv) < 2:
+    if len(sys.argv) < 3:
         print(__doc__ % sys.argv[0])
         sys.exit(1)
 
