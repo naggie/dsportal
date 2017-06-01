@@ -84,7 +84,9 @@ class HealthCheck(object):
         self.healthy = result['healthy']
         self.last_finish = monotonic()
 
-        if not result['healthy']:
+        if result['healthy']:
+            log.debug('Check passed: %s %s',self.cls,self.check_kwargs)
+        else:
             log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result.get('exception_msg',''))
 
 

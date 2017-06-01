@@ -17,7 +17,7 @@ import logging
 from dsportal.util import setup_logging
 from dsportal import base
 
-setup_logging()
+setup_logging(debug=True)
 log = logging.getLogger(__name__)
 
 
