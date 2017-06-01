@@ -1,9 +1,14 @@
 from dsportal.base import HealthCheck
-from dsportal.util import get_ups_data,bar_percentage
+from dsportal.util import get_ups_data
+from dsportal.util import bar_percentage
 import socket
 import os
 import multiprocessing
 import requests
+from subprocess import Popen,PIPE,TimeoutExpired
+
+# TODO implement or change representation of magnitude
+def human_bytes(x):return x
 
 class RamUsage(HealthCheck):
     label = "RAM Usage"
@@ -36,6 +41,7 @@ class RamUsage(HealthCheck):
                 "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
                 "bar_percentage": bar_percentage(value,total),
                 "healthy": value < (0.9*total)/100,
+                "error_message": error_message,
                 }
 
 class CpuUsage(HealthCheck):
@@ -66,13 +72,13 @@ class DiskUsage(HealthCheck):
 
     @staticmethod
     def check(mountpoint='/'):
-        s = statvfs(mountpoint)
+        s = os.statvfs(mountpoint)
         free = s.f_bsize * s.f_bavail
         total = s.f_bsize * s.f_blocks
         usage = total - free
 
         return {
-                "value": value,
+                "value": usage,
                 "bar_min": "0MB",
                 "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
                 "bar_percentage": bar_percentage(usage,total),
@@ -85,7 +91,7 @@ class UpsVoltage(HealthCheck):
     description = "Checks mains voltage falls within UK statutory limits of 230V +10% -6%"
     @staticmethod
     def check(_min=216,_max=253):
-        info = util.get_ups_data()
+        info = get_ups_data()
         return {
             "bar_min":'%sV' % _min,
             "bar_max":'%sV' % _max,
@@ -99,7 +105,7 @@ class UpsLoad(HealthCheck):
     description = "Checks UPS is not overloaded"
     @staticmethod
     def check():
-        info = util.get_ups_data()
+        info = get_ups_data()
         return {
             "bar_min":"0%",
             "bar_max":"100%",
@@ -113,7 +119,7 @@ class UpsBattery(HealthCheck):
     description = "Checks estimated time remaining and percentage"
     @staticmethod
     def check():
-        info = util.get_ups_data()
+        info = get_ups_data()
         return {
             "bar_min":"0%",
             "bar_max":"100%",
@@ -155,7 +161,11 @@ class GpuTemperature(HealthCheck):
     def check():
         process = Popen(['nvidia-smi', '-q', '-d', 'TEMPERATURE'],
                         stdout=PIPE, stderr=PIPE, stdin=PIPE)
-        out, _ = process.communicate()
+
+        try:
+            out, _ = process.communicate(timeout=5)
+        except TimeoutExpired:
+            process.kill()
 
         state = dict()
         for line in out.splitlines():

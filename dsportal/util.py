@@ -102,7 +102,7 @@ def extract_classes(module_path,Class):
 
     return classes
 
-
+# TODO marshal validation errors somehow
 def validate_result(result):
     if type(result) != dict:
         raise ValueError('Healthcheck result must be a dict')
