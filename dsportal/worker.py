@@ -16,6 +16,10 @@ import logging
 from dsportal.util import setup_logging
 from dsportal.util import TTLQueue
 from dsportal.util import ItemExpired
+from dsportal.util import extract_classes
+from dsportal.base import HealthCheck
+
+
 
 setup_logging(debug=False)
 log = logging.getLogger(__name__)
@@ -27,6 +31,8 @@ class Worker(object):
         # connection problems should not result in old results coming backk
         self.result_queue = TTLQueue(maxsize=1000,ttl=5)
 
+        self.hclasses = extract_classes('dsportal.healthchecks',HealthCheck)
+
     def start_workers(self,count=4):
         for x in range(count):
             t = Thread()
@@ -36,10 +42,10 @@ class Worker(object):
 
         return t
 
-    def enqueue(self,id,fn_name,**kwargs):
-        fn = base.HEALTHCHECKS[fn_name]
+    def enqueue(self,id,cls,**kwargs):
+        fn = self.hclasses[cls].run_check
         self.work_queue.put_nowait((id,fn,kwargs))
-        log.debug('Check enqueued: %s',fn_name)
+        log.debug('Check enqueued: %s',cls)
 
 
 

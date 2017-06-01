@@ -1,4 +1,4 @@
-from dsportal.base import healthcheckfn
+from dsportal.base import HealthCheck
 from dsportal.util import get_ups_data,bar_percentage
 import socket
 import os
@@ -218,7 +218,7 @@ class s3_backup_checker(HealthCheck):
         # list keys in bucket and check the latest upload was < 25 hours ago.
         pass
 
-class PapouchTh2eTemperature(HealthCheck)
+class PapouchTh2eTemperature(HealthCheck):
     label = "Server room Temperature"
     description = "Checks the temperature reported by a Papouch TH2E"
 
@@ -266,19 +266,20 @@ class SsllabsReport(HealthCheck):
             'healthy': True,
                 }
 
-    class PortScan(HealthCheck):
-        label = "Firewall"
-        description = "Scans host to check ports are closed. Synchronous so relatively quiet/slow."
-        @staticmethod
-        def check(host,open_ports=[22,80,443],limit=65535,wait=0.5):
-            for port in range(1,limit+1):
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                try:
-                    sock.settimeout(0.5)
-                    result = sock.connect_ex((host, port))
-                    if result == 0 and port not in open_ports:
-                        raise Exception('At least port %s is open but should not be' % port)
-                except:
-                    raise
-                finally:
-                    sock.close()
+
+class PortScan(HealthCheck):
+    label = "Firewall"
+    description = "Scans host to check ports are closed. Synchronous so relatively quiet/slow."
+    @staticmethod
+    def check(host,open_ports=[22,80,443],limit=65535,wait=0.5):
+        for port in range(1,limit+1):
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            try:
+                sock.settimeout(0.5)
+                result = sock.connect_ex((host, port))
+                if result == 0 and port not in open_ports:
+                    raise Exception('At least port %s is open but should not be' % port)
+            except:
+                raise
+            finally:
+                sock.close()

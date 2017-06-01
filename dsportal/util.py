@@ -3,6 +3,8 @@ import colorlog
 import queue
 from time import monotonic
 from os import path
+import importlib
+import inspect
 
 def get_ups_data():
     "Get UPS stats from apcupsd via apcaccess"
@@ -89,8 +91,10 @@ class TTLQueue(queue.Queue):
         raise NotImplementedError('use get_nowait')
 
 
-def extract_classes(module,Class):
+def extract_classes(module_path,Class):
     classes = dict()
+
+    module = importlib.import_module(module_path)
 
     for name, obj in inspect.getmembers(module):
         if inspect.isclass(obj) and Class in inspect.getmro(obj):

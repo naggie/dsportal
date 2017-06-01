@@ -3,13 +3,11 @@ from time import time
 from random import randint
 from functools import wraps
 from collections import OrderedDict,defaultdict
-import inspect
-import dsportal.entities
-import dsportal.healthchecks
-import sleep
+from time import sleep
 from time import monotonic
-from util import extract_classes
-from util import validate_result
+from dsportal.util import extract_classes
+from dsportal.util import validate_result
+from dsportal.util import extract_classes
 
 
 class Entity(object):
@@ -31,12 +29,14 @@ class Entity(object):
         # Unknown, yet
         self.healthy = None
 
+        HCLASSES = extract_classes('dsportal.healthchecks',HealthCheck)
+
         self.healthChecks = list()
 
         for h in healthchecks:
             cls = h.pop('cls')
             h['worker'] = h['worker'] or worker
-            HEALTHCHECK_CLASSES[cls](**h)
+            HCLASSES[cls](**h)
             self.healthChecks.append(healthCheck)
 
 
@@ -160,5 +160,4 @@ class Index(object):
 
 
 
-HEALTHCHECK_CLASSES = extract_classes(healthchecks,Healthcheck)
-ENTITY_CLASSES = extract_classes(entities,Entity)
+#ENTITY_CLASSES = extract_classes(entities,Entity)
