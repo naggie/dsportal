@@ -18,7 +18,6 @@ from dsportal.util import extract_classes
 from dsportal.base import HealthCheck
 
 
-
 setup_logging(debug=False)
 log = logging.getLogger(__name__)
 
@@ -90,40 +89,37 @@ async def websocket_client(loop,worker,host,key):
                 },
             )
 
-    async with session.get(url) as resp:
-        if resp.status != 400: # upgrade to ws pls
-            print(await resp.text())
-            sys.exit(1)
-
-    connection = session.ws_connect(
-            url=url,
-            autoping=True,
-            heartbeat=10,
-        )
-
-
-    async with connection as ws:
-        # TODO consider this implementation
-        # https://aiohttp.readthedocs.io/en/v2.1.0/faq.html#how-to-receive-an-incoming-events-from-different-sources-in-parallel
-
-        task = loop.create_task(read_results(worker,ws))
-
+    # check auth
+    while True:
         try:
-            async for msg in ws:
-                if msg.type == aiohttp.WSMsgType.TEXT:
-                    cls,id,kwargs = msg.json()
-                    worker.enqueue(cls,id,**kwargs)
-                elif msg.type == aiohttp.WSMsgType.CLOSED:
-                    print('error')
-                    break
-                elif msg.type == aiohttp.WSMsgType.ERROR:
-                    print('closed')
-                    break
-        finally:
-            task.cancel()
+            async with session.get(url) as resp:
+                if resp.status != 400: # upgrade to ws pls
+                    log.error(await resp.text())
+                    sys.exit(1)
+
+
+            connection = session.ws_connect(
+                    url=url,
+                    autoping=True,
+                    heartbeat=10,
+                )
+
+            async with connection as ws:
+                task = loop.create_task(read_results(worker,ws))
+
+                try:
+                    async for msg in ws:
+                        if msg.type == aiohttp.WSMsgType.TEXT:
+                            cls,id,kwargs = msg.json()
+                            worker.enqueue(cls,id,**kwargs)
+                finally:
+                    task.cancel()
+        except aiohttp.client_exceptions.ClientConnectorError:
+            log.error('No connection to server. Will retry in 10 seconds.')
+
+        await asyncio.sleep(10)
 
 # TODO reconnect forever
-
 async def read_results(worker,ws):
     while True:
         try:
@@ -135,6 +131,7 @@ async def read_results(worker,ws):
         except ItemExpired:
             pass
 
+        # There's got to be a better way! (Spills milk everywhere)
         await asyncio.sleep(0.01)
 
 
