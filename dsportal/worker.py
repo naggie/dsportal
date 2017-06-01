@@ -97,12 +97,13 @@ async def websocket_client(loop,worker,host,key):
                     log.error(await resp.text())
                     sys.exit(1)
 
-
             connection = session.ws_connect(
                     url=url,
                     autoping=True,
                     heartbeat=10,
                 )
+
+            log.info("Connected to server")
 
             async with connection as ws:
                 task = loop.create_task(read_results(worker,ws))
