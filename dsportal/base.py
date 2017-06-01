@@ -1,4 +1,5 @@
 from uuid import uuid4
+import logging
 from time import time
 from random import randint
 from functools import wraps
@@ -8,6 +9,8 @@ from time import monotonic
 from dsportal.util import extract_classes
 from dsportal.util import validate_result
 from dsportal.util import extract_classes
+
+log = logging.getLogger(__name__)
 
 
 class Entity(object):
@@ -21,6 +24,8 @@ class Entity(object):
         self.name = name
         self.description = description
 
+        self.cls = self.__class__.__name__
+
         # default worker given to child healthchecks that don't have worker
         # defined
         self.worker = worker
@@ -31,13 +36,13 @@ class Entity(object):
 
         HCLASSES = extract_classes('dsportal.healthchecks',HealthCheck)
 
-        self.healthChecks = list()
+        self.healthchecks = list()
 
         for h in healthchecks:
             cls = h.pop('cls')
             h['worker'] = h.get('worker',worker)
-            healthCheck = HCLASSES[cls](**h) # TODO handle keyerror here
-            self.healthChecks.append(healthCheck)
+            healthcheck = HCLASSES[cls](**h) # TODO handle keyerror here
+            self.healthchecks.append(healthcheck)
 
 
 
@@ -51,6 +56,7 @@ class HealthCheck(object):
         self.id = str(uuid4())
 
         self.worker = worker
+        self.cls = self.__class__.__name__
 
         # kwargs to pass to check
         self.check_kwargs = kwargs
@@ -78,6 +84,10 @@ class HealthCheck(object):
         self.healthy = result['healthy']
         self.last_finish = monotonic()
 
+        if not result['healthy']:
+            log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result['error_message'])
+
+
     @staticmethod
     def check():
         '''Run healthcheck. Must be stateless. Must not be run directly. Use
@@ -88,6 +98,7 @@ class HealthCheck(object):
     @classmethod
     def run_check(CLASS,**kwargs):
         '''Run check in exception wrapper'''
+        log.info('Processing check: %s %s',CLASS.__name__,kwargs)
         try:
             result = CLASS.check(**kwargs)
         except Exception as e:
@@ -96,6 +107,10 @@ class HealthCheck(object):
                     "error_message" : "{e.__class__.__name__}: {e}".format(e=e),
                 }
         validate_result(result)
+
+        if not result['healthy']:
+            log.warn('Check failed: %s %s %s',CLASS.__name__,self.kwargs,result['error_message'])
+
         return result
 
 
@@ -150,7 +165,7 @@ class Index(object):
             self.entities_by_tab[entity.tab] = [entity]
 
 
-        for hcs in entity.healthChecks:
+        for hcs in entity.healthchecks:
             self.healthchecks.append(hcs)
             self.healthcheck_by_worker[hcs.worker].append(hcs)
             self.healthcheck_by_id[hcs.id] = hcs

@@ -57,17 +57,8 @@ class Worker(object):
                 log.warn('Check dropped: %s',cls)
                 continue
 
-            log.debug('Processing check: %s',cls)
             result = self.hclasses[cls].run_check(**kwargs)
             self.work_queue.task_done()
-
-            if result['healthy']:
-                log.info('Check passed: %s %s',cls,kwargs)
-            elif result['healthy'] == False:
-                log.warn('Check failed: %s %s %s',cls,kwargs,result['error_message'])
-            else:
-                log.warn('Check error: %s %s %',cls,kwargs,result['error_message'])
-
             self.result_queue.put_nowait((id,result))
 
 
