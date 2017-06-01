@@ -65,7 +65,7 @@ class Worker(object):
             self.work_queue.task_done()
 
             if result['healthy']:
-                log.info('Check passed: %s %s',cls)
+                log.info('Check passed: %s %s',cls,kwargs)
             elif result['healthy'] == False:
                 log.warn('Check failed: %s %s %s',cls,kwargs,result['error_message'])
             else:
@@ -91,6 +91,11 @@ async def websocket_client(loop,worker,host,key):
                 'Authorization':'Token ' + key,
                 },
             )
+
+    async with session.get(url) as resp:
+        if resp.status != 400: # upgrade to ws pls
+            print(await resp.text())
+            sys.exit(1)
 
     connection = session.ws_connect(
             url=url,
