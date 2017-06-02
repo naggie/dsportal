@@ -153,6 +153,19 @@ class CpuTemperature(HealthCheck):
     label = "CPU Temperature"
     description = "Checks CPU Temperature is nominal"
 
+    @staticmethod
+    def check(zone=1,slowdown=80,_max=90):
+        with open('/sys/class/thermal/thermal_zone%s/temp' % zone) as f:
+            value = int(f.read().strip()[:-3])
+
+        return {
+                "value": "%s&deg;C" % value,
+                "bar_min": "15&deg;C",
+                "bar_max": "%s&deg;C" % _max,
+                "bar_percentage": bar_percentage(value,_max,15),
+                "healthy": value < slowdown,
+                }
+
 class GpuTemperature(HealthCheck):
     label = "GPU Temperature"
     description = "Checks GPU Temperature is nominal"
