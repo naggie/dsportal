@@ -6,7 +6,7 @@ import re
 import os
 import multiprocessing
 import requests
-from subprocess import Popen,PIPE,TimeoutExpired
+from subprocess import run,PIPE
 
 # TODO implement or change representation of magnitude
 def human_bytes(x):return x
@@ -158,17 +158,11 @@ class GpuTemperature(HealthCheck):
     description = "Checks GPU Temperature is nominal"
 
     @staticmethod
-    def check():
-        process = Popen(['nvidia-smi', '-q', '-d', 'TEMPERATURE'],
-                        stdout=PIPE, stderr=PIPE, stdin=PIPE)
-
-        try:
-            out, _ = process.communicate(timeout=5)
-        except TimeoutExpired:
-            process.kill()
+    def check(slowdown=88,_max=93):
+        dump = run(['nvidia-smi', '-q', '-d', 'TEMPERATURE'],timeout=10,check=True,stdout=PIPE).stdout
 
         state = dict()
-        for line in out.splitlines():
+        for line in dump.decode().splitlines():
             try:
                 key, val = line.split(":")
             except ValueError:
@@ -176,15 +170,22 @@ class GpuTemperature(HealthCheck):
             key, val = key.strip(), val.strip()
             state[key] = val
 
-        int(state['GPU Current Temp'][:-2])
+        value = int(state['GPU Current Temp'][:-2])
 
         try:
-            int(state['GPU Shutdown Temp'][:-2])
-            int(state['GPU Slowdown Temp'][:-2])
+            slowdown = int(state['GPU Slowdown Temp'][:-2])
+            _max = int(state['GPU Shutdown Temp'][:-2])
         except ValueError:
-            # not specified, so dot change the classaults
+            # not specified, so dot change the defaults
             pass
 
+        return {
+                "value": "%s&deg;C" % value,
+                "bar_min": "15&deg;C",
+                "bar_max": "%s&deg;C" % _max,
+                "bar_percentage": bar_percentage(value,_max,15),
+                "healthy": value < slowdown,
+                }
 
 
 class BtrfsPool(HealthCheck):

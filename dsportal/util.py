@@ -18,7 +18,7 @@ def get_ups_data():
     dump = run(['/sbin/apcaccess'],timeout=10,check=True,stdout=PIPE).stdout
 
     info = {}
-    for line in dump.decode().split('\n'):
+    for line in dump.decode().splitlines():
         m = re.search('(\w+)\s*:\s*((\d|\w)+)', line)
         if m:
             try:
