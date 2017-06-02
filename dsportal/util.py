@@ -19,7 +19,7 @@ def get_ups_data():
 
     info = {}
     for line in dump.decode().split('\n'):
-        m = re.search('(\w+)\s*:\s*(\w+)', line)
+        m = re.search('(\w+)\s*:\s*((\d|\w)+)', line)
         if m:
             try:
                 info[m.group(1)] = int(m.group(2))
