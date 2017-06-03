@@ -12,6 +12,7 @@ from dsportal.util import extract_classes
 from dsportal.util import TTLQueue
 from dsportal.util import ItemExpired
 from threading import Thread
+import asyncio
 
 log = logging.getLogger(__name__)
 

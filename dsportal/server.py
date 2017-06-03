@@ -59,6 +59,7 @@ async def worker_websocket(request):
         tasks.append(task)
 
     try:
+        # TODO worker lock 403
         #index.lock_worker(worker)
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
