@@ -45,8 +45,23 @@ class Entity(object):
         for h in healthchecks:
             cls = h.pop('cls')
             h['worker'] = h.get('worker',worker)
-            healthcheck = HCLASSES[cls](**h) # TODO handle keyerror here
+            healthcheck = HCLASSES[cls](entity=self,**h) # TODO handle keyerror here
             self.healthchecks.append(healthcheck)
+
+
+    def evaluate_health(self):
+        self.healthy = True
+
+        for h in self.healthchecks:
+            if h.result['healthy'] is None:
+                self.healthy = None
+                break
+
+        for h in self.healthchecks:
+            if h.result['healthy'] is False:
+                self.healthy = False
+                break
+
 
 
 
@@ -56,8 +71,13 @@ class HealthCheck(object):
 
     interval = 60 # default, can be overridden in configuration
 
-    def __init__(self,interval=None,worker=None,**kwargs):
+    def __init__(self,entity,interval=None,worker=None,**kwargs):
         self.id = str(uuid4())
+
+        if not isinstance(entity,Entity):
+            raise ValueError('Entity instance expected for "entity"')
+
+        self.entity = entity
 
         self.worker = worker
         self.cls = self.__class__.__name__
@@ -91,6 +111,8 @@ class HealthCheck(object):
         else:
             log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result.get('exception_msg',''))
             log.debug('Result: %s',result)
+
+        self.entity.evaluate_health()
 
 
     @staticmethod
