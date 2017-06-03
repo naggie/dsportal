@@ -71,7 +71,6 @@ class HealthCheck(object):
                 "healthy": None,
                 }
 
-        self.healthy = None
 
         # randomise for uniform distribution of health checks rather than
         # periodic stampedes
@@ -85,7 +84,6 @@ class HealthCheck(object):
     def update(self,result):
         validate_result(result)
         self.result = result
-        self.healthy = result['healthy']
         self.last_finish = monotonic()
 
         if result['healthy']:
