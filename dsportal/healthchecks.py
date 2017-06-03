@@ -123,7 +123,7 @@ class UpsBattery(HealthCheck):
             "bar_max":"100%",
             'bar_percentage': info['BCHARGE'],
             'value': "%sm" % info['TIMELEFT'],
-            "healthy": info['TIMELEFT'] < 10,
+            "healthy": info['TIMELEFT'] > 10,
         }
 
 
