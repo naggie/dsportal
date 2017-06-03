@@ -36,7 +36,7 @@ class RamUsage(HealthCheck):
 
         return {
                 "value": human_bytes(value),
-                "bar_min": "0MiB",
+                "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
                 "bar_percentage": bar_percentage(value,total),
                 "healthy": value < 0.9*total,
@@ -77,7 +77,7 @@ class DiskUsage(HealthCheck):
 
         return {
                 "value": human_bytes(usage),
-                "bar_min": "0MiB",
+                "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
                 "bar_percentage": bar_percentage(usage,total),
                 "healthy": usage < 0.8*total,
