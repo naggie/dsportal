@@ -1,15 +1,13 @@
 from dsportal.base import HealthCheck
 from dsportal.util import get_ups_data
 from dsportal.util import bar_percentage
+from dsportal.util import human_bytes
 import socket
 import re
 import os
 import multiprocessing
 import requests
 from subprocess import run,PIPE
-
-# TODO implement or change representation of magnitude
-def human_bytes(x):return x
 
 class RamUsage(HealthCheck):
     label = "RAM Usage"
@@ -37,9 +35,9 @@ class RamUsage(HealthCheck):
         value = used * 1024
 
         return {
-                "value": value,
-                "bar_min": "0MB",
-                "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
+                "value": human_bytes(value),
+                "bar_min": "0MiB",
+                "bar_max": human_bytes(total),
                 "bar_percentage": bar_percentage(value,total),
                 "healthy": value < 0.9*total,
                 }
@@ -55,7 +53,7 @@ class CpuUsage(HealthCheck):
         load = load / multiprocessing.cpu_count()
         value = int(load*100)
         return {
-                "value": value,
+                "value": '%s%%' % value,
                 "bar_min":"0%",
                 "bar_max":"100%",
                 "bar_percentage": bar_percentage(value,100),
@@ -78,9 +76,9 @@ class DiskUsage(HealthCheck):
         usage = total - free
 
         return {
-                "value": usage,
-                "bar_min": "0MB",
-                "bar_max": human_bytes(total), # TODO standardise way of representing magnitude
+                "value": human_bytes(usage),
+                "bar_min": "0MiB",
+                "bar_max": human_bytes(total),
                 "bar_percentage": bar_percentage(usage,total),
                 "healthy": usage < 0.8*total,
                 }
@@ -124,8 +122,8 @@ class UpsBattery(HealthCheck):
             "bar_min":"0%",
             "bar_max":"100%",
             'bar_percentage': info['BCHARGE'],
-            'value': info['TIMELEFT'], # ???
-            "healthy": info['TIMELEFT'] < 300,
+            'value': "%sm" % info['TIMELEFT'],
+            "healthy": info['TIMELEFT'] < 10,
         }
 
 
