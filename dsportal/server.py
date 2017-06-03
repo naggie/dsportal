@@ -73,6 +73,15 @@ async def worker_websocket(request):
     return ws
 
 
+async def tab_handler(request):
+    index = request.app['index']
+    tab = request.match_info.get('tab',index.entities[0].tab)
+
+    if tab not in index.entities_by_tab:
+        return aiohttp.web.Response(text="Unregistered tab",status=403) # TODO replace with exception and special 403 middleware
+
+    return aiohttp.web.Response(text=tab)
+
 
 app = aiohttp.web.Application(debug=True)
 app.router.add_static('/static',STATIC_DIR) # TODO nginx static overlay
@@ -80,6 +89,8 @@ app.router.add_static('/static',STATIC_DIR) # TODO nginx static overlay
 #app.router.add_get('/',sso)
 app.router.add_get('/worker-websocket',worker_websocket)
 #app.router.add_get('/client-websocket',sso)
+app.router.add_get('/',tab_handler)
+app.router.add_get('/{tab}',tab_handler)
 aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
 # Make scheduler available to request handlers
@@ -97,6 +108,7 @@ def main():
     aiohttp.web.run_app(
             app,
             port=int(8080),
+            host="0.0.0.0",
             shutdown_timeout=6,
         )
 
