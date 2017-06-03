@@ -122,7 +122,7 @@ class HealthCheck(object):
 
 
     async def loop(self,callback):
-        """Callback (cls,id,kwargs) at interval. Add to event loop as guarded task."""
+        """Callback ((cls,id,kwargs)) at interval. Add to event loop as guarded task."""
         await asyncio.sleep(self.delay)
 
         while True:
@@ -156,7 +156,7 @@ class Index(object):
         self.entities_by_id = dict()
 
         self.healthchecks = list()
-        self.healthcheck_by_worker = defaultdict(list)
+        self.healthchecks_by_worker = defaultdict(list)
         self.healthcheck_by_id = dict()
 
         self.ECLASSES = extract_classes('dsportal.entities',Entity)
@@ -178,7 +178,7 @@ class Index(object):
 
         for hcs in entity.healthchecks:
             self.healthchecks.append(hcs)
-            self.healthcheck_by_worker[hcs.worker].append(hcs)
+            self.healthchecks_by_worker[hcs.worker].append(hcs)
             self.healthcheck_by_id[hcs.id] = hcs
 
 
