@@ -41,8 +41,8 @@ async def worker_websocket(request):
         return aiohttp.web.Response(text="Authorization Token required",status=403)
 
     token = request.headers["Authorization"][6:]
-
     workers = {v: k for k, v in CONFIG['workers'].items()}
+    index = request.app['index']
 
     try:
         worker = workers[token]
@@ -52,28 +52,22 @@ async def worker_websocket(request):
     ws = aiohttp.web.WebSocketResponse()
     await ws.prepare(request)
 
-    # TODO DENY WORKER CONNECTING WITH A KEY-IN-USE
     tasks = []
-    for h in request.app['index'].healthchecks_by_worker[worker]:
+    for h in index.healthchecks_by_worker[worker]:
         task = request.app.loop.create_task(h.loop(ws.send_json))
         log.info('Registering %s for %s',h,worker)
         tasks.append(task)
 
-
     try:
+        #index.lock_worker(worker)
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 id,result = msg.json()
-                request.app['index'].healthcheck_by_id[id].update(result)
+                index.healthcheck_by_id[id].update(result)
     finally:
         for t in tasks:
             t.cancel()
-
-#        elif msg.type == aiohttp.WSMsgType.ERROR:
-#            print('ws connection closed with exception %s' %
-#                    ws.exception())
-
-    print('websocket connection closed')
+        #index.release_worker(worker)
 
     return ws
 
