@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <ul class="tabs">
-    <li class="selected"><a href=".">Services</a></li>
-    <li class="bad"><a href="hosts.html">Hosts</a></li>
-    <li><a href="about.html">About</a></li>
+    {% for t in tabs %}
+    <li class="{{'selected' if t == tab else ''}}"><a href="/{{'' if t == tabs[0] else t}}">{{t}}</a></li>
+    {% endfor %}
 </ul>
 <ul class="entities">
     {% for site in sites %}

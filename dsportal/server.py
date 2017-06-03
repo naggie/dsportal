@@ -83,7 +83,7 @@ async def tab_handler(request):
 
     return {
         "tab":tab,
-        "tabs":index.entities_by_tab.keys(),
+        "tabs": list(index.entities_by_tab.keys()),
         "entities": index.entities_by_tab[tab],
             }
 
