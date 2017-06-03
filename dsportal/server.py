@@ -73,6 +73,7 @@ async def worker_websocket(request):
     return ws
 
 
+@aiohttp_jinja2.template('tab.html')
 async def tab_handler(request):
     index = request.app['index']
     tab = request.match_info.get('tab',index.entities[0].tab)
@@ -80,7 +81,11 @@ async def tab_handler(request):
     if tab not in index.entities_by_tab:
         return aiohttp.web.Response(text="Unregistered tab",status=403) # TODO replace with exception and special 403 middleware
 
-    return aiohttp.web.Response(text=tab)
+    return {
+        "tab":tab,
+        "tabs":index.entities_by_tab.keys(),
+        "entities": index.entities_by_tab[tab],
+            }
 
 
 app = aiohttp.web.Application(debug=True)
