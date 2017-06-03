@@ -1,7 +1,7 @@
 <li class="service {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}" title="Powered by {{entity.powered_by}}">
     <a href="{{entity.url}}" target="_blank">
         <div class="indicator"></div>
-        <div class="title">{{entity.title}}</div>
+        <div class="title">{{entity.name}}</div>
         <img class="screenshot" src="{{entity.screenshot_url}}" width="{{entity.screenshot_width}}" height="{{entity.screenshot_height}}"/>
         <div class="description">{{entity.description}}</div>
     </a>

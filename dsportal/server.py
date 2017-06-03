@@ -29,7 +29,7 @@ if len(sys.argv) < 2:
 with open(sys.argv[1]) as f:
     CONFIG = yaml.load(f.read())
 
-CONFIG_DIR = path.realpath(sys.argv[1])
+CONFIG_DIR = path.realpath(path.dirname(sys.argv[1]))
 ASSET_DIR = path.join(CONFIG_DIR,'assets')
 SCRIPT_DIR = path.dirname(path.realpath(__file__))
 STATIC_DIR = path.join(SCRIPT_DIR,'static')
@@ -79,19 +79,22 @@ async def tab_handler(request):
     tab = request.match_info.get('tab',index.entities[0].tab)
 
     if tab not in index.entities_by_tab:
-        return aiohttp.web.Response(text="Unregistered tab",status=403) # TODO replace with exception and special 403 middleware
+        # TODO replace with exception and special 403 middleware
+        return aiohttp.web.Response(text="Unregistered tab",status=403)
 
     return {
         "tab":tab,
         "tabs": list(index.entities_by_tab.keys()),
         "entities": index.entities_by_tab[tab],
+        "css": CONFIG.get('css'),
+        "header": CONFIG.get('header',''),
+        "footer": CONFIG.get('footer',''),
             }
 
 
 app = aiohttp.web.Application(debug=True)
 app.router.add_static('/static',STATIC_DIR) # TODO nginx static overlay
-#app.router.add_static('/assets',ASSET_DIR)
-#app.router.add_get('/',sso)
+app.router.add_static('/assets',ASSET_DIR)
 app.router.add_get('/worker-websocket',worker_websocket)
 #app.router.add_get('/client-websocket',sso)
 app.router.add_get('/',tab_handler)

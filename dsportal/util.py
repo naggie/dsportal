@@ -120,3 +120,6 @@ def validate_result(result):
     #if result['healthy'] == False and 'exception_msg' not in result:
     #    raise ValueError('exception_msg must be set if healthy is False')
 
+
+def slug(string):
+    return re.sub(r'\W','_',string).lower()
