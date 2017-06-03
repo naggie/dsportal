@@ -1,0 +1,84 @@
+<li class="host {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}">
+    <div class="indicator"></div>
+    <div class="title">Blade</div>
+    <table class="metrics">
+        <tr>
+            <th class="key">CPU Load</th>
+            <td class="value">0%</td>
+            <td class="min">100%</td>
+            <td> <div class="meter"><div class="bar" style="width:30%;"></div></div> </td>
+            <td class="max">2GB</td>
+        </tr>
+        <tr>
+            <th class="key">RAM Usage</th>
+            <td class="value">224MB</td>
+            <td class="min">0GB</td>
+            <td> <div class="meter"><div class="bar" style="width:30%;"></div></div> </td>
+            <td class="max">10GB</td>
+        </tr>
+        <tr>
+            <th class="key">CPU Temperature</th>
+            <td class="value">57&deg;C</td>
+            <td class="min">20&deg;C</td>
+            <td> <div class="meter"><div class="bar" style="width:70%;"></div></div> </td>
+            <td class="max">95&deg;C</td>
+        </tr>
+        <tr class="bad">
+            <th class="key">GPU Temperature</th>
+            <td class="value">120&deg;C</td>
+            <td class="min">20&deg;C</td>
+            <td> <div class="meter"><div class="bar" style="width:95%;"></div></div> </td>
+            <td class="max">125&deg;C</td>
+        </tr>
+        <tr>
+            <th class="key">/ disk usage</th>
+            <td class="value">89GB</td>
+            <td class="min">0GB</td>
+            <td> <div class="meter"><div class="bar"></div></div> </td>
+            <td class="max">120GB</td>
+        </tr>
+        <tr>
+            <th class="key">/boot disk usage</th>
+            <td class="value">70MB</td>
+            <td class="min">0MB</td>
+            <td> <div class="meter"><div class="bar" style="width:70%;"></div></div> </td>
+            <td class="max">100MB</td>
+        </tr>
+        <tr>
+            <th class="key">/mnt/data disk usage</th>
+            <td class="value">892GB</td>
+            <td class="min">0TB</td>
+            <td> <div class="meter"><div class="bar"></div></div> </td>
+            <td class="max">2TB</td>
+        </tr>
+        <tr>
+            <th class="key">Max. open files</th>
+            <td class="value">300</td>
+            <td class="min">0</td>
+            <td> <div class="meter"><div class="bar" style="width:30%;"></div></div> </td>
+            <td class="max">1024</td>
+        </tr>
+        <tr>
+            <th class="key">Mains voltage</th>
+            <td class="value">243V</td>
+            <td class="min">216V</td>
+            <td> <div class="meter"><div class="bar" style="width:73%;"></div></div> </td>
+            <td class="max">253V</td>
+        </tr>
+        <tr>
+            <th class="key">Battery</th>
+            <td class="value">31m</td>
+            <td class="min">0%</td>
+            <td> <div class="meter"><div class="bar" style="width:100%;"></div></div> </td>
+            <td class="max">100%</td>
+        </tr>
+        <tr>
+            <th class="key">Uptime</th>
+            <td class="value" colspan="4">3 days</td>
+        </tr>
+        <tr>
+            <th class="key">Storage pool</th>
+            <td class="value" colspan="4">Healthy</td>
+        </tr>
+    </table>
+</li>
