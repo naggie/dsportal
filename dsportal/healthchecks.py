@@ -96,7 +96,7 @@ class UpsVoltage(HealthCheck):
             "bar_min":'%sV' % _min,
             "bar_max":'%sV' % _max,
             'bar_percentage': bar_percentage(info['LINEV'],_max,_min),
-            'value': info['LINEV'],
+            'value': '%sV' % info['LINEV'],
             "healthy": (info['LINEV'] < _max) and (info['LINEV'] > _min),
         }
 
