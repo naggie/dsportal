@@ -142,8 +142,9 @@ class HealthCheck(object):
         return result
 
 
-    async def loop(self,callback):
+    async def loop(self,callback,initial_delay=0):
         """Callback (self) at interval. Add to event loop as guarded task."""
+        await asyncio.sleep(initial_delay)
         await asyncio.sleep(self.delay)
 
         while True:
@@ -205,7 +206,8 @@ class Index(object):
 
     def register_tasks(self,loop):
         for h in self.healthchecks:
-            task = loop.create_task(h.loop(self._dispatch_check))
+            # wait 12 seconds for all workers to reconnect
+            task = loop.create_task(h.loop(self._dispatch_check,initial_delay=12))
             log.info('Registered %s for %s',h,h.worker)
             self.tasks.append(task)
 
