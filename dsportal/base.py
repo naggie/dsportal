@@ -234,6 +234,12 @@ class Index(object):
                 self.worker_websockets[h.worker].send_json((h.cls,h.id,h.check_kwargs))
             except KeyError:
                 log.warn('Worker %s not connected for healthcheck %s',h.worker,h)
+                # Invalidate result
+                result = {
+                    "healthy": None,
+                        }
+                validate_result(result)
+                self.dispatch_result(h.id,result)
         else:
             self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
 
@@ -255,6 +261,7 @@ class Index(object):
             for h in self.healthchecks:
                 if h.last_finish and h.last_finish < t - h.timeout:
                     log.warn('Healthcheck %s timeout',h)
+                    # Invalidate result
                     result = {
                         "healthy": None,
                             }
