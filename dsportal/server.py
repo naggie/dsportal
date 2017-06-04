@@ -55,23 +55,16 @@ async def worker_websocket(request):
     ws = aiohttp.web.WebSocketResponse()
     await ws.prepare(request)
 
-    tasks = []
-    for h in index.healthchecks_by_worker[worker]:
-        task = request.app.loop.create_task(h.loop(ws.send_json))
-        log.info('Registering %s for %s',h,worker)
-        tasks.append(task)
-
     try:
         index.worker_websockets[worker] = ws
 
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 id,result = msg.json()
+                # TODO replace with index method that propagates updates to clients
                 index.healthcheck_by_id[id].update(result)
     finally:
         del index.worker_websockets[worker]
-        for t in tasks:
-            t.cancel()
 
     return ws
 
@@ -104,22 +97,21 @@ app.router.add_get('/',tab_handler)
 app.router.add_get('/{tab}',tab_handler)
 aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
-# Make scheduler available to request handlers
-# See https://aiohttp.readthedocs.io/en/stable/web.html#data-sharing-aka-no-singletons-please
-# directly in request dict-like onject!
-#app['scheduler'] = TODO
-
 
 def main():
-    app['index'] = base.Index()
+    index = app['index'] = base.Index()
 
     for e in CONFIG['entities']:
-        app['index'].instantiate_entity(**e)
+        index.instantiate_entity(**e)
+
+    loop = asyncio.get_event_loop()
+    index.register_tasks(loop)
 
     aiohttp.web.run_app(
             app,
             port=int(8080),
             host="0.0.0.0",
             shutdown_timeout=6,
+            loop=loop,
         )
 

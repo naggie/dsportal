@@ -143,12 +143,12 @@ class HealthCheck(object):
 
 
     async def loop(self,callback):
-        """Callback ((cls,id,kwargs)) at interval. Add to event loop as guarded task."""
+        """Callback (self) at interval. Add to event loop as guarded task."""
         await asyncio.sleep(self.delay)
 
         while True:
             self.last_start = monotonic()
-            callback((self.cls,self.id,self.check_kwargs))
+            callback(self)
             await asyncio.sleep(self.interval)
 
 
@@ -185,6 +185,9 @@ class Index(object):
         self.worker_websockets = dict()
         self.client_websockets = dict()
 
+        # list of tasks registered on the event loop to schedule healthchecks
+        self.tasks = list()
+
 
     def _index_entity(self,entity):
         if not isinstance(entity,Entity):
@@ -209,6 +212,19 @@ class Index(object):
     def instantiate_entity(self,cls,**config):
         entity = self.ECLASSES[cls](**config)
         self._index_entity(entity)
+
+    def register_tasks(self,loop):
+        for h in self.healthchecks:
+            task = loop.create_task(h.loop(self._dispatch_check))
+            log.info('Registered %s for %s',h,h.worker)
+            self.tasks.append(task)
+
+
+    def _dispatch_check(self,h):
+        try:
+            self.worker_websockets[h.worker].send_json((h.cls,h.id,h.check_kwargs))
+        except KeyError:
+            log.warn('Worker %s not connected for healthcheck %s %s',h.worker,h,h.check_kwargs)
 
 
 
