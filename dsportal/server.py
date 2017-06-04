@@ -19,7 +19,7 @@ import logging
 from dsportal.util import setup_logging
 from dsportal import base
 
-setup_logging(debug=True)
+setup_logging(debug=False)
 log = logging.getLogger(__name__)
 
 
