@@ -61,8 +61,7 @@ async def worker_websocket(request):
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 id,result = msg.json()
-                # TODO replace with index method that propagates updates to clients
-                index.healthcheck_by_id[id].update(result)
+                index.dispatch_result(id,result)
     finally:
         del index.worker_websockets[worker]
 

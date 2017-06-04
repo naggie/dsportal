@@ -156,16 +156,6 @@ class HealthCheck(object):
         return '{cls} {check_kwargs}'.format(**self.__dict__)
 
 
-#    # used by scheduler to decide when to put job on queue
-#    # TODO probably replace with async sleep loop and asyncio create_task (or gather? or ensure_future?)
-#    def must_run(self):
-#        t = time()
-#        if self.last_attempt_time + self.interval <= t:
-#            self.last_attempt_time = t
-#            return True
-#        else:
-#            return False
-
 class Index(object):
     'Keeps track of HealthcheckState and Entity objects organised by tabs, worker, etc'
     def __init__(self):
@@ -183,7 +173,7 @@ class Index(object):
         self.ECLASSES = extract_classes('dsportal.entities',Entity)
 
         self.worker_websockets = dict()
-        self.client_websockets = dict()
+        self.client_websockets = list()
 
         # list of tasks registered on the event loop to schedule healthchecks
         self.tasks = list()
@@ -224,7 +214,19 @@ class Index(object):
         try:
             self.worker_websockets[h.worker].send_json((h.cls,h.id,h.check_kwargs))
         except KeyError:
-            log.warn('Worker %s not connected for healthcheck %s %s',h.worker,h,h.check_kwargs)
+            log.warn('Worker %s not connected for healthcheck %s',h.worker,h)
+
+    def dispatch_result(self,id,result):
+        h = self.healthcheck_by_id[id]
+        h.update(result)
+
+        # TODO entity updates
+        # TODO delta updates!
+        # TODO wire this up!
+        for ws in self.client_websockets:
+            ws.send_json((id,healthcheck.result))
+
+
 
 
 
