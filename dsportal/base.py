@@ -166,9 +166,6 @@ class HealthCheck(object):
 #        else:
 #            return False
 
-class WorkerAlreadyConnected(Exception):
-    pass
-
 class Index(object):
     'Keeps track of HealthcheckState and Entity objects organised by tabs, worker, etc'
     def __init__(self):
@@ -184,6 +181,9 @@ class Index(object):
         self.worker_locks = set()
 
         self.ECLASSES = extract_classes('dsportal.entities',Entity)
+
+        self.worker_websockets = dict()
+        self.client_websockets = dict()
 
 
     def _index_entity(self,entity):
@@ -209,15 +209,6 @@ class Index(object):
     def instantiate_entity(self,cls,**config):
         entity = self.ECLASSES[cls](**config)
         self._index_entity(entity)
-
-    def lock_worker(self,worker):
-        if worker in self.worker_locks:
-            raise WorkerAlreadyConnected()
-
-        self.worker_locks.add(worker)
-
-    def release_worker(self,worker):
-        self.worker_locks.remove(worker)
 
 
 

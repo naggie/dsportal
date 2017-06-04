@@ -49,6 +49,9 @@ async def worker_websocket(request):
     except KeyError:
         return aiohttp.web.Response(text="Incorrect token",status=403)
 
+    if worker in index.worker_websockets:
+        return aiohttp.web.Response(text="Worker %s already connected" % worker,status=403)
+
     ws = aiohttp.web.WebSocketResponse()
     await ws.prepare(request)
 
@@ -59,16 +62,16 @@ async def worker_websocket(request):
         tasks.append(task)
 
     try:
-        # TODO worker lock 403
-        #index.lock_worker(worker)
+        index.worker_websockets[worker] = ws
+
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 id,result = msg.json()
                 index.healthcheck_by_id[id].update(result)
     finally:
+        del index.worker_websockets[worker]
         for t in tasks:
             t.cancel()
-        #index.release_worker(worker)
 
     return ws
 
