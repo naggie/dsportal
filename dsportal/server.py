@@ -6,13 +6,15 @@ Usage: %s <config.yml>
 Dsportal server listens on port 8080. Use a reverse proxy to provide HTTPS
 termination.
 """
+from dsportal.config import CONFIG
+from dsportal.config import ASSET_DIR
+from dsportal.config import STATIC_DIR
+from dsportal.config import TEMPLATES_DIR
 import asyncio
 import aiohttp
 import sys
-from os import path
 import jinja2
 import aiohttp_jinja2
-import yaml
 import logging
 from dsportal.util import setup_logging
 from dsportal import base
@@ -21,19 +23,6 @@ setup_logging(debug=True)
 log = logging.getLogger(__name__)
 
 
-if len(sys.argv) < 2:
-    print(__doc__ % sys.argv[0])
-    sys.exit(1)
-
-
-with open(sys.argv[1]) as f:
-    CONFIG = yaml.load(f.read())
-
-CONFIG_DIR = path.realpath(path.dirname(sys.argv[1]))
-ASSET_DIR = path.join(CONFIG_DIR,'assets')
-SCRIPT_DIR = path.dirname(path.realpath(__file__))
-STATIC_DIR = path.join(SCRIPT_DIR,'static')
-TEMPLATES_DIR = path.join(SCRIPT_DIR,'templates')
 
 
 async def worker_websocket(request):
@@ -98,6 +87,11 @@ aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
 
 def main():
+
+    if len(sys.argv) < 2:
+        print(__doc__ % sys.argv[0])
+        sys.exit(1)
+
     index = app['index'] = base.Index()
 
     for e in CONFIG['entities']:

@@ -131,26 +131,29 @@ ul.entities {
     list-style:none;
 }
 
-.entities li {
+.entities > li {
     list-style:none;
     display:inline-block;
     margin:18px;
     vertical-align:top;
     box-sizing: border-box;
+    position:relative;
+}
+
+.entities > li.box {
     box-shadow:0 -3px 0 0 #ddd;
     border-left:1px solid #ddd;
     border-right:1px solid #ddd;
     border-bottom:1px solid #ddd;
-    position:relative;
 }
 
 
 /* simulate a butt-joint top border */
-ul.entities li.good {
+ul.entities > li.good {
     box-shadow:0 -3px 0 0 #00dd00;
 }
 
-ul.entities li.bad {
+ul.entities > li.bad {
     color:#dd0000;
     box-shadow:0 -3px 0 0 #dd0000;
     border-left:1px solid #dd0000;

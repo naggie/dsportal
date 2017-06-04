@@ -1,6 +1,8 @@
 from dsportal.base import Entity
 from dsportal.util import slug
 import markdown
+from os import path
+from dsportal.config import ASSET_DIR
 
 class Host(Entity):
     "A server"
@@ -27,7 +29,7 @@ class Markdown(Entity):
 
     def __init__(self,markdown_file,*args,**kwargs):
         super(Markdown,self).__init__(*args,**kwargs)
-        #with open(markdown_file) as f:
-        #    self.html = markdown.markdown(f.read())
 
-        self.html ='TODO!'
+        markdown_file = path.join(ASSET_DIR,markdown_file)
+        with open(markdown_file) as f:
+            self.html = markdown.markdown(f.read())
