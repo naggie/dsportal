@@ -88,6 +88,8 @@ class HealthCheck(object):
 
         self.interval = interval or self.interval
 
+        self.timeout = self.interval*2
+
         self.result = {
                 "healthy": None,
                 }
@@ -170,6 +172,8 @@ class Index(object):
         self.healthchecks_by_worker = defaultdict(list)
         self.healthcheck_by_id = dict()
 
+        # TODO remove unused indicies
+
         self.worker_locks = set()
 
         self.ECLASSES = extract_classes('dsportal.entities',Entity)
@@ -219,6 +223,10 @@ class Index(object):
                 self.local_worker.read_results(lambda r: self.dispatch_result(r[0],r[1]))
                 )
 
+        loop.create_task(
+                self.check_timeouts()
+                )
+
 
     def _dispatch_check(self,h):
         if h.worker:
@@ -238,6 +246,21 @@ class Index(object):
         # TODO wire this up!
         for ws in self.client_websockets:
             ws.send_json((id,healthcheck.result))
+
+
+    async def check_timeouts(self):
+        while True:
+            await asyncio.sleep(10)
+            t = monotonic()
+            for h in self.healthchecks:
+                if h.last_finish and h.last_finish < t - h.timeout:
+                    log.warn('Healthcheck %s timeout',h)
+                    result = {
+                        "healthy": None,
+                            }
+                    validate_result(result)
+                    self.dispatch_result(h.id,result)
+
 
 
 
