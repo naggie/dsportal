@@ -7,7 +7,6 @@ from os import path
 import aiohttp
 import asyncio
 from dsportal.base import Worker
-import queue
 import logging
 from dsportal.util import setup_logging
 
@@ -41,7 +40,7 @@ async def websocket_client(loop,worker,host,key):
             log.info("Connected to server")
 
             async with connection as ws:
-                task = loop.create_task(read_results(worker,ws))
+                task = loop.create_task(worker.read_results(ws.send_json))
 
                 try:
                     async for msg in ws:
@@ -55,22 +54,6 @@ async def websocket_client(loop,worker,host,key):
 
         await asyncio.sleep(10)
 
-# TODO reconnect forever
-async def read_results(worker,ws):
-    while True:
-        try:
-            while True:
-                response = worker.result_queue.get_nowait()
-                ws.send_json(response)
-        except queue.Empty:
-            pass
-        except ItemExpired:
-            pass
-
-        # There's got to be a better way! (Spills milk everywhere)
-        await asyncio.sleep(0.01)
-
-
 def main():
     # run as executable, must be remote worker
     if len(sys.argv) < 3:
@@ -81,7 +64,7 @@ def main():
     key = sys.argv[2]
 
     worker = Worker()
-    worker.start_workers()
+    worker.start()
 
     loop = asyncio.get_event_loop()
     client = websocket_client(loop,worker,host,key)

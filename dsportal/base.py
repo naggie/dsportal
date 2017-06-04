@@ -11,6 +11,7 @@ from dsportal.util import validate_result
 from dsportal.util import extract_classes
 from dsportal.util import TTLQueue
 from dsportal.util import ItemExpired
+import queue
 from threading import Thread
 import asyncio
 
@@ -18,7 +19,7 @@ log = logging.getLogger(__name__)
 
 
 class Entity(object):
-    def __init__(self,name,tab,worker,healthchecks=[],description=""):
+    def __init__(self,name,tab,worker=None,healthchecks=[],description=""):
         # Used for DOM ID as well
         self.id = str(uuid4())
 
@@ -179,6 +180,9 @@ class Index(object):
         # list of tasks registered on the event loop to schedule healthchecks
         self.tasks = list()
 
+        self.local_worker = Worker()
+        self.local_worker.start()
+
 
     def _index_entity(self,entity):
         if not isinstance(entity,Entity):
@@ -208,15 +212,22 @@ class Index(object):
         for h in self.healthchecks:
             # wait 12 seconds for all workers to reconnect
             task = loop.create_task(h.loop(self._dispatch_check,initial_delay=12))
-            log.info('Registered %s for %s',h,h.worker)
+            log.info('Registered %s for %s',h,h.worker or 'local worker')
             self.tasks.append(task)
+
+        loop.create_task(
+                self.local_worker.read_results(lambda r: self.dispatch_result(r[0],r[1]))
+                )
 
 
     def _dispatch_check(self,h):
-        try:
-            self.worker_websockets[h.worker].send_json((h.cls,h.id,h.check_kwargs))
-        except KeyError:
-            log.warn('Worker %s not connected for healthcheck %s',h.worker,h)
+        if h.worker:
+            try:
+                self.worker_websockets[h.worker].send_json((h.cls,h.id,h.check_kwargs))
+            except KeyError:
+                log.warn('Worker %s not connected for healthcheck %s',h.worker,h)
+        else:
+            self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
 
     def dispatch_result(self,id,result):
         h = self.healthcheck_by_id[id]
@@ -230,8 +241,6 @@ class Index(object):
 
 
 
-
-
 class Worker(object):
     def __init__(self):
         # drop items if workers are too busy -- time not number of items
@@ -241,7 +250,7 @@ class Worker(object):
 
         self.hclasses = extract_classes('dsportal.healthchecks',HealthCheck)
 
-    def start_workers(self,count=4):
+    def start(self,count=4):
         for x in range(count):
             t = Thread()
             t = Thread(target=self._worker)
@@ -273,12 +282,17 @@ class Worker(object):
             self.result_queue.put_nowait((id,result))
 
 
-    def drain(self):
-        try:
-            self.result_queue.get(block=False)
-            self.result_queue.task_done()
-        except queue.Empty:
-            return
+    async def read_results(self,callback):
+        while True:
+            try:
+                while True:
+                    response = self.result_queue.get_nowait()
+                    callback(response)
+            except queue.Empty:
+                pass
+            except ItemExpired:
+                pass
 
-
+            # There's got to be a better way! (Spills milk everywhere)
+            await asyncio.sleep(0.01)
 
