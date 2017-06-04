@@ -9,12 +9,12 @@
 
 
 [Unit]
-Description=dsportal worker
+Description=dsportal wserver
 After=network-online.target
 
 [Service]
 Type=idle
-ExecStart=/usr/local/bin/dsportal-worker
+ExecStart=/usr/local/bin/dsportal-server
 User=www-data
 Group=www-data
 
