@@ -102,6 +102,7 @@ def main():
             port=int(8080),
             host="0.0.0.0",
             shutdown_timeout=6,
+            access_log=None,
             loop=loop,
         )
 
