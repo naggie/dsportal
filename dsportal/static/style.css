@@ -218,7 +218,7 @@ table.metrics td.key {
 }
 
 table.metrics td.value {
-    width:60px;
+    width:75px;
 }
 
 table.metrics td.min {
@@ -229,7 +229,7 @@ table.metrics td.min {
 }
 
 table.metrics td.max {
-    width:40px;
+    width:50px;
     color:#999;
     font-size:11px;
 }
