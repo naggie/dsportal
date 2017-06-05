@@ -48,7 +48,7 @@ async def websocket_client(loop,worker,host,key):
                             worker.enqueue(cls,id,**kwargs)
                 finally:
                     task.cancel()
-        except (aiohttp.client_exceptions.ClientConnectorError,asyncio.TimeoutError):
+        except (aiohttp.client_exceptions.ClientConnectorError,asyncio.TimeoutError,aiohttp.client_exceptions.ServerDisconnectedError):
             log.error('No connection to server. Will retry in 10 seconds.')
 
         await asyncio.sleep(10)
