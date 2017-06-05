@@ -10,7 +10,6 @@ from dsportal.base import Worker
 import logging
 from dsportal.util import setup_logging
 
-
 setup_logging(debug=False)
 log = logging.getLogger(__name__)
 
@@ -49,7 +48,7 @@ async def websocket_client(loop,worker,host,key):
                             worker.enqueue(cls,id,**kwargs)
                 finally:
                     task.cancel()
-        except aiohttp.client_exceptions.ClientConnectorError:
+        except (aiohttp.client_exceptions.ClientConnectorError,asyncio.TimeoutError):
             log.error('No connection to server. Will retry in 10 seconds.')
 
         await asyncio.sleep(10)

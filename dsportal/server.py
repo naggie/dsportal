@@ -22,9 +22,6 @@ from dsportal import base
 setup_logging(debug=False)
 log = logging.getLogger(__name__)
 
-
-
-
 async def worker_websocket(request):
     if "Authorization" not in request.headers:
         return aiohttp.web.Response(text="Authorization Token required",status=403)
