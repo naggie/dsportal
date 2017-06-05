@@ -73,7 +73,7 @@ async def tab_handler(request):
             }
 
 
-app = aiohttp.web.Application(debug=True)
+app = aiohttp.web.Application()
 app.router.add_static('/static',STATIC_DIR) # TODO nginx static overlay
 app.router.add_static('/assets',ASSET_DIR)
 app.router.add_get('/worker-websocket',worker_websocket)
