@@ -215,7 +215,10 @@ class Index(object):
     def register_tasks(self,loop):
         for h in self.healthchecks:
             # wait 12 seconds for all workers to reconnect
-            task = loop.create_task(h.loop(self._dispatch_check,initial_delay=12))
+            task = loop.create_task(
+                    h.loop(self._dispatch_check,initial_delay=12 if h.worker else 0)
+                    )
+
             log.info('Registered %s for %s',h,h.worker or 'local worker')
             self.tasks.append(task)
 
