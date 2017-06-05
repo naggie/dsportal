@@ -152,16 +152,29 @@ class CpuTemperature(HealthCheck):
     description = "Checks CPU Temperature is nominal"
 
     @staticmethod
-    def check(zone=1,slowdown=80,_max=90):
-        with open('/sys/class/thermal/thermal_zone%s/temp' % zone) as f:
-            value = int(f.read().strip()[:-3])
+    def check(zone=None,slowdown=80,_max=90):
+
+        # search for hottest or use given zone
+        hottest = 0
+        for x in [zone] if zone else range(3):
+            try:
+                with open('/sys/class/thermal/thermal_zone%s/temp' % x) as f:
+                    reading = f.read()
+                    value = int(reading.strip()[:-3])
+                    if value > hottest:
+                        hottest = value
+            except OSError:
+                continue
+
+        if not hottest:
+            raise Exception('Could not find any thermal zone')
 
         return {
-                "value": "%s&deg;C" % value,
+                "value": "%s&deg;C" % hottest,
                 "bar_min": "15&deg;C",
                 "bar_max": "%s&deg;C" % _max,
-                "bar_percentage": bar_percentage(value,_max,15),
-                "healthy": value < slowdown,
+                "bar_percentage": bar_percentage(hottest,_max,15),
+                "healthy": hottest < slowdown,
                 }
 
 class GpuTemperature(HealthCheck):
