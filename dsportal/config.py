@@ -2,6 +2,8 @@ import yaml
 from os import path
 import sys
 
+CONFIG_DIR = ASSET_DIR = SCRIPT_DIR = STATIC_DIR = TEMPLATES_DIR = None
+
 if len(sys.argv) >= 2:
     with open(sys.argv[1]) as f:
         CONFIG = yaml.load(f.read())
