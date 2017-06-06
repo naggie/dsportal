@@ -99,8 +99,8 @@ def main():
 
     aiohttp.web.run_app(
             app,
-            port=int(8080),
-            host="0.0.0.0",
+            port=CONFIG.get('port',8080),
+            host=CONFIG.get('host','127.0.0.1'),
             shutdown_timeout=6,
             access_log=None,
             loop=loop,
