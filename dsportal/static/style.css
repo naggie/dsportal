@@ -267,3 +267,37 @@ table.metrics tr.bad div.meter div.bar {
         overflow:hidden;
     }
 }
+
+span.number-good {
+    color:#00dd00;
+    padding-left:8px;
+}
+
+span.number-bad {
+    color:#dd0000;
+    padding-left:8px;
+}
+
+span.number-unknown
+{
+    color:gray;
+    padding-left:6px;
+}
+
+span.number-good::before {
+    color:#00dd00;
+    content: '\2714';
+    padding-right:3px;
+}
+
+span.number-bad::before {
+    color:#dd0000;
+    content: '\2718';
+    padding-right:3px;
+}
+
+span.number-unknown::before {
+    content: '?';
+    font-weight:bold;
+    padding-right:2px;
+}

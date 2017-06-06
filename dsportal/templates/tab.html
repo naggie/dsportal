@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 <ul class="tabs">
+    <li style="float:right">
+        <span class="number-good">234</span>
+        <span class="number-bad">6</span>
+        <span class="number-unknown">4</span>
+    </li>
     {% for t in tabs %}
     <li class="{{'selected' if t == tab else ''}}"><a href="/{{'' if t == tabs[0] else t}}">{{t}}</a></li>
     {% endfor %}
