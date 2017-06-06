@@ -1,4 +1,5 @@
-<li class="box host {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}">
+<li class="box host {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}" title="{{entity.description}}">
+
     <div class="indicator"></div>
     <div class="title">{{entity.name}}</div>
     <table class="metrics">
