@@ -1,13 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
+
+{% if tabs|length > 1 %}
 <ul class="tabs">
     {% for t in tabs %}
     <li class="{{'selected' if t == tab else ''}}"><a href="/{{'' if t == tabs[0] else t}}">{{t}}</a></li>
     {% endfor %}
 </ul>
+{% endif %}
+
 <ul class="entities">
     {% for entity in entities %}
         {% include "entities/"+entity.cls+".html" %}
     {% endfor %}
 </ul>
+
 {% endblock content %}

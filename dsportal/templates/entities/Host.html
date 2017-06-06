@@ -20,6 +20,6 @@
     </table>
 </li>
 
-{% if entity == entities[-1] %}
+{% if entity == entities[-1] %} {% if entities|length > 1 %}
 <li class="host hidden">Dummy to left/center align</li>
-{% endif %}
+{% endif %} {% endif %}
