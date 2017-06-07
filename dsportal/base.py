@@ -277,7 +277,7 @@ class Index(object):
 
     @property
     def unknown_entities(self):
-        return [e for e in self.entities if e.healthy == None]
+        return [e for e in self.entities if e.healthy == None and e.healthchecks]
 
     @property
     def unhealthy_entities(self):
