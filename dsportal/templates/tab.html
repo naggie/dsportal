@@ -2,14 +2,14 @@
 {% block content %}
 
 <ul class="tabs">
-    <li class="right">
-        <span class="number-bad">{{num_unhealthy}}</span>
+    <li class="right {{'selected' if tab == "unhealthy" else ''}}">
+        <a href="/unhealthy" title="Entities that have failing healthchecks" class="number-bad">{{num_unhealthy}}</a>
     </li>
-    <li class="right">
-        <span class="number-good">{{num_healthy}}</span>
+    <li class="right {{'selected' if tab == "unknown" else ''}}">
+        <a href="/unknown" title="Entities that could not be checked recently" class="number-unknown">{{num_unknown}}</a>
     </li>
-    <li class="right">
-        <span class="number-unknown">{{num_unknown}}</span>
+    <li class="right {{'selected' if tab == "healthy" else ''}}">
+        <a href="/healthy" title="Entities that healthy" class="number-good">{{num_healthy}}</a>
     </li>
     {% if tabs|length > 1 %}
     {% for t in tabs %}

@@ -115,6 +115,7 @@ class HealthCheck(object):
             log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result.get('exception_msg',''))
             log.debug('Result: %s',result)
 
+        # TODO Entity.healty could be a @property -- however, may complicate client patching
         self.entity.evaluate_health()
 
 
@@ -259,29 +260,28 @@ class Index(object):
 
 
     @property
-    def num_healthy(self):
-        count = 0
-        for h in self.healthchecks:
-            if h.result['healthy'] == True:
-                count +=1
-        return count
+    def healthy_healthchecks(self):
+        return [h for h in self.healthchecks if h.result['healthy'] == True]
 
     @property
-    def num_unhealthy(self):
-        count = 0
-        for h in self.healthchecks:
-            if h.result['healthy'] == False:
-                count +=1
-        return count
+    def unknown_healthchecks(self):
+        return [h for h in self.healthchecks if h.result['healthy'] == None]
 
     @property
-    def num_unknown(self):
-        count = 0
-        for h in self.healthchecks:
-            if h.result['healthy'] == None:
-                count +=1
-        return count
+    def unhealthy_healthchecks(self):
+        return [h for h in self.healthchecks if h.result['healthy'] == False]
 
+    @property
+    def healthy_entities(self):
+        return [e for e in self.entities if e.healthy == True]
+
+    @property
+    def unknown_entities(self):
+        return [e for e in self.entities if e.healthy == None]
+
+    @property
+    def unhealthy_entities(self):
+        return [e for e in self.entities if e.healthy == False]
 
     async def check_timeouts(self):
         while True:

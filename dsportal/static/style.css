@@ -279,32 +279,32 @@ table.metrics tr.bad div.meter div.bar {
     }
 }
 
-span.number-good {
+.number-good {
     color:#00dd00;
 }
 
-span.number-bad {
+.number-bad {
     color:#dd0000;
 }
 
-span.number-unknown
+.number-unknown
 {
     color:gray;
 }
 
-span.number-good::before {
+.number-good::before {
     color:#00dd00;
     content: '\2714';
     padding-right:3px;
 }
 
-span.number-bad::before {
+.number-bad::before {
     color:#dd0000;
     content: '\2718';
     padding-right:3px;
 }
 
-span.number-unknown::before {
+.number-unknown::before {
     content: '?';
     font-weight:bold;
     padding-right:2px;
