@@ -165,10 +165,14 @@ ul.entities > li.bad {
     border-bottom:1px solid #dd0000;
 }
 
-article {
+li.text {
+    width:100%;
+}
+
+li.text > article {
     text-align:left;
     max-width:800px;
-    margin:80px auto;
+    margin:0 auto;
     color:#444;
 }
 
@@ -179,7 +183,8 @@ li.host {
     text-align:left;
 }
 
-li.host div.title {
+
+li.host > div.title {
     margin:15px 0;
 }
 
