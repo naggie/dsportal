@@ -280,11 +280,11 @@ table.metrics tr.bad div.meter div.bar {
 }
 
 .number-good {
-    color:#00dd00;
+    color:#00dd00 !important;
 }
 
 .number-bad {
-    color:#dd0000;
+    color:#dd0000 !important;
 }
 
 .number-unknown
