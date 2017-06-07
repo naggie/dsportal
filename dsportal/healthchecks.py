@@ -64,8 +64,8 @@ class CpuUsage(HealthCheck):
 class DiskUsage(HealthCheck):
     label = "Disk Usage"
     description = "Inspects used and available blocks on given mount points."
-    def __init__(self,*args,**kwargs):
-        super(DiskUsage,self).__init__(*args,**kwargs)
+    def __init__(self,**kwargs):
+        super(DiskUsage,self).__init__(**kwargs)
         self.label = '%s usage' % kwargs.get('mountpoint','/')
 
     @staticmethod
@@ -219,6 +219,11 @@ class BtrfsPool(HealthCheck):
 class HttpStatus(HealthCheck):
     label = "HTTP check"
     description = "Checks service returns 200 OK"
+
+    def __init__(self,**kwargs):
+        super(HttpStatus,self).__init__(**kwargs)
+        self.url = kwargs.get('url',self.entity.url)
+
     @staticmethod
     def check(url,status_code=200,timeout=10):
         r = requests.get(url,timeout=timeout)
