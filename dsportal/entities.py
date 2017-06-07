@@ -10,12 +10,10 @@ class Host(Entity):
 class WebApp(Entity):
     "Web application"
     def __init__(self,url,powered_by,settle_time=None,*args,**kwargs):
+        super(WebApp,self).__init__(*args,**kwargs)
+
         self.url = url
         self.powered_by = powered_by
-
-        # run parent init _after_setting URL so that healthchecks that
-        # reference this entity (bound by this parent) can access the URL
-        super(WebApp,self).__init__(*args,**kwargs)
 
         # TODO retina
         self.screenshot_url = "/assets/screenshots/%s.png" % slug(self.name)
