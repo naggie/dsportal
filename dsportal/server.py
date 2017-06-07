@@ -73,21 +73,21 @@ async def tab_handler(request):
             }
 
 
-app = aiohttp.web.Application()
-app.router.add_static('/static',STATIC_DIR) # TODO nginx static overlay
-app.router.add_static('/assets',ASSET_DIR)
-app.router.add_get('/worker-websocket',worker_websocket)
-#app.router.add_get('/client-websocket',sso)
-app.router.add_get('/',tab_handler)
-app.router.add_get('/{tab}',tab_handler)
-aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
-
 
 def main():
 
     if len(sys.argv) < 2:
         print(__doc__ % sys.argv[0])
         sys.exit(1)
+
+    app = aiohttp.web.Application()
+    app.router.add_static('/static',STATIC_DIR) # TODO nginx static overlay
+    app.router.add_static('/assets',ASSET_DIR)
+    app.router.add_get('/worker-websocket',worker_websocket)
+    #app.router.add_get('/client-websocket',sso)
+    app.router.add_get('/',tab_handler)
+    app.router.add_get('/{tab}',tab_handler)
+    aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
     index = app['index'] = base.Index()
 
@@ -99,8 +99,8 @@ def main():
 
     aiohttp.web.run_app(
             app,
-            port=int(8080),
-            host="0.0.0.0",
+            port=CONFIG.get('port',8080),
+            host=CONFIG.get('host','127.0.0.1'),
             shutdown_timeout=6,
             access_log=None,
             loop=loop,

@@ -1,18 +1,23 @@
 {% extends "base.html" %}
 {% block content %}
+
 <ul class="tabs">
     <li style="float:right">
         <span class="number-good">234</span>
         <span class="number-bad">6</span>
         <span class="number-unknown">4</span>
     </li>
+    {% if tabs|length > 1 %}
     {% for t in tabs %}
     <li class="{{'selected' if t == tab else ''}}"><a href="/{{'' if t == tabs[0] else t}}">{{t}}</a></li>
     {% endfor %}
+    {% endif %}
 </ul>
+
 <ul class="entities">
     {% for entity in entities %}
         {% include "entities/"+entity.cls+".html" %}
     {% endfor %}
 </ul>
+
 {% endblock content %}

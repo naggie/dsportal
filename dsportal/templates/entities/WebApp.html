@@ -1,4 +1,4 @@
-<li class="box service {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}" title="Powered by {{entity.powered_by}}">
+<li id="{{entity.id}}" class="box service {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}" title="Powered by {{entity.powered_by}}">
     <a href="{{entity.url}}" target="_blank">
         <div class="indicator"></div>
         <div class="title">{{entity.name}}</div>
@@ -6,7 +6,8 @@
         <div class="description">{{entity.description}}</div>
     </a>
 </li>
-{% if entity == entities[-1] %}
+
+{% if entity == entities[-1] %} {% if entities|length > 2 %}
 <li class="service hidden" style="width:384px;">Dummy to left/center align</li>
 <li class="service hidden" style="width:384px;">Dummy to left/center align</li>
-{% endif %}
+{% endif %} {% endif %}

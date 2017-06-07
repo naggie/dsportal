@@ -64,8 +64,8 @@ class CpuUsage(HealthCheck):
 class DiskUsage(HealthCheck):
     label = "Disk Usage"
     description = "Inspects used and available blocks on given mount points."
-    def __init__(self,*args,**kwargs):
-        super(DiskUsage,self).__init__(*args,**kwargs)
+    def __init__(self,**kwargs):
+        super(DiskUsage,self).__init__(**kwargs)
         self.label = '%s usage' % kwargs.get('mountpoint','/')
 
     @staticmethod
@@ -219,9 +219,16 @@ class BtrfsPool(HealthCheck):
 class HttpStatus(HealthCheck):
     label = "HTTP check"
     description = "Checks service returns 200 OK"
+
     @staticmethod
     def check(url,status_code=200,timeout=10):
-        r = requests.get(url,timeout=timeout)
+        r = requests.get(
+                url,
+                timeout=timeout,
+                headers={
+                    "User-Agent":'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
+                    }
+                )
         if r.status_code != status_code:
             r.raise_for_status()
             raise Exception('Unexpected HTTP 200 received')
@@ -273,6 +280,8 @@ class PapouchTh2eTemperature(HealthCheck):
 class SsllabsReport(HealthCheck):
     label = "SSL implementation"
     description = "Checks SSL implementation using ssllabs.org"
+    interval = 24*3600
+
     @staticmethod
     def check(host,min_grade='A+'):
         grades = ['A+','A','A-','B','C','D','E','F','T','M']
@@ -307,6 +316,7 @@ class SsllabsReport(HealthCheck):
 class PortScan(HealthCheck):
     label = "Firewall"
     description = "Scans host to check ports are closed. Synchronous so relatively quiet/slow."
+    interval = 24*3600
     @staticmethod
     def check(host,open_ports=[22,80,443],limit=65535,wait=0.5):
         for port in range(1,limit+1):
