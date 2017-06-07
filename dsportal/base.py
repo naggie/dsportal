@@ -246,6 +246,7 @@ class Index(object):
         else:
             self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
 
+
     def dispatch_result(self,id,result):
         h = self.healthcheck_by_id[id]
         h.update(result)
@@ -255,6 +256,31 @@ class Index(object):
         # TODO wire this up!
         for ws in self.client_websockets:
             ws.send_json((id,healthcheck.result))
+
+
+    @property
+    def num_healthy(self):
+        count = 0
+        for h in self.healthchecks:
+            if h.result['healthy'] == True:
+                count +=1
+        return count
+
+    @property
+    def num_unhealthy(self):
+        count = 0
+        for h in self.healthchecks:
+            if h.result['healthy'] == False:
+                count +=1
+        return count
+
+    @property
+    def num_unknown(self):
+        count = 0
+        for h in self.healthchecks:
+            if h.result['healthy'] == None:
+                count +=1
+        return count
 
 
     async def check_timeouts(self):

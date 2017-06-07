@@ -70,6 +70,9 @@ async def tab_handler(request):
         "css": CONFIG.get('css'),
         "header": CONFIG.get('header',''),
         "footer": CONFIG.get('footer',''),
+        "num_healthy": index.num_healthy,
+        "num_unhealthy": index.num_unhealthy,
+        "num_unknown": index.num_unknown,
             }
 
 

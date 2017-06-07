@@ -103,10 +103,9 @@ ul.tabs li {
     top:1px;
     color:grey;
     border:1px solid rgba(0,0,0,0);
-    border-bottom:1px solid #ddd;
 }
 
-ul.tabs li a {
+ul.tabs > li > * {
     display:block;
     margin:10px;
 }
@@ -125,6 +124,10 @@ ul.tabs li.selected {
     display:inline-block;
 }
 
+ul.tabs > li.right {
+    float:right;
+}
+
 ul.tabs a:visited, .tabs a {
     text-decoration:none;
     color:inherit;
@@ -135,7 +138,7 @@ ul.entities {
     list-style:none;
 }
 
-.entities > li {
+ul.entities > li {
     list-style:none;
     display:inline-block;
     margin:18px;
@@ -144,13 +147,12 @@ ul.entities {
     position:relative;
 }
 
-.entities > li.box {
+ul.entities > li.box {
     box-shadow:0 -3px 0 0 #ddd;
     border-left:1px solid #ddd;
     border-right:1px solid #ddd;
     border-bottom:1px solid #ddd;
 }
-
 
 /* simulate a butt-joint top border */
 ul.entities > li.good {
@@ -165,11 +167,11 @@ ul.entities > li.bad {
     border-bottom:1px solid #dd0000;
 }
 
-li.text {
+ul.entities > li.text {
     width:100%;
 }
 
-li.text > article {
+ul.entities > li.text > article {
     text-align:left;
     max-width:800px;
     margin:0 auto;
@@ -279,18 +281,15 @@ table.metrics tr.bad div.meter div.bar {
 
 span.number-good {
     color:#00dd00;
-    padding-left:8px;
 }
 
 span.number-bad {
     color:#dd0000;
-    padding-left:8px;
 }
 
 span.number-unknown
 {
     color:gray;
-    padding-left:6px;
 }
 
 span.number-good::before {

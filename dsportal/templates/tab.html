@@ -2,10 +2,14 @@
 {% block content %}
 
 <ul class="tabs">
-    <li style="float:right">
-        <span class="number-good">234</span>
-        <span class="number-bad">6</span>
-        <span class="number-unknown">4</span>
+    <li class="right">
+        <span class="number-bad">{{num_unhealthy}}</span>
+    </li>
+    <li class="right">
+        <span class="number-good">{{num_healthy}}</span>
+    </li>
+    <li class="right">
+        <span class="number-unknown">{{num_unknown}}</span>
     </li>
     {% if tabs|length > 1 %}
     {% for t in tabs %}
