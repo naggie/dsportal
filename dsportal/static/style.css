@@ -319,6 +319,6 @@ table.metrics tr.bad div.meter div.bar {
 }
 
 .number-unhealthy::after {
-    content: ' failed';
+    content: ' problems';
 }
 
