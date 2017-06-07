@@ -279,11 +279,11 @@ table.metrics tr.bad div.meter div.bar {
     }
 }
 
-.number-good {
+.number-healthy {
     color:#00dd00 !important;
 }
 
-.number-bad {
+.number-unhealthy {
     color:#dd0000 !important;
 }
 
@@ -292,15 +292,9 @@ table.metrics tr.bad div.meter div.bar {
     color:gray;
 }
 
-.number-good::before {
+.number-healthy::before {
     color:#00dd00;
     content: '\2714';
-    padding-right:3px;
-}
-
-.number-bad::before {
-    color:#dd0000;
-    content: '\2718';
     padding-right:3px;
 }
 
@@ -309,3 +303,22 @@ table.metrics tr.bad div.meter div.bar {
     font-weight:bold;
     padding-right:2px;
 }
+
+.number-unhealthy::before {
+    color:#dd0000;
+    content: '\2718';
+    padding-right:3px;
+}
+
+.number-healthy::after {
+    content: ' ok';
+}
+
+.number-unknown::after {
+    content: ' unknown';
+}
+
+.number-unhealthy::after {
+    content: ' failed';
+}
+
