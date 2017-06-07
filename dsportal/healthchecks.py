@@ -278,6 +278,12 @@ class PapouchTh2eTemperature(HealthCheck):
 class SsllabsReport(HealthCheck):
     label = "SSL implementation"
     description = "Checks SSL implementation using ssllabs.org"
+    interval = 24*3600
+
+    def __init__(self,**kwargs):
+        super(SsllabsReport,self).__init__(**kwargs)
+        self.url = kwargs.get('url',self.entity.url)
+
     @staticmethod
     def check(host,min_grade='A+'):
         grades = ['A+','A','A-','B','C','D','E','F','T','M']
@@ -312,6 +318,7 @@ class SsllabsReport(HealthCheck):
 class PortScan(HealthCheck):
     label = "Firewall"
     description = "Scans host to check ports are closed. Synchronous so relatively quiet/slow."
+    interval = 24*3600
     @staticmethod
     def check(host,open_ports=[22,80,443],limit=65535,wait=0.5):
         for port in range(1,limit+1):
