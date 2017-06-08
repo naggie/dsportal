@@ -293,12 +293,6 @@ table.metrics tr.bad div.meter div.bar {
     padding-right:3px;
 }
 
-.number-faults::before {
-    color:#dd0000;
-    content: '\2718';
-    padding-right:3px;
-}
-
 .number-healthy::after {
     content: ' ok';
 }
