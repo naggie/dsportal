@@ -283,13 +283,8 @@ table.metrics tr.bad div.meter div.bar {
     color:#00dd00 !important;
 }
 
-.number-unhealthy {
+.number-faults {
     color:#dd0000 !important;
-}
-
-.number-unknown
-{
-    color:gray;
 }
 
 .number-healthy::before {
@@ -298,13 +293,7 @@ table.metrics tr.bad div.meter div.bar {
     padding-right:3px;
 }
 
-.number-unknown::before {
-    content: '?';
-    font-weight:bold;
-    padding-right:2px;
-}
-
-.number-unhealthy::before {
+.number-faults::before {
     color:#dd0000;
     content: '\2718';
     padding-right:3px;
@@ -314,11 +303,7 @@ table.metrics tr.bad div.meter div.bar {
     content: ' ok';
 }
 
-.number-unknown::after {
-    content: ' unknown';
-}
-
-.number-unhealthy::after {
-    content: ' problems';
+.number-faults::after {
+    content: ' faults';
 }
 
