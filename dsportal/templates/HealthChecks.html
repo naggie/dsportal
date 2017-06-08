@@ -1,0 +1,19 @@
+{# TODO group by class? (separate tables, entities) #}
+<li>
+    <table class="">
+        <tr>
+            <th>Healthcheck</th>
+            <th>Entity</th>
+            <th>Healthy</th>
+            <th>Exception</th>
+        </tr>
+        {% for h in healthchecks %}
+        <tr {{'class="bad"' if h.result['healthy'] == False else ''}}>
+            <td>{{h.label}}</td>
+            <td><a href="/{{h.entity.tab}}#{{h.entity.id}}">{{h.entity.name}}</a></td>
+            <td>{{h.result["healthy"]}}</td>
+            <td>{{h.result.get('exception_msg','-')}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</li>

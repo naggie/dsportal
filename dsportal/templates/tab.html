@@ -19,6 +19,10 @@
     {% for entity in entities %}
         {% include "entities/"+entity.cls+".html" %}
     {% endfor %}
+
+    {% if healthchecks %}
+        {% include "HealthChecks.html" %}
+    {% endif %}
 </ul>
 
 {% endblock content %}

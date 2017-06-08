@@ -59,12 +59,15 @@ async def tab_handler(request):
     index = request.app['index']
     tab = request.match_info.get('tab',index.entities[0].tab)
 
+    healthchecks = []
+    entities = []
+
     if tab in index.entities_by_tab:
         entities = index.entities_by_tab[tab]
     elif tab == "healthy":
-        entities = index.healthy_entities
+        healthchecks = index.healthy_healthchecks
     elif tab == "faults":
-        entities = index.unhealthy_entities + index.unknown_entities
+        healthchecks = index.unhealthy_healthchecks + index.unknown_healthchecks
     else:
         # TODO replace with exception and special 403 middleware
         return aiohttp.web.Response(text="Unregistered tab",status=403)
@@ -79,12 +82,12 @@ async def tab_handler(request):
         "footer": CONFIG.get('footer',''),
         "num_healthy": len(index.healthy_healthchecks),
         "num_faults": len(index.unhealthy_healthchecks) + len(index.unknown_healthchecks),
+        "healthchecks": healthchecks,
             }
 
 
 
 def main():
-
     if len(sys.argv) < 2:
         print(__doc__ % sys.argv[0])
         sys.exit(1)

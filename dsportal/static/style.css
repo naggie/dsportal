@@ -18,6 +18,11 @@ h1,h2,h3 {
     font-weight:normal;
 }
 
+a:visited, a {
+    text-decoration:none;
+    color:inherit;
+}
+
 h1.main {
     color:#444;
     font-size:32px;
@@ -128,10 +133,6 @@ ul.tabs > li.right {
     float:right;
 }
 
-ul.tabs a:visited, .tabs a {
-    text-decoration:none;
-    color:inherit;
-}
 
 ul.entities {
     padding:0;
@@ -188,6 +189,8 @@ li.host {
 
 li.host > div.title {
     margin:15px 0;
+    padding-bottom:10px;
+    border-bottom:1px solid #ddd;
 }
 
 @media (max-width: 1280px) {
@@ -204,28 +207,24 @@ li.host > div.title {
     }
 }
 
-table.metrics {
+table {
+    text-align:left;
     width:100%;
     border-collapse:separate;
     table-layout:fixed;
     color:#888;
-    margin-top:10px;
-    border-top:1px solid #ddd;
     padding:10px;
 }
 
-table.metrics td {
+table td {
     padding:5px 0;
 }
 
-table.metrics th {
-    padding-left:4px;
-    overflow:hidden;
+table th {
     font-weight:normal;
     color:#555;
-}
-
-table.metrics td.key {
+    padding:5px 0;
+    overflow:hidden;
 }
 
 table.metrics td.value {
@@ -239,7 +238,7 @@ table.metrics td.min {
     font-size:11px;
 }
 
-table.metrics td.max {
+table.td.max {
     width:50px;
     color:#999;
     font-size:11px;
