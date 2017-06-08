@@ -129,7 +129,7 @@ class HealthCheck(object):
     @classmethod
     def run_check(CLASS,**kwargs):
         '''Run check in exception wrapper'''
-        log.info('Processing check: %s %s',CLASS.__name__,kwargs)
+        log.debug('Processing check: %s %s',CLASS.__name__,kwargs)
         try:
             result = CLASS.check(**kwargs)
         except Exception as e:
@@ -220,7 +220,7 @@ class Index(object):
                     h.loop(self._dispatch_check,initial_delay=12 if h.worker else 0)
                     )
 
-            log.info('Registered %s for %s',h,h.worker or 'local worker')
+            log.debug('Registered %s for %s',h,h.worker or 'local worker')
             self.tasks.append(task)
 
         loop.create_task(
