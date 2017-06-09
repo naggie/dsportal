@@ -135,7 +135,7 @@ class HealthCheck(object):
         except Exception as e:
             result = {
                     "healthy" : False,
-                    "exception_msg" : "{e.__class__.__name__}: {e}".format(e=e),
+                    "exception_msg" : str(e),
                 }
         validate_result(result)
 
