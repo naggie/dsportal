@@ -18,7 +18,7 @@ h1,h2,h3 {
     font-weight:normal;
 }
 
-a:visited, a {
+ul.tabs a:visited, ul.tabs a {
     text-decoration:none;
     color:inherit;
 }
