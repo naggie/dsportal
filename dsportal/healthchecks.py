@@ -220,6 +220,10 @@ class HttpStatus(HealthCheck):
     label = "HTTP check"
     description = "Checks service returns 200 OK"
 
+    def __init__(self,**kwargs):
+        super(HttpStatus,self).__init__(**kwargs)
+        self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
+
     @staticmethod
     def check(url,status_code=200,timeout=10):
         r = requests.get(
@@ -281,6 +285,10 @@ class SsllabsReport(HealthCheck):
     label = "SSL implementation"
     description = "Checks SSL implementation using ssllabs.org"
     interval = 24*3600
+
+    def __init__(self,**kwargs):
+        super(SsllabsReport,self).__init__(**kwargs)
+        self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
 
     @staticmethod
     def check(host,min_grade='A+'):
