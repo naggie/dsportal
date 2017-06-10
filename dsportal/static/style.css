@@ -46,15 +46,16 @@ h1.main {
     background:white;
 }
 
-.service {
+li.service {
     display:inline-block;
     padding:10px 0;
     margin:0;
     background:white;
     text-align:center;
+    width:384px;
 }
 
-.service a:visited, .service a {
+li.service a:visited, li.service a {
     text-decoration:none;
     color:black;
 }
@@ -286,10 +287,6 @@ table.metrics tr.bad div.meter div.bar {
     color:#00dd00 !important;
 }
 
-.number-faults {
-    color:#dd0000 !important;
-}
-
 .number-healthy::before {
     color:#00dd00;
     content: '\2714';
@@ -300,7 +297,25 @@ table.metrics tr.bad div.meter div.bar {
     content: ' ok';
 }
 
-.number-faults::after {
-    content: ' faults';
+.number-unknown {
+    color:gray !important;
+}
+
+.number-unknown::after {
+    content: ' unknown';
+}
+
+.number-unhealthy {
+    color:#dd0000 !important;
+}
+
+.number-unhealthy::before {
+    color:#dd0000;
+    content: '\2718';
+    padding-right:3px;
+}
+
+.number-unhealthy::after {
+    content: ' failed';
 }
 
