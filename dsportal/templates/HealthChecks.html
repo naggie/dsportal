@@ -24,7 +24,7 @@
                 <th>Healthcheck</th>
                 <th>Healthy</th>
                 <th>Interval</th>
-                <th>Exception</th>
+                <th>Reason</th>
             </tr>
         </thead>
         <tbody>
@@ -42,7 +42,7 @@
                 {% endif %}
                 </td>
                 <td>{{h.interval}}s</td>
-                <td>{{h.result.get('exception_msg','-')}}</td>
+                <td>{{h.result.get('reason','-')}}</td>
             </tr>
             {% endfor %}
         </tbody>

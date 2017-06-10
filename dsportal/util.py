@@ -117,8 +117,8 @@ def validate_result(result):
     if type(result['healthy']) != bool and result['healthy'] != None:
         raise ValueError('`healthy` key must be bool or None. None means unknown-yet or not-applicable.')
 
-    #if result['healthy'] == False and 'exception_msg' not in result:
-    #    raise ValueError('exception_msg must be set if healthy is False')
+    #if result['healthy'] == False and 'reason' not in result:
+    #    raise ValueError('reason must be set if healthy is False')
 
 
 def slug(string):

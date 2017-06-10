@@ -92,7 +92,7 @@ class HealthCheck(object):
 
         self.result = {
                 "healthy": None,
-                "exception_msg": "Waiting for check",
+                "reason": "Waiting for check",
                 }
 
 
@@ -113,7 +113,7 @@ class HealthCheck(object):
         if result['healthy']:
             log.debug('Check passed: %s %s',self.cls,self.check_kwargs)
         else:
-            log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result.get('exception_msg',''))
+            log.warn('Check failed: %s %s %s',self.cls,self.check_kwargs,result.get('reason',''))
             log.debug('Result: %s',result)
 
         # TODO Entity.healty could be a @property -- however, may complicate client patching
@@ -136,12 +136,12 @@ class HealthCheck(object):
         except Exception as e:
             result = {
                     "healthy" : False,
-                    "exception_msg" : str(e),
+                    "reason" : str(e),
                 }
         validate_result(result)
 
         if not result['healthy']:
-            log.warn('Check failed: %s %s %s',CLASS.__name__,kwargs,result.get('exception_msg',''))
+            log.warn('Check failed: %s %s %s',CLASS.__name__,kwargs,result.get('reason',''))
             log.debug('Result: %s',result)
 
         return result
@@ -242,7 +242,7 @@ class Index(object):
                 # Invalidate result
                 result = {
                     "healthy": None,
-                    "exception_msg":"Worker %s offline" % h.worker,
+                    "reason":"Worker %s offline" % h.worker,
                         }
                 validate_result(result)
                 self.dispatch_result(h.id,result)
@@ -333,7 +333,7 @@ class Worker(object):
                 cls,id,kwargs = e.item
                 self.result_queue.put_nowait((id,{
                         'healthy': None,
-                        'exception_msg' : 'Worker was too busy to run this health check in time',
+                        'reason' : 'Worker was too busy to run this health check in time',
                     }))
                 log.warn('Check dropped: %s',cls)
                 continue

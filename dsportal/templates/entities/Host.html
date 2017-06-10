@@ -13,7 +13,7 @@
                 <td class="max">{{h.result['bar_max']}}</td>
             {% else %}
                 <th class="key">{{h.label}}</th>
-                <td class="value" colspan="4">{{h.result.get('value',h.result.get('exception_msg','-'))}}</td>
+                <td class="value" colspan="4">{{h.result.get('value',h.result.get('reason','-'))}}</td>
             {% endif %}
         </tr>
         {% endfor %}
