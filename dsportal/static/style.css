@@ -319,3 +319,12 @@ table.metrics tr.bad div.meter div.bar {
     content: ' failed';
 }
 
+.tab-warning::before {
+    font-size:40px;
+    position:absolute;
+    color:#dd0000;
+    content: '\26a0';
+    top:-55px;
+    margin-left:-20px;
+    left:50%;
+}

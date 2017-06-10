@@ -3,7 +3,11 @@
 
 <ul class="tabs">
     <li class="right {{'selected' if tab == "healthchecks" else ''}}">
-        <a href="/healthchecks">All checks</a>
+        {% if num_unknown + num_unhealthy %}
+            <a class="tab-warning" href="/healthchecks">All checks</a>
+        {% else %}
+            <a href="/healthchecks">All checks</a>
+        {% endif %}
     </li>
     {% for t in tabs %}
     <li class="{{'selected' if t == tab else ''}}">
