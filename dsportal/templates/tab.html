@@ -4,7 +4,7 @@
 <ul class="tabs">
     <li class="right {{'selected' if tab == "healthchecks" else ''}}">
         {% if num_unknown + num_unhealthy %}
-            <a class="tab-warning" href="/healthchecks">All checks</a>
+            <a class="tab-warning" href="/healthchecks" title="Problems detected">All checks</a>
         {% else %}
             <a href="/healthchecks">All checks</a>
         {% endif %}
