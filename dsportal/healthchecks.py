@@ -158,7 +158,7 @@ class Uptime(HealthCheck):
 class CpuTemperature(HealthCheck):
     label = "CPU Temperature"
     description = "Checks CPU Temperature is nominal"
-    nominal_failure = "UPS battery almost fully discharged"
+    nominal_failure = "CPU has overheated"
 
     @staticmethod
     def check(zone=None,slowdown=80,_max=90):
