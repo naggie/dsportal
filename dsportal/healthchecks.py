@@ -8,6 +8,8 @@ import os
 import multiprocessing
 import requests
 from subprocess import run,PIPE
+from urllib.parse import urlparse
+from time import sleep
 
 class RamUsage(HealthCheck):
     label = "RAM Usage"
@@ -296,7 +298,9 @@ class SsllabsReport(HealthCheck):
 
     def __init__(self,**kwargs):
         super(SsllabsReport,self).__init__(**kwargs)
-        self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
+        url = kwargs.get('url',self.entity.url)
+        if 'host' not in kwargs:
+            self.check_kwargs['host'] = urlparse(url).hostname
 
     @staticmethod
     def check(host,min_grade='A+'):
@@ -321,7 +325,7 @@ class SsllabsReport(HealthCheck):
 
         grade = report['endpoints'][0]['grade']
 
-        if grades[grade] >= grades[min_grade]:
+        if grades[grade] > grades[min_grade]:
             raise Exception('Grade %s not acheived, got %s.' % (min_grade,grade))
 
         return {
