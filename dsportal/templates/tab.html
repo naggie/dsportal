@@ -2,17 +2,14 @@
 {% block content %}
 
 <ul class="tabs">
-    <li class="right {{'selected' if tab == "faults" else ''}}" {{'style="display:none;"' if not num_faults else ''}}>
-        <a href="/faults" title="Entities that have failing healthchecks" class="number-faults">{{num_faults}}</a>
+    <li class="right {{'selected' if tab == "healthchecks" else ''}}">
+        <a href="/healthchecks">All checks</a>
     </li>
-    <li class="right {{'selected' if tab == "healthy" else ''}}" {{'style="display:none;"' if not num_healthy else ''}}>
-        <a href="/healthy" title="Entities that healthy" class="number-healthy">{{num_healthy}}</a>
-    </li>
-    {% if tabs|length > 1 %}
     {% for t in tabs %}
-    <li class="{{'selected' if t == tab else ''}}"><a href="/{{'' if t == tabs[0] else t}}">{{t}}</a></li>
+    <li class="{{'selected' if t == tab else ''}}">
+        <a href="/{{'' if t == tabs[0] else t}}">{{t}}</a>
+    </li>
     {% endfor %}
-    {% endif %}
 </ul>
 
 <ul class="entities">

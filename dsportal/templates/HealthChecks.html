@@ -1,29 +1,36 @@
-{# TODO group by class? (separate tables, entities) #}
+<li>
+    TODO Here: 1/3rd entities based on webapp (no box)
+    Passed Failed Unknown
+</li>
 <li>
     <table class="">
-        <tr>
-            <th>Entity</th>
-            <th>Healthcheck</th>
-            <th>Healthy</th>
-            <th>Interval</th>
-            <th>Exception</th>
-        </tr>
-        {% for h in healthchecks %}
-        <tr {{'class="bad"' if h.result['healthy'] == False else ''}}>
-            <td><a href="/{{h.entity.tab}}#{{h.entity.id}}">{{h.entity.name}}</a></td>
-            <td>{{h.label}}</td>
-            <td>
-            {% if h.result['healthy'] == True %}
-                <span style="color:#00dd00">&#x2714;</span>
-            {% elif h.result['healthy'] == None %}
-                ?
-            {% else %}
-                <span style="color:#dd0000">&#x2718;</span>
-            {% endif %}
-            </td>
-            <td>{{h.interval}}s</td>
-            <td>{{h.result.get('exception_msg','-')}}</td>
-        </tr>
-        {% endfor %}
+        <thead>
+            <tr>
+                <th>Entity</th>
+                <th>Healthcheck</th>
+                <th>Healthy</th>
+                <th>Interval</th>
+                <th>Exception</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for h in healthchecks %}
+            <tr {{'class="bad"' if h.result['healthy'] == False else ''}}>
+                <td><a href="/{{h.entity.tab}}#{{h.entity.id}}">{{h.entity.name}}</a></td>
+                <td>{{h.label}}</td>
+                <td>
+                {% if h.result['healthy'] == True %}
+                    <span style="color:#00dd00">&#x2714;</span>
+                {% elif h.result['healthy'] == None %}
+                    ?
+                {% else %}
+                    <span style="color:#dd0000">&#x2718;</span>
+                {% endif %}
+                </td>
+                <td>{{h.interval}}s</td>
+                <td>{{h.result.get('exception_msg','-')}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
     </table>
 </li>

@@ -111,7 +111,7 @@ ul.tabs li {
 }
 
 ul.tabs > li > * {
-    display:block;
+    display:inline-block;
     margin:10px;
 }
 
@@ -218,6 +218,10 @@ table {
 
 table td {
     padding:5px 0;
+}
+
+table > thead > tr > th {
+    font-size:18px;
 }
 
 table th {
