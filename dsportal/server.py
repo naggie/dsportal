@@ -44,6 +44,8 @@ async def worker_websocket(request):
     try:
         index.worker_websockets[worker] = ws
 
+        log.info('worker %s connected',worker)
+
         async for msg in ws:
             if msg.type == aiohttp.WSMsgType.TEXT:
                 id,result = msg.json()
