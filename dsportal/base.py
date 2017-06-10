@@ -64,11 +64,10 @@ class Entity(object):
                 break
 
 
-
-
 class HealthCheck(object):
     label = "The name of this value"
     description = "What this health check does"
+    nominal_failure = "What causes a nominal failure"
 
     interval = 60 # default, can be overridden in configuration
 
@@ -143,6 +142,9 @@ class HealthCheck(object):
         if not result['healthy']:
             log.warn('Check failed: %s %s %s',CLASS.__name__,kwargs,result.get('reason',''))
             log.debug('Result: %s',result)
+
+        if result['healthy'] == False and 'reason' not in result:
+            result['reason'] = CLASS.nominal_failure
 
         return result
 

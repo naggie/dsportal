@@ -12,6 +12,7 @@ from subprocess import run,PIPE
 class RamUsage(HealthCheck):
     label = "RAM Usage"
     description = "Checks RAM usage is less than 90%. Does not count cache and buffers."
+    nominal_failure = "RAM insufficient"
 
     @staticmethod
     def check():
@@ -45,6 +46,7 @@ class RamUsage(HealthCheck):
 class CpuUsage(HealthCheck):
     label = "CPU Utilisation"
     description = "Checks CPU load is nominal."
+    nominal_failure = "CPU overloaded"
 
     @staticmethod
     def check(_max=200):
@@ -64,6 +66,8 @@ class CpuUsage(HealthCheck):
 class DiskUsage(HealthCheck):
     label = "Disk Usage"
     description = "Inspects used and available blocks on given mount points."
+    nominal_failure = "Disk usage too high"
+
     def __init__(self,**kwargs):
         super(DiskUsage,self).__init__(**kwargs)
         self.label = '%s usage' % kwargs.get('mountpoint','/')
@@ -87,6 +91,7 @@ class DiskUsage(HealthCheck):
 class UpsVoltage(HealthCheck):
     label = "Mains Voltage"
     description = "Checks mains voltage falls within UK statutory limits of 230V +10% -6%"
+    nominal_failure = "Voltage outside legal limit"
     @staticmethod
     def check(_min=216,_max=253):
         info = get_ups_data()
@@ -101,6 +106,7 @@ class UpsVoltage(HealthCheck):
 class UpsLoad(HealthCheck):
     label = "UPS Load"
     description = "Checks UPS is not overloaded"
+    nominal_failure = "UPS overloaded"
     @staticmethod
     def check():
         info = get_ups_data()
@@ -115,6 +121,7 @@ class UpsLoad(HealthCheck):
 class UpsBattery(HealthCheck):
     label = "UPS battery"
     description = "Checks estimated time remaining and percentage"
+    nominal_failure = "UPS battery almost fully discharged"
     @staticmethod
     def check():
         info = get_ups_data()
@@ -130,7 +137,6 @@ class UpsBattery(HealthCheck):
 class Uptime(HealthCheck):
     label = "Uptime"
     description = "Specify uptime in days"
-
     @staticmethod
     def check():
         with open('/proc/uptime', 'r') as f:
@@ -150,10 +156,10 @@ class Uptime(HealthCheck):
 class CpuTemperature(HealthCheck):
     label = "CPU Temperature"
     description = "Checks CPU Temperature is nominal"
+    nominal_failure = "UPS battery almost fully discharged"
 
     @staticmethod
     def check(zone=None,slowdown=80,_max=90):
-
         # search for hottest or use given zone
         hottest = 0
         for x in [zone] if zone else range(3):
@@ -180,6 +186,7 @@ class CpuTemperature(HealthCheck):
 class GpuTemperature(HealthCheck):
     label = "GPU Temperature"
     description = "Checks GPU Temperature is nominal"
+    nominal_failure = "GPU has overheated"
 
     @staticmethod
     def check(slowdown=88,_max=93):
@@ -215,9 +222,10 @@ class GpuTemperature(HealthCheck):
 class BtrfsPool(HealthCheck):
     label = "BTRFS Pool"
     description = "Checks BTRFS health"
+    nominal_failure = "Pool in degraded state"
 
 class HttpStatus(HealthCheck):
-    label = "HTTP check"
+    label = "Page load"
     description = "Checks service returns 200 OK"
 
     def __init__(self,**kwargs):
