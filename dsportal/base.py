@@ -98,7 +98,7 @@ class HealthCheck(object):
         # randomise for uniform distribution of health checks rather than
         # periodic stampedes
         # warm up over interval, max 1 min
-        self.delay = randint(0,max(self.interval,60))
+        self.delay = randint(0,min(self.interval,60))
 
         self.last_start = None
         self.last_finish = None
