@@ -92,6 +92,7 @@ class HealthCheck(object):
 
         self.result = {
                 "healthy": None,
+                "exception_msg": "Waiting for check",
                 }
 
 
