@@ -244,7 +244,7 @@ class Index(object):
                 # Invalidate result
                 result = {
                     "healthy": None,
-                    "reason":"Worker %s offline" % h.worker,
+                    "reason":"Worker %s was offline" % h.worker,
                         }
                 validate_result(result)
                 self.dispatch_result(h.id,result)
