@@ -10,6 +10,7 @@ import re
 def get_ups_data():
     "Get UPS stats from apcupsd via /var/log/apcupsd.status"
 
+    info = {}
     with open('/var/log/apcupsd.status') as f:
         for line in f:
             m = re.search('(\w+)\s*:\s*((\d|\w)+)', line)
