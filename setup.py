@@ -16,12 +16,19 @@ with open(path.join(script_dir,'requirements.txt')) as f:
         else:
             packages.append(line)
 
+data_files = list()
+
+module_dir = path.join(script_dir,'dsportal')
+for root, subdirs, filenames in os.walk(module_dir):
+    data_files += [path.join(root,filename) for filename in filenames]
+
+print (data_files)
+
 setup(
     name = "dsportal",
     version = "0.1",
     packages = find_packages(),
     dependency_links=links,
-    #scripts = ['dsblog/dsblog.py'],
     entry_points = {
         'console_scripts': [
             'dsportal-server = dsportal.server:main',
@@ -30,7 +37,7 @@ setup(
             ],
         },
     install_requires = packages,
-    package_data = {'':['*.*']},
+    package_data = {'':data_files},
     author = "Callan Bryant",
     author_email = "callan.bryant@gmail.com",
     maintainer = "Callan Bryant",
