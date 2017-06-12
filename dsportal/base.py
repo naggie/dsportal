@@ -343,7 +343,16 @@ class Worker(object):
                 log.warn('Check dropped: %s',cls)
                 continue
 
-            result = self.hclasses[cls].run_check(**kwargs)
+            try:
+                fn = self.hclasses[cls].run_check
+            except KeyError:
+                self.result_queue.put_nowait((id,{
+                        'healthy': None,
+                        'reason' : 'Healthcheck not known by worker',
+                    }))
+                log.warn('Check unknown: %s',cls)
+
+            result = fn(**kwargs)
             self.work_queue.task_done()
             self.result_queue.put_nowait((id,result))
 
