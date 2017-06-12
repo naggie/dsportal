@@ -86,7 +86,7 @@ class DiskUsage(HealthCheck):
                 "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
                 "bar_percentage": bar_percentage(usage,total),
-                "healthy": usage < 0.8*total,
+                "healthy": usage < 0.9*total,
                 }
 
 
