@@ -213,7 +213,10 @@ class Index(object):
 
 
     def instantiate_entity(self,cls,**config):
-        entity = self.ECLASSES[cls](**config)
+        try:
+            entity = self.ECLASSES[cls](**config)
+        except KeyError:
+            raise ValueError('Entity %s does not exist' % cls)
         self._index_entity(entity)
 
     def register_tasks(self,loop):
