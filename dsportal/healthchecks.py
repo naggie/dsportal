@@ -235,7 +235,7 @@ class HttpStatus(HealthCheck):
         self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
 
     @staticmethod
-    def check(url,status_code=200,timeout=10):
+    def check(url,status_code=200,timeout=10,contains=None):
         r = requests.get(
                 url,
                 timeout=timeout,
@@ -246,6 +246,9 @@ class HttpStatus(HealthCheck):
         if r.status_code != status_code:
             r.raise_for_status()
             raise Exception('Unexpected HTTP 200 received')
+
+        if contains and contains not in in r.text:
+            raise Exception('Unexpected page content despite correct HTTP status')
 
         return {
                 "healthy": True,
