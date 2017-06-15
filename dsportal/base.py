@@ -1,5 +1,4 @@
 from uuid import uuid4
-import logging
 from time import time
 from random import randint
 from functools import wraps
@@ -15,6 +14,7 @@ import queue
 from threading import Thread
 import asyncio
 
+import logging
 log = logging.getLogger(__name__)
 
 
@@ -166,7 +166,8 @@ class HealthCheck(object):
 
 class Index(object):
     'Keeps track of HealthcheckState and Entity objects organised by tabs, worker, etc'
-    def __init__(self):
+    def __init__(self,name):
+        self.name = name
         # indices
         self.entities = list()
         self.entities_by_tab = OrderedDict()
@@ -180,7 +181,7 @@ class Index(object):
 
         self.worker_locks = set()
 
-        self.ECLASSES = extract_classes('dsportal.entities',Entity)
+        self.entity_classes = extract_classes('dsportal.entities',Entity)
 
         self.worker_websockets = dict()
         self.client_websockets = list()
@@ -191,10 +192,16 @@ class Index(object):
         self.local_worker = Worker()
         self.local_worker.start()
 
+        self.alerter_classes = extract_classes('dsportal.alerters',Alerter)
+        self.alerters = list()
 
-    def _index_entity(self,entity):
-        if not isinstance(entity,Entity):
-            raise ValueError('Instance of an Entity (subclass) required')
+
+
+    def instantiate_entity(self,cls,**config):
+        try:
+            entity = self.entity_classes[cls](**config)
+        except KeyError:
+            raise ValueError('Entity class %s does not exist' % cls)
 
         self.entities.append(entity)
         self.entities_by_id[entity.id] = entity
@@ -212,12 +219,6 @@ class Index(object):
             self.healthcheck_by_id[hcs.id] = hcs
 
 
-    def instantiate_entity(self,cls,**config):
-        try:
-            entity = self.ECLASSES[cls](**config)
-        except KeyError:
-            raise ValueError('Entity %s does not exist' % cls)
-        self._index_entity(entity)
 
     def register_tasks(self,loop):
         for h in self.healthchecks:
@@ -251,6 +252,7 @@ class Index(object):
                         }
                 validate_result(result)
                 self.dispatch_result(h.id,result)
+                self.alert(h.worker,'Worker %s is having connection issues' % h.worker)
         else:
             self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
 
@@ -259,12 +261,12 @@ class Index(object):
         h = self.healthcheck_by_id[id]
         h.update(result)
 
-        # TODO entity updates
         # TODO delta updates!
-        # TODO wire this up!
         for ws in self.client_websockets:
             ws.send_json((id,healthcheck.result))
 
+        if result['healthy'] == False:
+            self.alert(h.id,'{label} unhealthy on {entity.name}, reason: {result[reason]}'.format(**h.__dict__))
 
     @property
     def healthy_healthchecks(self):
@@ -304,6 +306,18 @@ class Index(object):
                     validate_result(result)
                     self.dispatch_result(h.id,result)
 
+
+    def _alert(self,context,text):
+        for a in self.alerters:
+            a.alert(context,text)
+
+    def instantiate_alerter(self,cls,**kwargs):
+        try:
+            alerter = self.alerter_classes[cls](name=self.name,**kwargs)
+        except KeyError:
+            raise ValueError('Alerter class %s does not exist' % cls)
+
+        self.alerters.append(alerter)
 
 
 
@@ -370,4 +384,33 @@ class Worker(object):
 
             # There's got to be a better way! (Spills milk everywhere)
             await asyncio.sleep(0.01)
+
+
+class Alerter(object):
+    '''ABC for sending alerts that require human intervention. Will throttle
+    events from the same given context by interval. Example contexts: worker,
+    healthcheck ID'''
+    def __init__(self,interval=3600):
+        # last notification times by context
+        # time is monotonic unix timestamp
+        # preloaded with now -- so alerts come at least interval after
+        # deplotyment
+        self.last_notifications = defaultdict(monotonic)
+        self.interval = interval
+
+        # name of system (domain name)
+        self.name = name
+
+    def alert(self,context,text):
+        if self.last_notifications[context] < monotonic() - self.interval:
+            self.broadcast_alert(text)
+            log.info('Alert broadcasted: %s',text)
+            self.last_notifications[context] = monotonic()
+        else:
+            log.debug('Alert throttled: %s',text)
+
+
+    def broadcast_alert(self,text):
+        raise NotImplemented()
+
 

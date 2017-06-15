@@ -102,10 +102,14 @@ def main():
     app.router.add_get('/{tab}',tab_handler)
     aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
 
-    index = app['index'] = base.Index()
+    index = app['index'] = base.Index(CONFIG['name'])
 
     for e in CONFIG['entities']:
         index.instantiate_entity(**e)
+
+    if 'alerters' in CONFIG:
+        for a in CONFIG['alerters']:
+            index.instantiate_alerter(**a)
 
     loop = asyncio.get_event_loop()
     index.register_tasks(loop)
