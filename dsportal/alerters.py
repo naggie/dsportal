@@ -47,4 +47,3 @@ class AwsSnsSmsAlerter(Alerter):
 
             except:
                 log.exception('SNS client failure')
-                raise
