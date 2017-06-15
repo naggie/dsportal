@@ -247,7 +247,7 @@ class HttpStatus(HealthCheck):
             r.raise_for_status()
             raise Exception('Unexpected HTTP 200 received')
 
-        if contains and contains not in in r.text:
+        if contains and contains not in r.text:
             raise Exception('Unexpected page content despite correct HTTP status')
 
         return {
