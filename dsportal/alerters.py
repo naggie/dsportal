@@ -1,5 +1,6 @@
 from dsportal.base import Alerter
-import boto
+import boto3
+from dsportal.util import slug
 import logging
 log = logging.getLogger(__name__)
 
@@ -11,7 +12,13 @@ class AwsSnsSmsAlerter(Alerter):
             phone_numbers,
             **kwargs):
 
-        self.phone_numbers = list(phone_numbers)
+        super(AwsSnsSmsAlerter,self).__init__(**kwargs)
+
+        if type(phone_numbers) != list:
+            raise ValueError('Phone numbers must be list')
+
+        self.phone_numbers = phone_numbers
+
         self.sns = boto3.client(
                 service_name='sns',
                 region_name=region_name,
@@ -19,18 +26,21 @@ class AwsSnsSmsAlerter(Alerter):
                 aws_secret_access_key=aws_secret_access_key,
                 )
 
+
     def broadcast_alert(self,text):
         for pn in self.phone_numbers:
             try:
-                sns_client.publish( PhoneNumber=pn,
+                self.sns.publish(
+                        PhoneNumber=pn,
                         Message=text,
                         MessageAttributes={
                             'AWS.SNS.SMS.SenderID': {
                                 'DataType': 'String',
-                                'StringValue': self.name,
+                                'StringValue': slug(self.name).replace('_','')[:11],
                                 }
                             }
                         )
 
             except:
-                log.exception()
+                log.exception('SNS client failure')
+                raise

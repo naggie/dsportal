@@ -5,6 +5,7 @@ colorlog==2.10.0
 # server only
 aiohttp-jinja2==0.13.0
 markdown==2.6.8
+boto3==1.4.4
 
 # screenshot only
 pillow==4.1.1

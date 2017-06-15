@@ -252,7 +252,7 @@ class Index(object):
                         }
                 validate_result(result)
                 self.dispatch_result(h.id,result)
-                self.alert(h.worker,'Worker %s is having connection issues' % h.worker)
+                self._alert(h.worker,'Worker %s is having connection issues' % h.worker)
         else:
             self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
 
@@ -266,7 +266,7 @@ class Index(object):
             ws.send_json((id,healthcheck.result))
 
         if result['healthy'] == False:
-            self.alert(h.id,'{label} unhealthy on {entity.name}, reason: {result[reason]}'.format(**h.__dict__))
+            self._alert(h.id,'{h.label} unhealthy on {h.entity.name}, reason: {h.result[reason]}'.format(h=h))
 
     @property
     def healthy_healthchecks(self):
@@ -317,6 +317,7 @@ class Index(object):
         except KeyError:
             raise ValueError('Alerter class %s does not exist' % cls)
 
+        log.debug('Registered alerter: %s',alerter)
         self.alerters.append(alerter)
 
 
@@ -390,7 +391,7 @@ class Alerter(object):
     '''ABC for sending alerts that require human intervention. Will throttle
     events from the same given context by interval. Example contexts: worker,
     healthcheck ID'''
-    def __init__(self,interval=3600):
+    def __init__(self,name,interval=3600):
         # last notification times by context
         # time is monotonic unix timestamp
         # preloaded with now -- so alerts come at least interval after
@@ -403,11 +404,11 @@ class Alerter(object):
 
     def alert(self,context,text):
         if self.last_notifications[context] < monotonic() - self.interval:
-            self.broadcast_alert(text)
-            log.info('Alert broadcasted: %s',text)
             self.last_notifications[context] = monotonic()
+            log.info('Broadcasting alert: %s',text)
+            self.broadcast_alert(text)
         else:
-            log.debug('Alert throttled: %s',text)
+            log.debug('Alert throttled: %s (interval:%s)',text,self.interval)
 
 
     def broadcast_alert(self,text):
