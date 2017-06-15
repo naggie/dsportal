@@ -37,8 +37,12 @@ class AwsSnsSmsAlerter(Alerter):
                             'AWS.SNS.SMS.SenderID': {
                                 'DataType': 'String',
                                 'StringValue': slug(self.name).replace('_','')[:11],
-                                }
-                            }
+                                },
+                            'AWS.SNS.SMS.SMSType': {
+                                'DataType': 'String',
+                                'StringValue': 'Transactional',
+                                },
+                            },
                         )
 
             except:
