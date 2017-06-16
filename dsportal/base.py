@@ -266,7 +266,9 @@ class Index(object):
             ws.send_json((id,healthcheck.result))
 
         if result['healthy'] == False:
-            self._alert(h.id,'{h.label} unhealthy on {h.entity.name}, reason: {h.result[reason]}'.format(h=h))
+            # stop iOS previews: http://support.fastsms.co.uk/knowledgebase/ios-10-update-impacts-sms-messages/
+            # leave a space at the end!
+            self._alert(h.id,'{h.label} unhealthy on {h.entity.name}, reason: {h.result[reason]} '.format(h=h))
 
     @property
     def healthy_healthchecks(self):
