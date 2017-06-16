@@ -6,8 +6,11 @@ log = logging.getLogger(__name__)
 
 class AwsSnsSmsAlerter(Alerter):
     def __init__(self,
+            region_name,
+            aws_access_key_id,
+            aws_secret_access_key,
             phone_numbers,
-            **client_kwargs):
+            **kwargs):
 
         super(AwsSnsSmsAlerter,self).__init__(**kwargs)
 
@@ -18,7 +21,9 @@ class AwsSnsSmsAlerter(Alerter):
 
         self.sns = boto3.client(
                 service_name='sns',
-                **client_kwargs,
+                region_name=region_name,
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
                 )
 
 
