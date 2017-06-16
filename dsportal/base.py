@@ -396,7 +396,8 @@ class Alerter(object):
         # time is monotonic unix timestamp
         # preloaded with now -- so alerts come at least interval after
         # deplotyment
-        self.last_notifications = defaultdict(monotonic)
+        self.start = monotonic()
+        self.last_notifications = defaultdict(lambda: self.start)
         self.interval = interval
 
         # name of system (domain name)
