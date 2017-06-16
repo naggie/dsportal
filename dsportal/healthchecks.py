@@ -276,7 +276,7 @@ class S3BackupChecker(HealthCheck):
     label = "S3 daily backup"
     description = "Checks to see that a backup was made in the last 25 hours"
     nominal_failure = "No recent backup found"
-    interval = 3600*24
+    interval = 3600
 
     @staticmethod
     def check(
