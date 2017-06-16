@@ -9,7 +9,8 @@ import multiprocessing
 import requests
 from subprocess import run,PIPE
 from urllib.parse import urlparse
-from time import sleep
+from time import sleep,mktime,time
+import boto3
 
 class RamUsage(HealthCheck):
     label = "RAM Usage"
@@ -271,13 +272,38 @@ class CertificateExpiry(HealthCheck):
     "Checks certificate isn't near expiry"
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
-class s3_backup_checker(HealthCheck):
+class S3BackupChecker(HealthCheck):
     label = "S3 daily backup"
     description = "Checks to see that a backup was made in the last 25 hours"
+    nominal_failure = "No recent backup found"
+    interval = 3600*24
+
     @staticmethod
-    def check(bucket,hours=25):
+    def check(
+            bucket,
+            hours=25,
+            **client_kwargs
+            ):
         # list keys in bucket and check the latest upload was < 25 hours ago.
-        pass
+        client = boto3.client(
+                service_name='s3',
+                **client_kwargs
+                )
+
+        paginator = client.get_paginator('list_objects_v2')
+
+        latest = 0
+        for page in paginator.paginate(Bucket=bucket):
+            for obj in page['Contents']:
+                timestamp = mktime(obj['LastModified'].timetuple())
+                if timestamp > latest:
+                    latest = timestamp
+
+        return {
+            "healthy" : time() - latest < 25,
+                }
+
+
 
 class PapouchTh2eTemperature(HealthCheck):
     label = "Server room Temperature"

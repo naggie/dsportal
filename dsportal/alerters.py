@@ -4,6 +4,8 @@ from dsportal.util import slug
 import logging
 log = logging.getLogger(__name__)
 
+# TODO pass on excess kwargs to boto3 instead of individual vars
+
 class AwsSnsSmsAlerter(Alerter):
     def __init__(self,
             region_name,
