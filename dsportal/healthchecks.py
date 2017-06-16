@@ -300,7 +300,7 @@ class S3BackupChecker(HealthCheck):
                     latest = timestamp
 
         return {
-            "healthy" : time() - latest < 25,
+            "healthy" : time() - latest < hours*3600,
                 }
 
 
