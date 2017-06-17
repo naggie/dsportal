@@ -273,7 +273,7 @@ class CertificateExpiry(HealthCheck):
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
 class S3BackupChecker(HealthCheck):
-    label = "S3 daily backup"
+    label = "Recent backup exists"
     description = "Checks to see that a backup was made in the last 25 hours"
     nominal_failure = "No recent backup found"
     interval = 3600
