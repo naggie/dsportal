@@ -381,16 +381,16 @@ class PortScan(HealthCheck):
                 sock.close()
 
 
-class SystemD(HealthCheck):
+class Systemd(HealthCheck):
     label = "Systemd status"
     description = "Checks all systemd services are OK"
-    nominal_failure  "Service failure(s)"
+    nominal_failure = "Service failure(s)"
 
     @staticmethod
     def check():
         result = run(['systemctl','is-system-running'],timeout=10,check=True,stdout=PIPE)
 
-        value = result.stdout.decode().strip
+        value = result.stdout.decode().strip()
 
         return {
                 "value": value.capitalize(),
