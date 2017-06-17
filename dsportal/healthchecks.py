@@ -388,7 +388,7 @@ class Systemd(HealthCheck):
 
     @staticmethod
     def check():
-        result = run(['systemctl','is-system-running'],timeout=10,check=True,stdout=PIPE)
+        result = run(['systemctl','is-system-running'],timeout=10,stdout=PIPE)
 
         value = result.stdout.decode().strip()
 
