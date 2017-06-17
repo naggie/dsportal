@@ -112,7 +112,7 @@ class HealthCheck(object):
         if result['healthy']:
             log.debug('Check passed: %s %s',self.cls,self.check_kwargs)
         else:
-            log.warn('Check failed: %s %s',self.cls,self.entity.name,result.get('reason',''))
+            log.warn('Check failed: %s %s %s',self.cls,self.entity.name,result.get('reason',''))
             log.debug('Result: %s',result)
 
         # TODO Entity.healty could be a @property -- however, may complicate client patching
