@@ -193,7 +193,7 @@ class GpuTemperature(HealthCheck):
 
     @staticmethod
     def check(slowdown=88,_max=93):
-        dump = run(['nvidia-smi', '-q', '-d', 'TEMPERATURE'],timeout=10,check=True,stdout=PIPE).stdout
+        dump = run(['nvidia-smi', '-q', '-d', 'TEMPERATURE'],timeout=10,check=True,stdout=PIPE)
 
         state = dict()
         for line in dump.decode().splitlines():
@@ -379,3 +379,21 @@ class PortScan(HealthCheck):
                 raise
             finally:
                 sock.close()
+
+
+class SystemD(HealthCheck):
+    label = "Systemd status"
+    description = "Checks all systemd services are OK"
+    nominal_failure  "Service failure(s)"
+
+    @staticmethod
+    def check():
+        result = run(['systemctl','is-system-running'],timeout=10,check=True,stdout=PIPE)
+
+        value = result.stdout.decode().strip
+
+        return {
+                "value": value.capitalize(),
+                "healthy": result.returncode == 0,
+                }
+
