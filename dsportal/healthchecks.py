@@ -274,7 +274,7 @@ class CertificateExpiry(HealthCheck):
 
 class S3BackupChecker(HealthCheck):
     label = "Recent backup exists"
-    description = "Checks to see that a backup was made in the last 25 hours"
+    description = "Checks to see that a backup was made recently"
     nominal_failure = "No recent backup found"
     interval = 3600
 
