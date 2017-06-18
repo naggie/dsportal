@@ -1,17 +1,23 @@
 import logging
 import colorlog
 import queue
-from time import monotonic
+from time import monotonic,time
 from os import path
 import importlib
 import inspect
 import re
 
-def get_ups_data():
+def get_ups_data(max_age=120):
     "Get UPS stats from apcupsd via /var/log/apcupsd.status"
+    fp = '/var/log/apcupsd.status'
+
+    mtime = path.getmtime(fp)
+
+    if time() - mtime > max_age:
+        raise Exception("UPS data isn't being updated")
 
     info = {}
-    with open('/var/log/apcupsd.status') as f:
+    with open(fp) as f:
         for line in f:
             m = re.search('(\w+)\s*:\s*((\d|\w)+)', line)
             if m:
