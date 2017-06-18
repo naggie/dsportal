@@ -77,6 +77,7 @@ async def tab_handler(request):
         "tab":tab,
         "tabs": list(index.entities_by_tab.keys()),
         "entities": entities,
+        "name": CONFIG.get('name'),
         "css": CONFIG.get('css'),
         "header": CONFIG.get('header',''),
         "footer": CONFIG.get('footer',''),
