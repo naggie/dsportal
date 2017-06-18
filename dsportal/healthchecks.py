@@ -193,10 +193,10 @@ class GpuTemperature(HealthCheck):
 
     @staticmethod
     def check(slowdown=88,_max=93):
-        dump = run(['nvidia-smi', '-q', '-d', 'TEMPERATURE'],timeout=10,check=True,stdout=PIPE)
+        result = run(['nvidia-smi', '-q', '-d', 'TEMPERATURE'],timeout=10,check=True,stdout=PIPE)
 
         state = dict()
-        for line in dump.decode().splitlines():
+        for line in result.stdout.decode().splitlines():
             try:
                 key, val = line.split(":")
             except ValueError:
