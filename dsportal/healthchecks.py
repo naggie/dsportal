@@ -11,6 +11,7 @@ from subprocess import run,PIPE
 from urllib.parse import urlparse
 from time import sleep,mktime,time
 import boto3
+import xml.etree.ElementTree as ET
 
 class RamUsage(HealthCheck):
     label = "RAM Usage"
@@ -308,15 +309,23 @@ class S3BackupChecker(HealthCheck):
 class PapouchTh2eTemperature(HealthCheck):
     label = "Server room Temperature"
     description = "Checks the temperature reported by a Papouch TH2E"
+    nominal_failure = "Temperature outside acceptable range"
 
     @staticmethod
-    def check(
-        url,
-        min_temp=10,
-        max_temp=35,
-        min_hum=20,
-        max_hum=80):
-        pass
+    def check(url,_min=10,_max=35):
+        r = requests.get('http://192.168.168.200/fresh.xml',timeout=5)
+        r.raise_for_status()
+        root = ET.fromstring(r.text)
+        value = root[0].attrib['val']
+        value = int(float(value))
+
+        return {
+                "value": "%s&deg;C" % value,
+                "bar_min": "%s&deg;C" % _min,
+                "bar_max": "%s&deg;C" % _max,
+                "bar_percentage": bar_percentage(value,_max,_min),
+                "healthy": value < _max and value > _min,
+                }
 
 
 
