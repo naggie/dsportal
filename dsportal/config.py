@@ -14,3 +14,9 @@ if len(sys.argv) >= 2:
     SCRIPT_DIR = path.dirname(path.realpath(__file__))
     STATIC_DIR = path.join(SCRIPT_DIR,'static')
     TEMPLATES_DIR = path.join(SCRIPT_DIR,'templates')
+
+    if 'workers' not in CONFIG:
+        CONFIG['workers'] = []
+
+    if 'alerters' not in CONFIG:
+        CONFIG['alerters'] = []
