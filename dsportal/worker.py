@@ -25,13 +25,12 @@ async def websocket_client(loop,worker,host,key):
     # check auth
     while True:
         try:
-            # TODO re-enable when
-            # https://github.com/aio-libs/aiohttp/issues/1955 is fixed check
-            # auth, worker lock, etc
-            #async with session.get(url) as resp:
-            #    if resp.status != 400: # upgrade to ws pls
-            #        log.error(await resp.text())
-            #        sys.exit(1)
+            # https://github.com/aio-libs/aiohttp/issues/1955 is now fixed
+            # check auth, worker lock, etc
+            async with session.get(url) as resp:
+                if resp.status != 400: # upgrade to ws pls
+                    log.error(await resp.text())
+                    sys.exit(1)
 
             connection = session.ws_connect(
                     url=url,
