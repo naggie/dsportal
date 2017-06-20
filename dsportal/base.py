@@ -368,6 +368,8 @@ class Worker(object):
                         'reason' : 'Healthcheck not known by worker',
                     }))
                 log.warn('Check unknown: %s',cls)
+                self.work_queue.task_done()
+                continue
 
             result = fn(**kwargs)
             self.work_queue.task_done()
