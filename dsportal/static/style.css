@@ -180,6 +180,11 @@ ul.entities > li.text > article {
     color:#444;
 }
 
+ul.entities > li.text > article img {
+    margin:60px auto;
+    display:block;
+}
+
 li.host {
     width:100%;
     min-width:384px;
