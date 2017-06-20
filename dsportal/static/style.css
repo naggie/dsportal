@@ -46,7 +46,7 @@ h1.main {
     background:white;
 }
 
-li.service {
+li.webapp {
     display:inline-block;
     padding:10px 0;
     margin:0;
@@ -55,7 +55,7 @@ li.service {
     width:386px;
 }
 
-li.service a:visited, li.service a {
+li.webapp a:visited, li.webapp a {
     text-decoration:none;
     color:black;
 }
