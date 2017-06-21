@@ -42,7 +42,13 @@
                     <span style="color:#dd0000">&#x2718;</span>
                 {% endif %}
                 </td>
-                <td>{{h.result.get('reason','-')}}</td>
+                {% if h.result.get('reason') %}
+                    <td>{{h.result['reason']}}</td>
+                {% elif h.result.get('value') %}
+                    <td>{{h.result['value']}} is OK</td>
+                {% else %}
+                    <td>-</td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
