@@ -5,6 +5,13 @@
         <img class="screenshot" src="{{entity.screenshot_url}}" width="{{entity.screenshot_width}}" height="{{entity.screenshot_height}}"/>
         <div class="description">{{entity.description}}</div>
     </a>
+    <ul class="webapp-failed-healthchecks">
+        {% for h in entity.healthchecks %}
+            {% if h.result['healthy'] == False %}
+            <li title="{{h.description}}. Reason: {{h.result.get('reason','')}}"> {{h.label}} check failed </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
 </li>
 
 {% if entity == entities[-1] %}

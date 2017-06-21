@@ -60,6 +60,22 @@ li.webapp a:visited, li.webapp a {
     color:black;
 }
 
+li.webapp ul.webapp-failed-healthchecks {
+    position:absolute;
+    top:50px;
+    text-align:center;
+    width:100%;
+    padding:0;
+}
+
+li.webapp ul.webapp-failed-healthchecks li {
+    color: white;
+    background: #dd0000;
+    padding:8px 12px;
+    margin:10px;
+    list-style:none;
+}
+
 .title {
     margin:6px;
     font-size:20px;
@@ -167,6 +183,10 @@ ul.entities > li.bad {
     border-left:1px solid #dd0000;
     border-right:1px solid #dd0000;
     border-bottom:1px solid #dd0000;
+}
+
+ul.entities > li.bad.webapp img {
+    opacity:0.5;
 }
 
 ul.entities > li.text {
