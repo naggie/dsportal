@@ -244,7 +244,7 @@ class Index(object):
             try:
                 self.worker_websockets[h.worker].send_json((h.cls,h.id,h.check_kwargs))
             except KeyError:
-                log.warn('Worker %s not connected for healthcheck %s',h.worker,h)
+                log.warn('Worker %s not connected for healthcheck',h.worker)
                 # Invalidate result
                 result = {
                     "healthy": None,
