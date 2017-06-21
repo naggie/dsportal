@@ -254,6 +254,7 @@ class HttpStatus(HealthCheck):
 
         return {
                 "healthy": True,
+                "value": r.status_code,
                 }
 
 class BrokenLinks(HealthCheck):
@@ -332,6 +333,7 @@ class PapouchTh2eTemperature(HealthCheck):
 class SsllabsReport(HealthCheck):
     label = "SSL implementation"
     description = "Checks SSL implementation using ssllabs.org"
+    nominal_failure = "Grade achieved is below threshold"
     interval = 24*3600
 
     def __init__(self,**kwargs):
@@ -363,11 +365,9 @@ class SsllabsReport(HealthCheck):
 
         grade = report['endpoints'][0]['grade']
 
-        if grades[grade] > grades[min_grade]:
-            raise Exception('Grade %s not acheived, got %s.' % (min_grade,grade))
-
         return {
-            'healthy': True,
+            'healthy': grades[grade] <= grades[min_grade],
+            'value': grade,
                 }
 
 
