@@ -257,7 +257,7 @@ class HttpStatus(HealthCheck):
                 }
 
 class BrokenLinks(HealthCheck):
-    label = "Hyperlinks"
+    label = "Page links"
     description = "Crawls website for broken links"
     interval = 5*60*60
     @staticmethod
@@ -274,7 +274,7 @@ class CertificateExpiry(HealthCheck):
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
 class S3BackupChecker(HealthCheck):
-    label = "Recent backup exists"
+    label = "Recent backup"
     description = "Checks to see that a backup was made recently"
     nominal_failure = "No recent backup found"
     interval = 3600
@@ -307,7 +307,7 @@ class S3BackupChecker(HealthCheck):
 
 
 class PapouchTh2eTemperature(HealthCheck):
-    label = "Server room Temperature"
+    label = "Temperature"
     description = "Checks the temperature reported by a Papouch TH2E"
     nominal_failure = "Temperature outside acceptable range"
 
@@ -391,7 +391,7 @@ class PortScan(HealthCheck):
 
 
 class Systemd(HealthCheck):
-    label = "Systemd status"
+    label = "Systemd"
     description = "Checks all systemd services are OK"
     nominal_failure = "Service failure(s)"
 
