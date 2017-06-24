@@ -1,6 +1,6 @@
 from dsportal.base import HealthCheck
 from dsportal.util import get_ups_data
-from dsportal.util import bar_percentage
+from dsportal.util import bar_percent
 from dsportal.util import human_bytes
 import socket
 import re
@@ -41,9 +41,10 @@ class RamUsage(HealthCheck):
 
         return {
                 "value": human_bytes(value),
+                "bytes": value,
                 "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
-                "bar_percentage": bar_percentage(value,total),
+                "bar_percent": bar_percent(value,total),
                 "healthy": value < 0.9*total,
                 }
 
@@ -62,7 +63,7 @@ class CpuUsage(HealthCheck):
                 "value": '%s%%' % value,
                 "bar_min":"0%",
                 "bar_max":"100%",
-                "bar_percentage": bar_percentage(value,100),
+                "bar_percent": bar_percent(value,100),
                 "healthy": value < _max,
                 }
 
@@ -85,9 +86,10 @@ class DiskUsage(HealthCheck):
 
         return {
                 "value": human_bytes(usage),
+                "bytes": usage,
                 "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
-                "bar_percentage": bar_percentage(usage,total),
+                "bar_percent": bar_percent(usage,total),
                 "healthy": usage < 0.9*total,
                 }
 
@@ -102,7 +104,7 @@ class UpsVoltage(HealthCheck):
         return {
             "bar_min":'%sV' % _min,
             "bar_max":'%sV' % _max,
-            'bar_percentage': bar_percentage(info['LINEV'],_max,_min),
+            'bar_percent': bar_percent(info['LINEV'],_max,_min),
             'value': '%sV' % info['LINEV'],
             "healthy": (info['LINEV'] < _max) and (info['LINEV'] > _min),
         }
@@ -117,7 +119,7 @@ class UpsLoad(HealthCheck):
         return {
             "bar_min":"0%",
             "bar_max":"100%",
-            'bar_percentage': info['LOADPCT'],
+            'bar_percent': info['LOADPCT'],
             'value': '%s%%' % info['LOADPCT'],
             "healthy": info['LOADPCT'] < 90,
         }
@@ -132,7 +134,7 @@ class UpsBattery(HealthCheck):
         return {
             "bar_min":"0%",
             "bar_max":"100%",
-            'bar_percentage': info['BCHARGE'],
+            'bar_percent': info['BCHARGE'],
             'value': "%sm" % info['TIMELEFT'],
             "healthy": info['TIMELEFT'] > 10,
         }
@@ -183,7 +185,7 @@ class CpuTemperature(HealthCheck):
                 "value": "%s&deg;C" % hottest,
                 "bar_min": "15&deg;C",
                 "bar_max": "%s&deg;C" % _max,
-                "bar_percentage": bar_percentage(hottest,_max,15),
+                "bar_percent": bar_percent(hottest,_max,15),
                 "healthy": hottest < slowdown,
                 }
 
@@ -218,7 +220,7 @@ class GpuTemperature(HealthCheck):
                 "value": "%s&deg;C" % value,
                 "bar_min": "15&deg;C",
                 "bar_max": "%s&deg;C" % _max,
-                "bar_percentage": bar_percentage(value,_max,15),
+                "bar_percent": bar_percent(value,_max,15),
                 "healthy": value < slowdown,
                 }
 
@@ -324,7 +326,7 @@ class PapouchTh2eTemperature(HealthCheck):
                 "value": "%s&deg;C" % value,
                 "bar_min": "%s&deg;C" % _min,
                 "bar_max": "%s&deg;C" % _max,
-                "bar_percentage": bar_percentage(value,_max,_min),
+                "bar_percent": bar_percent(value,_max,_min),
                 "healthy": value < _max and value > _min,
                 }
 

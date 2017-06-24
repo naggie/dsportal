@@ -151,6 +151,11 @@ class HealthCheck(object):
             else:
                 result['reason'] = '-'
 
+        if 'value' not in result:
+            result['value'] = ''
+
+
+        validate_result(result,annotated=True)
 
         return result
 

@@ -32,7 +32,7 @@ def get_ups_data(max_age=120):
     return info
 
 
-def bar_percentage(value,_max,_min=0):
+def bar_percent(value,_max,_min=0):
     'Return a value, capped integer 0-100 to render a bar chart'
     val = (value-_min) / (_max-_min)
     val *= 100
@@ -107,7 +107,7 @@ def extract_classes(module_path,Class):
     return classes
 
 # TODO marshal validation errors somehow
-def validate_result(result):
+def validate_result(result,annotated=False):
     if type(result) != dict:
         raise ValueError('Healthcheck result must be a dict')
 
@@ -117,8 +117,31 @@ def validate_result(result):
     if type(result['healthy']) != bool and result['healthy'] != None:
         raise ValueError('`healthy` key must be bool or None. None means unknown-yet or not-applicable.')
 
-    #if result['healthy'] == False and 'reason' not in result:
-    #    raise ValueError('reason must be set if healthy is False')
+    if 'value' in result:
+        if str(result['value']).endswith('B') and 'bytes' not in result:
+            raise ValueError('If value is in bytes (with magnitude) bytes key must be present')
+
+    if 'bytes' in result:
+        if type(result['bytes']) != int:
+            raise ValueError('bytes must be an int')
+
+    if 'bar_percent' in result:
+        if not isinstance(result['bar_percent'], (int, float,)):
+            raise ValueError('bar_percent must be a number')
+
+        if result['bar_percent'] < 0 or result['bar_percent'] > 100:
+            raise ValueError('bar_percent must be 0-100')
+
+        if 'bar_min' not in result or 'bar_max' not in result:
+            raise ValueError('bar_min and bar_max have to be in result if bar_percent is defined')
+
+    if annotated:
+        if 'reason' not in result:
+            raise ValueError('Annotated Heathcheck result must have `reason` key: exception message, nominal failure reason on nominal success reason')
+
+        if 'value' not in result:
+            raise ValueError('Annotated Heathcheck result must have `value` key, which can be empty')
+
 
 
 def slug(string):
