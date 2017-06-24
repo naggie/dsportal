@@ -50,7 +50,7 @@ def setup_logging(debug=False):
     logger.addHandler(handler)
 
     # avoid spam
-    logging.getLogger('boto').setLevel(logging.CRITICAL)
+    logging.getLogger('botocore').setLevel(logging.CRITICAL)
 
 
 def human_bytes(b):
