@@ -49,6 +49,9 @@ def setup_logging(debug=False):
     logger.setLevel(logging.DEBUG if debug else logging.INFO)
     logger.addHandler(handler)
 
+    # avoid spam
+    logging.getLogger('boto').setLevel(logging.CRITICAL)
+
 
 def human_bytes(b):
     return b
