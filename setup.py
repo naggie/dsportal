@@ -3,6 +3,8 @@ import os
 from os import path
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
+from dsportal import __version__ as version
+
 packages = list()
 links = list()
 with open(path.join(script_dir,'requirements.txt')) as f:
@@ -26,7 +28,7 @@ print (data_files)
 
 setup(
     name = "dsportal",
-    version = "0.1",
+    version = version,
     packages = find_packages(),
     dependency_links=links,
     entry_points = {
