@@ -133,7 +133,7 @@ def validate_result(result,annotated=False):
             raise ValueError('bar_percent must be a number')
 
         if result['bar_percent'] < 0 or result['bar_percent'] > 100:
-            raise ValueError('bar_percent must be 0-100')
+            raise ValueError('bar_percent must be 0-100. Use util.bar_percent()')
 
         if 'bar_min' not in result or 'bar_max' not in result:
             raise ValueError('bar_min and bar_max have to be in result if bar_percent is defined')

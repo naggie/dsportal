@@ -5,11 +5,11 @@
     <table class="metrics">
         {% for h in entity.healthchecks %}
         <tr {{'class="bad"' if h.result['healthy'] == False else ''}} title="{{h.description}}">
-            {% if 'bar_percentage' in h.result %}
+            {% if 'bar_percent' in h.result %}
                 <th class="key">{{h.label}}</th>
                 <td class="value">{{h.result.get('value')}}</td>
                 <td class="min">{{h.result['bar_min']}}</td>
-                <td> <div class="meter"><div class="bar" style="width:{{h.result['bar_percentage']}}%;"></div></div> </td>
+                <td> <div class="meter"><div class="bar" style="width:{{h.result['bar_percent']}}%;"></div></div> </td>
                 <td class="max">{{h.result['bar_max']}}</td>
             {% else %}
                 <th class="key">{{h.label}}</th>
