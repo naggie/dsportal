@@ -236,15 +236,6 @@ class Index(object):
             self.healthcheck_by_id[hcs.id] = hcs
 
 
-    def register_worker_version_checks(self):
-        # local import to avoid cycle
-        from dsportal.healthchecks import WorkerVersion
-
-        for worker in self.healthchecks_by_worker.keys():
-            h = WorkerVersion(worker=worker,entity=None)
-            self.healthchecks.append(h)
-
-
     def register_tasks(self,loop):
         for h in self.healthchecks:
             # wait 12 seconds for all workers to reconnect

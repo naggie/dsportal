@@ -112,8 +112,6 @@ def main():
         for a in CONFIG['alerters']:
             index.instantiate_alerter(**a)
 
-    index.register_worker_version_checks()
-
     loop = asyncio.get_event_loop()
     index.register_tasks(loop)
 
