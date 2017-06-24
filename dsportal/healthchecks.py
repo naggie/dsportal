@@ -2,6 +2,7 @@ from dsportal.base import HealthCheck
 from dsportal.util import get_ups_data
 from dsportal.util import bar_percent
 from dsportal.util import human_bytes
+from dsportal import __version__ as version
 import socket
 import re
 import os
@@ -408,3 +409,19 @@ class Systemd(HealthCheck):
                 "healthy": result.returncode == 0,
                 }
 
+
+class WorkerVersion(HealthCheck):
+    label = "Worker version"
+    description = "Checks dsportal worker version matches server version"
+    nominal_failure = "Worker version does not match server version"
+    interval = 3600
+
+    def __init__(self,**kwargs):
+        super(WorkerVersion,self).__init__(**kwargs)
+        self.check_kwargs['server_version'] = self.server_version
+
+    @staticmethod
+    def check(server_version):
+        return {
+                "healthy": version == server_version,
+                }

@@ -13,6 +13,7 @@ from dsportal.util import ItemExpired
 import queue
 from threading import Thread
 import asyncio
+from dsportal import __version__ as version
 
 import logging
 log = logging.getLogger(__name__)
@@ -102,6 +103,8 @@ class HealthCheck(object):
 
         self.last_start = None
         self.last_finish = None
+
+        self.server_version = version
 
 
     def update(self,result):
@@ -229,6 +232,14 @@ class Index(object):
             self.healthchecks_by_worker[hcs.worker].append(hcs)
             self.healthcheck_by_id[hcs.id] = hcs
 
+
+    def register_worker_version_checks(self):
+        # local import to avoid cycle
+        from dsportal.healthchecks import WorkerVersion
+
+        for worker in self.healthchecks_by_worker.keys():
+            h = WorkerVersion(worker=worker)
+            self.healthchecks.append(h)
 
 
     def register_tasks(self,loop):
