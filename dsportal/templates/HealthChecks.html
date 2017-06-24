@@ -17,7 +17,7 @@
 {% endif %}
 
 <li>
-    <table class="">
+    <table>
         <thead>
             <tr>
                 <th>Entity</th>
@@ -30,7 +30,10 @@
         <tbody>
             {% for h in healthchecks %}
             <tr {{'class="bad"' if h.result['healthy'] == False else ''}} title="{{h.description}}">
-                <td><a href="/{{h.entity.tab}}#{{h.entity.id}}">{{h.entity.name}}</a></td>
+                <td>
+                    {% if h.entity %}
+                        <a href="/{{h.entity.tab}}#{{h.entity.id}}">{{h.entity.name}}</a></td>
+                    {% endif %}
                 <td>{{h.label}}</td>
                 <td>{{h.interval}}s</td>
                 <td>

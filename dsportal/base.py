@@ -75,7 +75,7 @@ class HealthCheck(object):
     def __init__(self,entity,interval=None,worker=None,**kwargs):
         self.id = str(uuid4())
 
-        if not isinstance(entity,Entity):
+        if entity and not isinstance(entity,Entity):
             raise ValueError('Entity instance expected for "entity"')
 
         self.entity = entity
@@ -238,7 +238,7 @@ class Index(object):
         from dsportal.healthchecks import WorkerVersion
 
         for worker in self.healthchecks_by_worker.keys():
-            h = WorkerVersion(worker=worker)
+            h = WorkerVersion(worker=worker,entity=None)
             self.healthchecks.append(h)
 
 
