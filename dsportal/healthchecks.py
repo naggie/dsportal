@@ -413,7 +413,6 @@ class Systemd(HealthCheck):
 class WorkerVersion(HealthCheck):
     label = "Worker version"
     description = "Checks dsportal worker version matches server version"
-    nominal_failure = "Worker version does not match server version"
     interval = 3600
 
     def __init__(self,**kwargs):
@@ -424,4 +423,5 @@ class WorkerVersion(HealthCheck):
     def check(server_version):
         return {
                 "healthy": version == server_version,
+                "value": version,
                 }

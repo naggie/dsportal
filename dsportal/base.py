@@ -147,10 +147,13 @@ class HealthCheck(object):
             log.debug('Result: %s',result)
 
         if 'reason' not in result:
-            if result['healthy'] == False:
+            if result['healthy'] == False and CLASS.nominal_failure != HealthCheck.nominal_failure:
                 result['reason'] = CLASS.nominal_failure
-            if result['healthy'] == True and result.get('value'):
-                result['reason'] = "%s is OK" % result['value']
+            if 'value' in result:
+                if result['healthy'] == True:
+                    result['reason'] = "%s is OK" % result['value']
+                elif result['healthy'] == False:
+                    result['reason'] = "%s is not OK" % result['value']
             else:
                 result['reason'] = '-'
 
