@@ -248,6 +248,7 @@ table td {
 
 table > thead > tr > th {
     font-size:18px;
+    text-align:left; /* IE11 */
 }
 
 table th {
