@@ -62,11 +62,11 @@ class SlackAlerter(Alerter):
 
     def broadcast_alert(self,text):
         try:
-            r = requests.post(self.webhook_url,data = {
+            r = requests.post(self.webhook_url,json={
                     'username': self.username,
                     'channel': self.channel,
                     'text': text,
                 })
             r.raise_for_status()
         except:
-            log.exception('SNS client failure')
+            log.exception('Slack webhook failure')
