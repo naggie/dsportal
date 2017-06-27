@@ -59,6 +59,7 @@ class SlackAlerter(Alerter):
         self.channel = channel
         self.username = username or self.name
         self.channel = channel
+        self.icon_emoji = icon_emoji
 
     def broadcast_alert(self,text):
         try:
