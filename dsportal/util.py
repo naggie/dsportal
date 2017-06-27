@@ -157,3 +157,27 @@ def human_bytes(num):
         num /= 1024.0
 
     return "%.1f %s" % (num, 'YiB')
+
+def human_seconds(num,max_sf=2):
+    mags = [
+            ('y',31557600),
+            ('w',604800),
+            ('d',86400),
+            ('h',3600),
+            ('m',60),
+            ('s',1),
+            ]
+
+    summary = ''
+    sf = 0
+    for suf,size in mags:
+        count = num // size
+        num %= size # remainder
+        if count:
+            summary += str(count) + suf
+            sf +=1
+        if sf >= max_sf:
+            break
+
+    return summary
+

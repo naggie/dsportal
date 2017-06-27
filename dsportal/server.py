@@ -16,7 +16,7 @@ import sys
 import jinja2
 import aiohttp_jinja2
 import logging
-from dsportal.util import setup_logging
+from dsportal.util import setup_logging,human_seconds
 from dsportal import base
 
 setup_logging(debug=False)
@@ -101,7 +101,15 @@ def main():
     #app.router.add_get('/client-websocket',sso)
     app.router.add_get('/',tab_handler)
     app.router.add_get('/{tab}',tab_handler)
-    aiohttp_jinja2.setup(app,loader=jinja2.FileSystemLoader(TEMPLATES_DIR))
+
+    # kwargs are passed to jinja2.Environment constructor
+    aiohttp_jinja2.setup(
+            app,
+            loader=jinja2.FileSystemLoader(TEMPLATES_DIR),
+            filters={
+                'human_seconds':human_seconds,
+                }
+            )
 
     index = app['index'] = base.Index(CONFIG['name'])
 
