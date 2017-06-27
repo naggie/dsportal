@@ -2,6 +2,7 @@ from dsportal.base import Alerter
 import boto3
 from dsportal.util import slug
 import logging
+import requests
 log = logging.getLogger(__name__)
 
 # TODO pass on excess kwargs to boto3 instead of individual vars
@@ -49,3 +50,23 @@ class AwsSnsSmsAlerter(Alerter):
 
             except:
                 log.exception('SNS client failure')
+
+
+class SlackAlerter(Alerter):
+    def __init__(self,webhook_url,username=None,channel='',**kwargs):
+        super(SlackAlerter,self).__init__(**kwargs)
+        self.webhook_url = webhook_url
+        self.channel = channel
+        self.username = username or self.name
+        self.channel = channel
+
+    def broadcast_alert(self,text):
+        try:
+            r = requests.post(self.webhook_url,data = {
+                    'username': self.username,
+                    'channel': self.channel,
+                    'text': text,
+                })
+            r.raise_for_status()
+        except:
+            log.exception('SNS client failure')
