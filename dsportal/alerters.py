@@ -53,7 +53,7 @@ class AwsSnsSmsAlerter(Alerter):
 
 
 class SlackAlerter(Alerter):
-    def __init__(self,webhook_url,username=None,channel='',**kwargs):
+    def __init__(self,webhook_url,username=None,channel='',icon_emoji=':exclamation:',**kwargs):
         super(SlackAlerter,self).__init__(**kwargs)
         self.webhook_url = webhook_url
         self.channel = channel
@@ -65,7 +65,8 @@ class SlackAlerter(Alerter):
             r = requests.post(self.webhook_url,json={
                     'username': self.username,
                     'channel': self.channel,
-                    'text': text,
+                     'text': text,
+                     'icon_emoji': self.icon_emoji,
                 })
             r.raise_for_status()
         except:
