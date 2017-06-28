@@ -10,6 +10,7 @@ from dsportal.util import validate_result
 from dsportal.util import extract_classes
 from dsportal.util import TTLQueue
 from dsportal.util import ItemExpired
+from dsportal.util import machine_seconds
 import queue
 from threading import Thread
 import asyncio
@@ -70,7 +71,7 @@ class HealthCheck(object):
     description = "What this health check does"
     nominal_failure = "What causes a nominal failure"
 
-    interval = 60 # default, can be overridden in configuration
+    interval = 60 # default in seconds, can be overridden in configuration using notation accepted by machine_seconds()
 
     def __init__(self,entity,interval=None,worker=None,**kwargs):
         self.id = str(uuid4())
@@ -86,7 +87,7 @@ class HealthCheck(object):
         # kwargs to pass to check
         self.check_kwargs = kwargs
 
-        self.interval = interval or self.interval
+        self.interval = machine_seconds(interval) or self.interval
 
         self.timeout = self.interval*2
 

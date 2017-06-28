@@ -190,12 +190,11 @@ def machine_seconds(notation):
 
     seconds = 0
     for c in re.sub(r'([a-z])(\d)',r'\1 \2',notation).split():
-        num = int(c[:-1])
-        suf = c[-1]
-
         try:
+            num = int(c[:-1])
+            suf = c[-1]
             seconds += num * time_mags[suf]
-        except KeyError:
-            raise ValueError('Unexpected time suffix found')
+        except (ValueError,KeyError):
+            raise ValueError('Time notations must be single characters prefixed by int number. Valid characters are %s. Mixed notations are OK.' % ','.join(time_mags.keys()))
 
     return seconds
