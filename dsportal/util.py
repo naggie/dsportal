@@ -6,6 +6,7 @@ from os import path
 import importlib
 import inspect
 import re
+from collections import OrderedDict
 
 def get_ups_data(max_age=120):
     "Get UPS stats from apcupsd via /var/log/apcupsd.status"
@@ -158,26 +159,43 @@ def human_bytes(num):
 
     return "%.1f %s" % (num, 'YiB')
 
-def human_seconds(num,max_sf=2):
-    mags = [
-            ('y',31557600),
-            ('w',604800),
-            ('d',86400),
-            ('h',3600),
-            ('m',60),
-            ('s',1),
-            ]
+time_mags = OrderedDict([
+        ('y',31557600),
+        ('w',604800),
+        ('d',86400),
+        ('h',3600),
+        ('m',60),
+        ('s',1),
+        ])
 
-    summary = ''
+def human_seconds(num,max_sf=2):
+
+    notation = ''
     sf = 0
-    for suf,size in mags:
+    for suf,size in time_mags.items():
         count = num // size
         num %= size # remainder
         if count:
-            summary += str(count) + suf
+            notation += str(count) + suf
             sf +=1
         if sf >= max_sf:
             break
 
-    return summary
+    return notation
 
+def machine_seconds(notation):
+    notation = str(notation)
+    if notation[-1] not in time_mags.keys():
+        notation +='s'
+
+    seconds = 0
+    for c in re.sub(r'([a-z])(\d)',r'\1 \2',notation).split():
+        num = int(c[:-1])
+        suf = c[-1]
+
+        try:
+            seconds += num * time_mags[suf]
+        except KeyError:
+            raise ValueError('Unexpected time suffix found')
+
+    return seconds
