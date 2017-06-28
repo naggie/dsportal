@@ -240,7 +240,7 @@ class HttpStatus(HealthCheck):
         self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
 
     @staticmethod
-    def check(url,status_code=200,timeout=10,contains=None):
+    def check(url,status_code=200,timeout=20,contains=None):
         r = requests.get(
                 url,
                 timeout=timeout,
