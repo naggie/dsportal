@@ -87,7 +87,7 @@ class HealthCheck(object):
         # kwargs to pass to check
         self.check_kwargs = kwargs
 
-        self.interval = machine_seconds(interval) or self.interval
+        self.interval = machine_seconds(interval) if interval else self.interval
 
         self.timeout = self.interval*2
 
@@ -418,8 +418,8 @@ class Alerter(object):
         # preloaded with now -- so alerts come at least interval after
         # deplotyment
         self.start = monotonic()
-        self.last_notifications = defaultdict(lambda: self.start - interval + deploy_snooze)
         self.interval = machine_seconds(interval)
+        self.last_notifications = defaultdict(lambda: self.start - self.interval + deploy_snooze)
 
         # name of system (domain name)
         self.name = name
