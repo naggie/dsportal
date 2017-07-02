@@ -240,14 +240,25 @@ class HttpStatus(HealthCheck):
         self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
 
     @staticmethod
-    def check(url,status_code=200,timeout=20,contains=None):
-        r = requests.get(
-                url,
-                timeout=timeout,
-                headers={
-                    "User-Agent":'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36',
-                    }
-                )
+    def check(url,status_code=200,timeout=10,contains=None,timeout_retry=True):
+        # N.B. timeout_retry will try one more time upon timeout as a
+        # mitigation against transient local network issues.
+        # Intermittent "ReadTimeout" errors experienced on t2.micro in AWS.
+        ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
+
+        try:
+            r = requests.get(
+                    url,
+                    timeout=timeout,
+                    headers={ "User-Agent": ua, }
+                    )
+        except requests.exceptions.ReadTimeout:
+            r = requests.get(
+                    url,
+                    timeout=timeout,
+                    headers={ "User-Agent": ua, }
+                    )
+
         if r.status_code != status_code:
             r.raise_for_status()
             raise Exception('Unexpected HTTP 200 received')
