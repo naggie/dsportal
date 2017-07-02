@@ -55,7 +55,7 @@ class CpuUsage(HealthCheck):
     nominal_failure = "CPU overloaded"
 
     @staticmethod
-    def check(_max=200):
+    def check(_max=300):
         #"return normalised % load (avg num of processes waiting per processor)"
         load = os.getloadavg()[0]
         load = load / multiprocessing.cpu_count()
