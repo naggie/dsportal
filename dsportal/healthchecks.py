@@ -106,8 +106,12 @@ class DiskUsage(HealthCheck):
 
 
 class UpsVoltage(HealthCheck):
+    """Checks mains voltage falls within UK statutory limits of 230V +10% -6%
+        Kwargs:
+            _min (int): Voltage must not fall below this level
+            _max (int): Voltage must not raise above this level
+    """
     label = "Mains Voltage"
-    description = "Checks mains voltage falls within UK statutory limits of 230V +10% -6%"
     nominal_failure = "Voltage outside legal limit"
     @staticmethod
     def check(_min=216,_max=253):
@@ -121,8 +125,10 @@ class UpsVoltage(HealthCheck):
         }
 
 class UpsLoad(HealthCheck):
+    """Checks UPS is not overloaded.
+    Requires apcupsd and configuration to output status to /var/log/apcupsd.status.
+    """
     label = "UPS Load"
-    description = "Checks UPS is not overloaded"
     nominal_failure = "UPS overloaded"
     @staticmethod
     def check():
@@ -136,8 +142,10 @@ class UpsLoad(HealthCheck):
         }
 
 class UpsBattery(HealthCheck):
+    """Checks estimated time remaining and percentage
+    Requires apcupsd and configuration to output status to /var/log/apcupsd.status.
+    """
     label = "UPS battery"
-    description = "Checks estimated time remaining and percentage"
     nominal_failure = "UPS battery almost fully discharged"
     @staticmethod
     def check():
@@ -152,8 +160,8 @@ class UpsBattery(HealthCheck):
 
 
 class Uptime(HealthCheck):
+    """Specifies uptime in days. No check."""
     label = "Uptime"
-    description = "Specify uptime in days"
     @staticmethod
     def check():
         with open('/proc/uptime', 'r') as f:
@@ -171,8 +179,14 @@ class Uptime(HealthCheck):
 
 
 class CpuTemperature(HealthCheck):
+    """Checks CPU Temperature is nominal. Uses ACPI.
+
+        Kwargs:
+            zone (int): Zone number to check. If not given, will pick hottest of first 4 zones.
+            slowdown (int): Temperature in Celcius at which to fail check (implies thermal throttling)
+            _max (int): Max die temperature in Celcius
+    """
     label = "CPU Temperature"
-    description = "Checks CPU Temperature is nominal"
     nominal_failure = "CPU has overheated"
 
     @staticmethod
@@ -201,8 +215,16 @@ class CpuTemperature(HealthCheck):
                 }
 
 class GpuTemperature(HealthCheck):
+    """Checks GPU Temperature is nominal
+
+        Kwargs:
+            slowdown (int): Temperature in Celcius at which to fail check (implies thermal throttling)
+            _max (int): Max die temperature in Celcius
+
+        Requires `nvidia-smi`. If slowdown and shutdown temperature is provided
+        by nvidia-smi it will be used instead.
+    """
     label = "GPU Temperature"
-    description = "Checks GPU Temperature is nominal"
     nominal_failure = "GPU has overheated"
 
     @staticmethod
@@ -237,13 +259,22 @@ class GpuTemperature(HealthCheck):
 
 
 class BtrfsPool(HealthCheck):
+    """Checks BTRFS health"""
     label = "BTRFS Pool"
-    description = "Checks BTRFS health"
     nominal_failure = "Pool in degraded state"
 
 class HttpStatus(HealthCheck):
+    """Checks service returns 200 OK or other.
+
+    Kwargs:
+        url (str): URL to attempt to load.
+        status_code (int): Default 200. HTTP status code to expect.
+        timeout (int): Number of seconds to wait for a response
+        contains (str): String that must be found in response.
+        timeout_retry (bool): Retry once given a read timeout. Useful to filter
+        some local network issues
+    """
     label = "Page load"
-    description = "Checks service returns 200 OK"
 
     def __init__(self,**kwargs):
         super(HttpStatus,self).__init__(**kwargs)
@@ -282,8 +313,8 @@ class HttpStatus(HealthCheck):
                 }
 
 class BrokenLinks(HealthCheck):
+    """Crawls website for broken links"""
     label = "Page links"
-    description = "Crawls website for broken links"
     interval = 5*60*60
     @staticmethod
     def check(url,ignore):

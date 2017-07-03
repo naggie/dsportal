@@ -3,12 +3,12 @@
         <div class="indicator"></div>
         <div class="title">{{entity.name}}</div>
         <img class="screenshot" src="{{entity.screenshot_url}}" width="{{entity.screenshot_width}}" height="{{entity.screenshot_height}}"/>
-        <div class="description">{{entity.description}}</div>
+        <div class="description">{{entity.__doc__}}</div>
     </a>
     <ul class="webapp-failed-healthchecks">
         {% for h in entity.healthchecks %}
             {% if h.result['healthy'] == False %}
-            <li title="{{h.description}}. Reason: {{h.result.get('reason','')}}"> {{h.label}} check failed </li>
+            <li title="{{h.__doc__}}. Reason: {{h.result.get('reason','')}}"> {{h.label}} check failed </li>
             {% endif %}
         {% endfor %}
     </ul>

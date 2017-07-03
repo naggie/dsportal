@@ -1,10 +1,10 @@
-<li id="{{entity.id}}" class="box host {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}" title="{{entity.description}}">
+<li id="{{entity.id}}" class="box host {{"good" if entity.healthy else "bad" if entity.healthy == False else ""}}" title="{{entity.__doc__}}">
 
     <div class="indicator"></div>
     <div class="title">{{entity.name}}</div>
     <table class="metrics">
         {% for h in entity.healthchecks %}
-        <tr {{'class="bad"' if h.result['healthy'] == False else ''}} title="{{h.description}}">
+        <tr {{'class="bad"' if h.result['healthy'] == False else ''}} title="{{h.__doc__}}">
             {% if 'bar_percent' in h.result %}
                 <th class="key">{{h.label}}</th>
                 <td class="value">{{h.result.get('value')}}</td>
