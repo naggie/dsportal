@@ -109,7 +109,7 @@ class UpsVoltage(HealthCheck):
     """Checks mains voltage falls within UK statutory limits of 230V +10% -6%
         Kwargs:
             _min (int): Voltage must not fall below this level
-            _max (int): Voltage must not raise above this level
+            _max (int): Voltage must not rise above this level
     """
     label = "Mains Voltage"
     nominal_failure = "Voltage outside legal limit"
@@ -330,8 +330,14 @@ class CertificateExpiry(HealthCheck):
     # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
 
 class S3BackupChecker(HealthCheck):
+    """Checks to see that a backup was made recently
+
+        Kwargs:
+            bucket (str): Name of s3 bucket to check
+            hours (int): Number of hours before a backup is considered too old.
+            **client_kwargs (dict): additional kwargs to pass onto boto3.client
+    """
     label = "Recent backup"
-    description = "Checks to see that a backup was made recently"
     nominal_failure = "No recent backup found"
     interval = 3600
 
@@ -363,13 +369,20 @@ class S3BackupChecker(HealthCheck):
 
 
 class PapouchTh2eTemperature(HealthCheck):
+     """Checks the temperature reported by a Papouch TH2E
+
+        Kwargs:
+            host (str): IP address or hostname of the Papouch unit
+            _min (int): Temperature must not fall below this level
+            _max (int): Temperature must not rise above this level
+
+     """
     label = "Temperature"
-    description = "Checks the temperature reported by a Papouch TH2E"
     nominal_failure = "Temperature outside acceptable range"
 
     @staticmethod
-    def check(url,_min=10,_max=35):
-        r = requests.get('http://192.168.168.200/fresh.xml',timeout=5)
+    def check(host,_min=10,_max=35):
+        r = requests.get('http://%s/fresh.xml',host,timeout=5)
         r.raise_for_status()
         root = ET.fromstring(r.text)
         value = root[0].attrib['val']
@@ -386,8 +399,13 @@ class PapouchTh2eTemperature(HealthCheck):
 
 
 class SsllabsReport(HealthCheck):
+    """Checks SSL implementation using ssllabs.org
+
+        Kwargs:
+            host (str): Host or IP address to scan
+            min_grade (str): Minimum grade necessary (A+, A-, A-F, T, M)
+    """
     label = "SSL implementation"
-    description = "Checks SSL implementation using ssllabs.org"
     nominal_failure = "Grade achieved is below threshold"
     interval = 24*3600
 
@@ -427,8 +445,14 @@ class SsllabsReport(HealthCheck):
 
 
 class PortScan(HealthCheck):
+    """Scans host to check ports are closed. Synchronous so relatively quiet/slow.
+
+        Kwargs:
+            host (str): Host or IP address to scan
+            open_ports (list): list of (int) ports that must be open
+            wait (float): Seconds to wait between port checks
+    """
     label = "Firewall"
-    description = "Scans host to check ports are closed. Synchronous so relatively quiet/slow."
     interval = 24*3600
     @staticmethod
     def check(host,open_ports=[22,80,443],limit=65535,wait=0.5):
@@ -446,8 +470,8 @@ class PortScan(HealthCheck):
 
 
 class Systemd(HealthCheck):
+    """Checks all systemd services are OK"""
     label = "Systemd"
-    description = "Checks all systemd services are OK"
     nominal_failure = "Service failure(s)"
 
     @staticmethod
@@ -463,8 +487,8 @@ class Systemd(HealthCheck):
 
 
 class WorkerVersion(HealthCheck):
+    """Checks dsportal worker version matches server version"""
     label = "Worker version"
-    description = "Checks dsportal worker version matches server version"
     interval = 3600
 
     def __init__(self,**kwargs):
