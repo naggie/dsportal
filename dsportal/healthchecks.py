@@ -15,6 +15,9 @@ import boto3
 import xml.etree.ElementTree as ET
 
 class RamUsage(HealthCheck):
+    """Checks RAM usage is less than 90%. Does not count cache and buffers.
+    """
+
     label = "RAM Usage"
     description = "Checks RAM usage is less than 90%. Does not count cache and buffers."
     nominal_failure = "RAM insufficient"
@@ -50,6 +53,8 @@ class RamUsage(HealthCheck):
                 }
 
 class CpuUsage(HealthCheck):
+    """Checks number of waiting processes per thread is less than 3
+    """
     label = "CPU Utilisation"
     description = "Checks CPU load is nominal."
     nominal_failure = "CPU overloaded"
@@ -70,6 +75,11 @@ class CpuUsage(HealthCheck):
 
 
 class DiskUsage(HealthCheck):
+    """Inspects used and available blocks on given mount points.
+
+    Kwargs:
+        mountpoint (str): mounted directory to test
+    """
     label = "Disk Usage"
     description = "Inspects used and available blocks on given mount points."
     nominal_failure = "Disk usage too high"
