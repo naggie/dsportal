@@ -299,6 +299,10 @@ class HttpStatus(HealthCheck):
                     timeout=timeout,
                     headers={ "User-Agent": ua, }
                     )
+        except requests.exceptions.ConnectionError as e:
+            # see https://stackoverflow.com/questions/15431044/can-i-set-max-retries-for-requests-request
+            # actual exception is wrapped in (effective) nonsense. Unwrap.
+            raise e.args[0].reason
 
         if r.status_code != status_code:
             r.raise_for_status()
