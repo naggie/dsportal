@@ -196,6 +196,7 @@ ul.entities > li.text {
 ul.entities > li.text > article {
     text-align:left;
     max-width:800px;
+    min-height:36px;
     margin:0 auto;
     color:#444;
 }
