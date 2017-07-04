@@ -77,7 +77,7 @@ class CpuUsage(HealthCheck):
 class DiskUsage(HealthCheck):
     """Inspects used and available blocks on given mount points.
 
-    Kwargs:
+    Args:
         mountpoint (str): mounted directory to test
     """
     label = "Disk Usage"
@@ -107,7 +107,7 @@ class DiskUsage(HealthCheck):
 
 class UpsVoltage(HealthCheck):
     """Checks mains voltage falls within UK statutory limits of 230V +10% -6%
-        Kwargs:
+        Args:
             _min (int): Voltage must not fall below this level
             _max (int): Voltage must not rise above this level
     """
@@ -181,7 +181,7 @@ class Uptime(HealthCheck):
 class CpuTemperature(HealthCheck):
     """Checks CPU Temperature is nominal. Uses ACPI.
 
-        Kwargs:
+        Args:
             zone (int): Zone number to check. If not given, will pick hottest of first 4 zones.
             slowdown (int): Temperature in Celcius at which to fail check (implies thermal throttling)
             _max (int): Max die temperature in Celcius
@@ -217,7 +217,7 @@ class CpuTemperature(HealthCheck):
 class GpuTemperature(HealthCheck):
     """Checks GPU Temperature is nominal
 
-        Kwargs:
+        Args:
             slowdown (int): Temperature in Celcius at which to fail check (implies thermal throttling)
             _max (int): Max die temperature in Celcius
 
@@ -266,7 +266,7 @@ class BtrfsPool(HealthCheck):
 class HttpStatus(HealthCheck):
     """Checks service returns 200 OK or other.
 
-    Kwargs:
+    Args:
         url (str): URL to attempt to load.
         status_code (int): Default 200. HTTP status code to expect.
         timeout (int): Number of seconds to wait for a response
@@ -332,7 +332,7 @@ class CertificateExpiry(HealthCheck):
 class S3BackupChecker(HealthCheck):
     """Checks to see that a backup was made recently
 
-        Kwargs:
+        Args:
             bucket (str): Name of s3 bucket to check
             hours (int): Number of hours before a backup is considered too old.
             **client_kwargs (dict): additional kwargs to pass onto boto3.client
@@ -369,9 +369,9 @@ class S3BackupChecker(HealthCheck):
 
 
 class PapouchTh2eTemperature(HealthCheck):
-     """Checks the temperature reported by a Papouch TH2E
+    """Checks the temperature reported by a Papouch TH2E
 
-        Kwargs:
+        Args:
             host (str): IP address or hostname of the Papouch unit
             _min (int): Temperature must not fall below this level
             _max (int): Temperature must not rise above this level
@@ -401,7 +401,7 @@ class PapouchTh2eTemperature(HealthCheck):
 class SsllabsReport(HealthCheck):
     """Checks SSL implementation using ssllabs.org
 
-        Kwargs:
+        Args:
             host (str): Host or IP address to scan
             min_grade (str): Minimum grade necessary (A+, A-, A-F, T, M)
     """
@@ -447,7 +447,7 @@ class SsllabsReport(HealthCheck):
 class PortScan(HealthCheck):
     """Scans host to check ports are closed. Synchronous so relatively quiet/slow.
 
-        Kwargs:
+        Args:
             host (str): Host or IP address to scan
             open_ports (list): list of (int) ports that must be open
             wait (float): Seconds to wait between port checks

@@ -33,6 +33,9 @@ sys.path.insert(0, os.path.abspath('..'))
 extensions = [
         'sphinx.ext.githubpages',
         'sphinx.ext.autodoc',
+        # Allows for google/numpy style docstrings as an alternative to reST
+        # google-style docstrings are easier to read and cover more.
+        'sphinx.ext.napoleon',
         ]
 
 # Add any paths that contain templates here, relative to this directory.
