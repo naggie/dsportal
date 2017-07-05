@@ -6,7 +6,7 @@ Usage: %s <config.yml>
 Dsportal server listens on port 8080. Use a reverse proxy to provide HTTPS
 termination.
 """
-from dsportal.config import CONFIG
+from dsportal.config import USER_CONFIG
 from dsportal.config import ASSET_DIR
 from dsportal.config import STATIC_DIR
 from dsportal.config import TEMPLATES_DIR
@@ -27,7 +27,7 @@ async def worker_websocket(request):
         return aiohttp.web.Response(text="Authorization Token required",status=403)
 
     token = request.headers["Authorization"][6:]
-    workers = {v: k for k, v in CONFIG['workers'].items()}
+    workers = {v: k for k, v in USER_CONFIG['workers'].items()}
     index = request.app['index']
 
     try:
@@ -77,10 +77,10 @@ async def tab_handler(request):
         "tab":tab,
         "tabs": list(index.entities_by_tab.keys()),
         "entities": entities,
-        "name": CONFIG.get('name'),
-        "css": CONFIG.get('css'),
-        "header": CONFIG.get('header',''),
-        "footer": CONFIG.get('footer',''),
+        "name": USER_CONFIG.get('name'),
+        "css": USER_CONFIG.get('css'),
+        "header": USER_CONFIG.get('header',''),
+        "footer": USER_CONFIG.get('footer',''),
         "num_healthy": len(index.healthy_healthchecks),
         "num_unhealthy": len(index.unhealthy_healthchecks),
         "num_unknown": len(index.unknown_healthchecks),
@@ -111,13 +111,13 @@ def main():
                 }
             )
 
-    index = app['index'] = base.Index(CONFIG['name'])
+    index = app['index'] = base.Index(USER_CONFIG['name'])
 
-    for e in CONFIG['entities']:
+    for e in USER_CONFIG['entities']:
         index.instantiate_entity(**e)
 
-    if 'alerters' in CONFIG:
-        for a in CONFIG['alerters']:
+    if 'alerters' in USER_CONFIG:
+        for a in USER_CONFIG['alerters']:
             index.instantiate_alerter(**a)
 
     loop = asyncio.get_event_loop()
@@ -125,8 +125,8 @@ def main():
 
     aiohttp.web.run_app(
             app,
-            port=CONFIG.get('port',8080),
-            host=CONFIG.get('host','127.0.0.1'),
+            port=USER_CONFIG.get('port',8080),
+            host=USER_CONFIG.get('host','127.0.0.1'),
             shutdown_timeout=6,
             access_log=None,
             loop=loop,

@@ -2,11 +2,11 @@ import yaml
 from os import path
 import sys
 
-CONFIG = CONFIG_DIR = ASSET_DIR = SCRIPT_DIR = STATIC_DIR = TEMPLATES_DIR = None
+USER_CONFIG = CONFIG_DIR = ASSET_DIR = SCRIPT_DIR = STATIC_DIR = TEMPLATES_DIR = None
 
 if len(sys.argv) >= 2:
     with open(sys.argv[1]) as f:
-        CONFIG = yaml.load(f.read())
+        USER_CONFIG = yaml.load(f.read())
 
     CONFIG_DIR = path.realpath(path.dirname(sys.argv[1]))
     # TODO ASSET_DIR yes or no? -- could just be local to yml file
@@ -15,8 +15,8 @@ if len(sys.argv) >= 2:
     STATIC_DIR = path.join(SCRIPT_DIR,'static')
     TEMPLATES_DIR = path.join(SCRIPT_DIR,'templates')
 
-    if 'workers' not in CONFIG:
-        CONFIG['workers'] = []
+    if 'workers' not in USER_CONFIG:
+        USER_CONFIG['workers'] = []
 
-    if 'alerters' not in CONFIG:
-        CONFIG['alerters'] = []
+    if 'alerters' not in USER_CONFIG:
+        USER_CONFIG['alerters'] = []
