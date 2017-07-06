@@ -9,6 +9,7 @@ boto3==1.4.4
 
 # screenshot only
 pillow==4.1.1
+selenium==3.4.3
 
 # worker only
 requests==2.14.2

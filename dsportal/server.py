@@ -16,7 +16,8 @@ import sys
 import jinja2
 import aiohttp_jinja2
 import logging
-from dsportal.util import setup_logging,human_seconds
+from dsportal.util import setup_logging
+from dsportal.util import human_seconds
 from dsportal import base
 
 setup_logging(debug=False)

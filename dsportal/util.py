@@ -149,7 +149,7 @@ def validate_result(result,annotated=False):
 
 
 def slug(string):
-    return re.sub(r'\W','_',string).lower()
+    return re.sub(r'\W+','_',string).lower()
 
 def human_bytes(num):
     for unit in ['B','KB','MB','GB','TB','PB','EB','ZB']:
