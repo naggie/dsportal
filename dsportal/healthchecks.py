@@ -386,7 +386,7 @@ class PapouchTh2eTemperature(HealthCheck):
 
     @staticmethod
     def check(host,_min=10,_max=35):
-        r = requests.get('http://%s/fresh.xml',host,timeout=5)
+        r = requests.get('http://%s/fresh.xml' % host,timeout=5)
         r.raise_for_status()
         root = ET.fromstring(r.text)
         value = root[0].attrib['val']
