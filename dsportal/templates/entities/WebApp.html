@@ -6,7 +6,7 @@
         src="{{entity.screenshot_url}}"
         width="{{entity.screenshot_display_width}}"
         height="{{entity.screenshot_display_height}}"/>
-        <div class="description">{{entity.__doc__}}</div>
+        <div class="description">{{entity.description}}</div>
     </a>
     <ul class="webapp-failed-healthchecks">
         {% for h in entity.healthchecks %}
