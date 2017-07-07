@@ -10,7 +10,7 @@
         <link rel="stylesheet" type="text/css" href="static/style.css">
         {# no favicon/similar requests with empty PNG! #}
         <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
-        {% if css %} <style> {{css}} </style> {% endif %}
+        {% if extra_head %} {{extra_head}} {% endif %}
     </head>
     <body>
         <div id="content">

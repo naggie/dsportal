@@ -79,7 +79,7 @@ async def tab_handler(request):
         "tabs": list(index.entities_by_tab.keys()),
         "entities": entities,
         "name": USER_CONFIG.get('name'),
-        "css": USER_CONFIG.get('css'),
+        "extra_head": USER_CONFIG.get('extra_head'),
         "header": USER_CONFIG.get('header',''),
         "footer": USER_CONFIG.get('footer',''),
         "num_healthy": len(index.healthy_healthchecks),
