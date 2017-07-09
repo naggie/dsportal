@@ -271,7 +271,7 @@ class HttpStatus(HealthCheck):
         status_code (int): Default 200. HTTP status code to expect.
         timeout (int): Number of seconds to wait for a response
         contains (str): String that must be found in response.
-        timeout_retry (bool): Retry once given a read timeout. Useful to filter
+        doublecheck (bool): Retry once given a TCP/IP/DNS problem. Useful to filter
         some local network issues
     """
     label = "Page load"
@@ -281,28 +281,28 @@ class HttpStatus(HealthCheck):
         self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
 
     @staticmethod
-    def check(url,status_code=200,timeout=10,contains=None,timeout_retry=True):
-        # N.B. timeout_retry will try one more time upon timeout as a
-        # mitigation against transient local network issues.
-        # Intermittent "ReadTimeout" errors experienced on t2.micro in AWS.
+    def check(url,status_code=200,timeout=10,contains=None):
+        # N.B. doublecheck mechanism will try one more time upon connection
+        # problem as a mitigation against transient local network issues that
+        # cause a false-positive. Intermittent "ReadTimeout" errors
+        # experienced on t2.micro in AWS.
         ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
 
+        kwargs = {
+                "url" : url,
+                "timeout" : timeout,
+                "headers" : { "User-Agent": ua, },
+                }
+
         try:
-            r = requests.get(
-                    url,
-                    timeout=timeout,
-                    headers={ "User-Agent": ua, }
-                    )
-        except requests.exceptions.ReadTimeout:
-            r = requests.get(
-                    url,
-                    timeout=timeout,
-                    headers={ "User-Agent": ua, }
-                    )
-        except requests.exceptions.ConnectionError as e:
-            # see https://stackoverflow.com/questions/15431044/can-i-set-max-retries-for-requests-request
-            # actual exception is wrapped in (effective) nonsense. Unwrap.
-            raise e.args[0].reason
+            r = requests.get(**kwargs)
+        except:
+            try:
+                r = requests.get(**kwargs)
+            except requests.exceptions.ConnectionError as e:
+                # see https://stackoverflow.com/questions/15431044/can-i-set-max-retries-for-requests-request
+                # actual exception is wrapped in (effective) nonsense. Unwrap.
+                raise e.args[0].reason
 
         if r.status_code != status_code:
             r.raise_for_status()
