@@ -28,3 +28,15 @@ Of course, the same but (2) applies to set up a worker.
 `sudo pip install .` (python 3 pip!)
 
 For development, `pip install -e .` will link a global install.
+
+
+
+
+
+# Alarm fatigue
+* False positives
+* Multiple notifications for the same problem
+* Notifications that require no human action
+* Everything's fine notifications
+* Toggling notifications due to intermittent test
+* Cascade test failures
