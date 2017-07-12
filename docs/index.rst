@@ -19,9 +19,9 @@ Welcome to dsportal's documentation!
 
 
 Dsportal is a monitoring web portal that runs periodic health checks against
-things like web appplications and servers.  Health checks are able to run
-server-side or remotely on stateless workers for the sake of firewall
-limitations, location or authorisation reasons.
+web appplications and servers.  Health checks are able to run server-side or
+remotely on stateless workers for the sake of firewall limitations, location or
+authorisation reasons.
 
 Dsportal can also send alerts when healthchecks fail, rate limiting to avoid
 alarm_fatigue_.
