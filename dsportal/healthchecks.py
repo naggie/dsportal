@@ -278,6 +278,7 @@ class HttpStatus(HealthCheck):
 
     def __init__(self,**kwargs):
         super(HttpStatus,self).__init__(**kwargs)
+        # inherit URL from entity by default
         self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
 
     @staticmethod
@@ -301,15 +302,43 @@ class HttpStatus(HealthCheck):
                 r = requests.get(**kwargs)
             except requests.exceptions.ConnectionError as e:
                 # see https://stackoverflow.com/questions/15431044/can-i-set-max-retries-for-requests-request
-                # actual exception is wrapped in (effective) nonsense. Unwrap.
-                raise e.args[0].reason
+                # actual exception is wrapped in (effectively) nonsense. Unwrap.
+                return {
+                        "healthy": False,
+                        "reason": e.args[0].reason,
+                        }
+            except requests.exceptions.SSLError as e:
+                return {
+                        "healthy": False,
+                        "reason": "Failed to verify SSL connection",
+                        }
+            except requests.exceptions.Timeout as e:
+                return {
+                        "healthy": False,
+                        "reason": "Connection timed out",
+                        }
 
         if r.status_code != status_code:
-            r.raise_for_status()
-            raise Exception('Unexpected HTTP 200 received')
+            if status_code == 200:
+                return {
+                        "healthy": False,
+                        "value": 200,
+                        "reason": "Unexpected 200 OK received",
+                        }
+            else:
+                return {
+                        "healthy": False,
+                        "value": r.status_code,
+                        "reason": r.reason,
+                        }
+
 
         if contains and contains not in r.text:
-            raise Exception('Unexpected page content despite correct HTTP status')
+            return {
+                    "healthy": False,
+                    "value": r.status_code,
+                    "reason": "Unexpected page content despite correct HTTP status",
+                    }
 
         return {
                 "healthy": True,

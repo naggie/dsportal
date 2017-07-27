@@ -138,7 +138,7 @@ class HealthCheck(object):
             result = CLASS.check(**kwargs)
         except Exception as e:
             result = {
-                    "healthy" : False,
+                    "healthy" : None,
                     "reason" : str(e),
                 }
         validate_result(result)
