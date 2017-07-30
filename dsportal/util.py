@@ -172,7 +172,7 @@ def human_seconds(num,max_sf=2):
     notation = ''
     sf = 0
     for suf,size in time_mags.items():
-        count = num // size
+        count = int(num // size)
         num %= size # remainder
         if count:
             notation += str(count) + suf
