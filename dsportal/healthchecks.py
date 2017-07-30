@@ -302,13 +302,6 @@ class HttpStatus(HealthCheck):
         except:
             try:
                 r = requests.get(**kwargs)
-            except requests.exceptions.ConnectionError as e:
-                # see https://stackoverflow.com/questions/15431044/can-i-set-max-retries-for-requests-request
-                # actual exception is wrapped in (effectively) nonsense. Unwrap.
-                return {
-                        "healthy": False,
-                        "reason": e.args[0].reason,
-                        }
             except requests.exceptions.SSLError as e:
                 return {
                         "healthy": False,
@@ -318,6 +311,13 @@ class HttpStatus(HealthCheck):
                 return {
                         "healthy": False,
                         "reason": "Connection timed out",
+                        }
+            except requests.exceptions.ConnectionError as e:
+                # see https://stackoverflow.com/questions/15431044/can-i-set-max-retries-for-requests-request
+                # actual exception is wrapped in (effectively) nonsense. Unwrap.
+                return {
+                        "healthy": False,
+                        "reason": e.args[0].reason,
                         }
 
         if r.status_code != status_code:
