@@ -169,7 +169,6 @@ time_mags = OrderedDict([
         ])
 
 def human_seconds(num,max_sf=2):
-
     notation = ''
     sf = 0
     for suf,size in time_mags.items():

@@ -2,6 +2,8 @@ from dsportal.base import HealthCheck
 from dsportal.util import get_ups_data
 from dsportal.util import bar_percent
 from dsportal.util import human_bytes
+from dsportal.util import human_seconds
+from dsportal.util import machine_seconds
 from dsportal import __version__ as version
 import socket
 import re
@@ -367,7 +369,7 @@ class S3BackupChecker(HealthCheck):
 
         Args:
             bucket (str): Name of s3 bucket to check
-            hours (int): Number of hours before a backup is considered too old.
+            age (str): Time in short notation before a backup is considered too old.
             **client_kwargs (dict): additional kwargs to pass onto boto3.client
     """
     label = "Recent backup"
@@ -377,7 +379,7 @@ class S3BackupChecker(HealthCheck):
     @staticmethod
     def check(
             bucket,
-            hours=25,
+            age='25h',
             **client_kwargs
             ):
         # list keys in bucket and check the latest upload was < 25 hours ago.
@@ -396,7 +398,8 @@ class S3BackupChecker(HealthCheck):
                     latest = timestamp
 
         return {
-            "healthy" : time() - latest < hours*3600,
+            "healthy" : time() - latest < machine_seconds(age),
+            "value" : human_seconds(time() - latest),
                 }
 
 
