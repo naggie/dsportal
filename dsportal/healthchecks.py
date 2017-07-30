@@ -399,7 +399,7 @@ class S3BackupChecker(HealthCheck):
 
         return {
             "healthy" : time() - latest < machine_seconds(age),
-            "value" : human_seconds(time() - latest),
+            "reason" : "backup is %s old" % human_seconds(time() - latest),
                 }
 
 
