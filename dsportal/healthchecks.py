@@ -321,7 +321,7 @@ class HttpStatus(HealthCheck):
                         }
 
         if r.status_code != status_code:
-            if status_code == 200:
+            if r.status_code == 200:
                 return {
                         "healthy": False,
                         "value": 200,
