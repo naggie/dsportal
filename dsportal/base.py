@@ -269,11 +269,14 @@ class Index(object):
                         }
                 validate_result(result)
                 self.dispatch_result(h.id,result)
-                # N.B. Context was set to worker name, however connection
+                # NOTE Context was set to worker name, however connection
                 # failures may correlate resulting in `n` notifications instead
                 # of one. If notifications are not correlated, the first
                 # notification should be sufficient to prompt investigation.
-                self._alert('workers','Worker(s) are having connection issues')
+                # NOTE Worker connection issues are generally inconsequential
+                # and annoying. QoS should be implemented to make sure worker
+                # connection issues don't matter as much.
+                #self._alert('workers','Worker(s) are having connection issues')
         else:
             self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
 
