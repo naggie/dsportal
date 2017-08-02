@@ -326,6 +326,12 @@ class HttpStatus(HealthCheck):
                         "healthy": False,
                         "reason": "Redirect loop detected",
                         }
+            # actually a parent of many above
+            except requests.exceptions.ConnectionError as e:
+                return {
+                        "healthy": False,
+                        "reason": "Connection failed",
+                        }
 
         if r.status_code != status_code:
             if r.status_code == 200:
