@@ -302,22 +302,29 @@ class HttpStatus(HealthCheck):
         except:
             try:
                 r = requests.get(**kwargs)
+            except requests.exceptions.ProxyError:
+                # indicates a local problem and therefore the test is invalid
+                # and health is unknown.
+                raise
             except requests.exceptions.SSLError as e:
                 return {
                         "healthy": False,
                         "reason": "Failed to verify SSL connection",
                         }
-            except requests.exceptions.Timeout as e:
+            except requests.exceptions.ReadTimeout as e:
+                return {
+                        "healthy": False,
+                        "reason": "Read timed out",
+                        }
+            except requests.exceptions.ConnectTimeout as e:
                 return {
                         "healthy": False,
                         "reason": "Connection timed out",
                         }
-            except requests.exceptions.ConnectionError as e:
-                # see https://stackoverflow.com/questions/15431044/can-i-set-max-retries-for-requests-request
-                # actual exception is wrapped in (effectively) nonsense. Unwrap.
+            except requests.exceptions.TooManyRedirects as e:
                 return {
                         "healthy": False,
-                        "reason": e.args[0].reason,
+                        "reason": "Redirect loop detected",
                         }
 
         if r.status_code != status_code:
