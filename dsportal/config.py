@@ -21,3 +21,7 @@ if len(sys.argv) >= 2:
     if 'alerters' not in USER_CONFIG:
         USER_CONFIG['alerters'] = []
 
+    for entity in USER_CONFIG['entities']:
+        if not entity.get('healthchecks'):
+            entity['healthchecks'] = []
+
