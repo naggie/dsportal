@@ -300,6 +300,7 @@ class HttpStatus(HealthCheck):
         try:
             r = requests.get(**kwargs)
         except:
+            sleep(1)
             try:
                 r = requests.get(**kwargs)
             except requests.exceptions.ProxyError:
