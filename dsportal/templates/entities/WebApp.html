@@ -7,14 +7,14 @@
         width="{{entity.screenshot_display_width}}"
         height="{{entity.screenshot_display_height}}"/>
         <div class="description">{{entity.description}}</div>
+        <ul class="webapp-failed-healthchecks">
+            {% for h in entity.healthchecks %}
+                {% if h.result['healthy'] == False %}
+                <li title="{{h.__doc__}}. Reason: {{h.result.get('reason','')}}"> {{h.label}} check failed </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
     </a>
-    <ul class="webapp-failed-healthchecks">
-        {% for h in entity.healthchecks %}
-            {% if h.result['healthy'] == False %}
-            <li title="{{h.__doc__}}. Reason: {{h.result.get('reason','')}}"> {{h.label}} check failed </li>
-            {% endif %}
-        {% endfor %}
-    </ul>
 </li>
 
 {% if entity == entities[-1] %}
