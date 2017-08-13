@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 from time import sleep,mktime,time
 import boto3
 import xml.etree.ElementTree as ET
+import urllib
 
 class RamUsage(HealthCheck):
     """Checks RAM usage is less than 90%. Does not count cache and buffers.
@@ -551,3 +552,30 @@ class WorkerVersion(HealthCheck):
                 "healthy": version == server_version,
                 "value": version,
                 }
+
+class SimpleResolverCheck(HealthCheck):
+    """Checks a hostname resolves to a particular IP. Very basic."""
+    label = "DNS record check"
+    interval = 600
+
+    def __init__(self,**kwargs):
+        super(SimpleResolverCheck,self).__init__(**kwargs)
+        # inherit host from URL from entity by default
+        domain = urllib.parse.urlparse(self.entity.url).netloc
+        self.check_kwargs['domain'] = kwargs.get('domain',domain)
+
+    @staticmethod
+    def check(domain,expected_ip):
+        ip = socket.gethostbyname(domain)
+
+        if ip == expected_ip:
+            return {
+                    "healthy" : True,
+                    "reason" : "Resolved IP matches expected IP",
+                    }
+        else:
+            return {
+                    "healthy" : False,
+                    "reason" : "Resolved IP does not match expected IP",
+                    }
+

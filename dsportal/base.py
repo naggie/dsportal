@@ -257,7 +257,9 @@ class Index(object):
 
 
     def _dispatch_check(self,h):
-        if h.worker:
+        if h.worker == "local" or h.worker == None:
+            self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
+        else:
             try:
                 self.worker_websockets[h.worker].send_json((h.cls,h.id,h.check_kwargs))
             except KeyError:
@@ -277,8 +279,6 @@ class Index(object):
                 # and annoying. QoS should be implemented to make sure worker
                 # connection issues don't matter as much.
                 #self._alert('workers','Worker(s) are having connection issues')
-        else:
-            self.local_worker.enqueue(h.cls,h.id,**h.check_kwargs)
 
 
     def dispatch_result(self,id,result):
