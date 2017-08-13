@@ -30,7 +30,8 @@ class ScreenshotGrabber(object):
             chrome_options.add_argument("user-data-dir=%s" % chrome_profile)
 
         chrome_options.add_argument("disable-infobars")
-        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+        #self.driver = webdriver.Chrome(chrome_options=chrome_options)
+        self.driver = webdriver.Firefox()
         self.driver.set_window_size(self.width, self.height)
         self.driver.set_window_position(0,0)
 
