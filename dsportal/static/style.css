@@ -355,3 +355,43 @@ table.metrics tr.bad div.meter div.bar {
     margin-left:-20px;
     left:50%;
 }
+
+div.hud {
+    position:fixed;
+    top:25%;
+    right:20px;
+    margin-right:20px;
+    height:50%;
+}
+
+div.hud-info {
+    text-transform:uppercase;
+    color:#ddd;
+    transform: rotate(270deg);
+    position:absolute;
+    width:200px;
+    left:-109px;
+    top:150px;
+}
+
+div.hud-health {
+    width:20px;
+    height:100%;
+    border: 1px solid #ddd;
+    position:absolute;
+}
+
+div.hud-bar {
+    bottom:0;
+    position:absolute;
+    height:100%;
+    background:#00dd00;
+    width:100%;
+    opacity:0.4;
+}
+
+@media (max-height: 500px), (max-width: 1400px) {
+    div.hud {
+        display:none;
+    }
+}
