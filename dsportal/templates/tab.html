@@ -28,9 +28,7 @@
 
 <div class="hud">
     <a href="/healthchecks">
-        <div class="hud-info">
-            System health <span class="hud-info-percent">{{percent_healthy|round|int}}%</span>
-        </div>
+        <div class="hud-percent">{{percent_healthy|round|int}}</div>
         <div class="hud-health">
             <div class="hud-bar-unhealthy" style="height:{{percent_unhealthy}}%;bottom:{{percent_healthy}}%"></div>
             <div class="hud-bar-healthy" style="height:{{percent_healthy}}%;"></div>

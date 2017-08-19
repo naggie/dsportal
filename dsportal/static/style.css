@@ -364,19 +364,24 @@ div.hud {
     height:50%;
 }
 
-div.hud-info {
+div.hud-percent {
+    color:#444;
     text-transform:uppercase;
-    color:#888;
     transform: rotate(270deg);
     position:absolute;
-    width:200px;
-    left:-110px;
-    top:93px;
+    width:300px;
+    left:-160px;
+    top:142px;
     text-align:right;
 }
 
-span.hud-info-percent {
+div.hud-percent::before {
+    color:#888;
+    content:'SYSTEM HEALTH ';
+}
+div.hud-percent::after {
     color:#444;
+    content:'%';
 }
 
 div.hud-health {
