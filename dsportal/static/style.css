@@ -370,8 +370,9 @@ div.hud-info {
     transform: rotate(270deg);
     position:absolute;
     width:200px;
-    left:-109px;
-    top:150px;
+    left:-110px;
+    top:93px;
+    text-align:right;
 }
 
 span.hud-info-percent {
