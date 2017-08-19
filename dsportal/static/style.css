@@ -366,7 +366,7 @@ div.hud {
 
 div.hud-info {
     text-transform:uppercase;
-    color:#ddd;
+    color:#888;
     transform: rotate(270deg);
     position:absolute;
     width:200px;
@@ -376,7 +376,7 @@ div.hud-info {
 }
 
 span.hud-info-percent {
-    color:#aaa;
+    color:#444;
 }
 
 div.hud-health {
