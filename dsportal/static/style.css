@@ -374,6 +374,10 @@ div.hud-info {
     top:150px;
 }
 
+span.hud-info-percent {
+    color:#aaa;
+}
+
 div.hud-health {
     width:20px;
     height:100%;
