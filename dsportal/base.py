@@ -73,7 +73,7 @@ class HealthCheck(object):
 
     interval = 60 # default in seconds, can be overridden in configuration using notation accepted by machine_seconds()
 
-    def __init__(self,entity,interval=None,worker=None,**kwargs):
+    def __init__(self,entity,interval=None,worker=None,label=None,**kwargs):
         self.id = str(uuid4())
 
         if entity and not isinstance(entity,Entity):
@@ -106,6 +106,11 @@ class HealthCheck(object):
         self.last_finish = None
 
         self.server_version = version
+
+        # set an alias for 2 or more of the same healthcheck on one entity,
+        # allowing differentiation.
+        if label:
+            self.label = label
 
 
     def update(self,result):
