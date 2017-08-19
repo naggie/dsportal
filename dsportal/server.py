@@ -85,6 +85,8 @@ async def tab_handler(request):
         "num_healthy": len(index.healthy_healthchecks),
         "num_unhealthy": len(index.unhealthy_healthchecks),
         "num_unknown": len(index.unknown_healthchecks),
+        "percent_healthy": int(len(index.healthy_healthchecks)*100/len(index.healthchecks)),
+        "percent_unhealthy": int(len(index.unhealthy_healthchecks)*100/len(index.healthchecks)),
         "healthchecks": healthchecks,
             }
 

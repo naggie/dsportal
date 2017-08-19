@@ -381,13 +381,19 @@ div.hud-health {
     position:absolute;
 }
 
-div.hud-bar {
-    bottom:0;
+div.hud-bar-healthy {
     position:absolute;
-    height:100%;
+    bottom:0;
     background:#00dd00;
     width:100%;
     opacity:0.4;
+}
+
+div.hud-bar-unhealthy {
+    background:#dd0000;
+    width:100%;
+    opacity:0.4;
+    position:absolute;
 }
 
 @media (max-height: 500px), (max-width: 1400px) {
