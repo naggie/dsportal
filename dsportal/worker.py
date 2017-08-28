@@ -70,3 +70,8 @@ def main():
     loop = asyncio.get_event_loop()
     client = websocket_client(loop,worker,host,key)
     loop.run_until_complete(client)
+
+if __name__ == "__main__":
+    main()
+
+
