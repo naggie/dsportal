@@ -1,5 +1,16 @@
 from tkinter import Tk, Label, Button
 
+# Ask user for key and URL
+# Validate above by connection attempt
+# Create install directory
+# Extract winsw.exe
+# Extract worker.exe
+# Extract uninstaller (or copy this file if it's the installer)
+# Create winsw config (templated key)
+# Register uninstaller
+# Install + start service via winsw
+# Check service is running
+
 class Installer:
     def __init__(self, master):
         self.master = master
