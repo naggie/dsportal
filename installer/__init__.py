@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Button
+from tkinter import Tk, Label, Button, Entry
 
 # Ask user for key and URL
 # Validate above by connection attempt
@@ -17,13 +17,19 @@ class Installer:
         master.title("dsportal worker installer")
 
         self.label = Label(master, text="Welcome to the dsportal worker windows service installer.")
-        self.label.pack(pady=20,padx=10)
+        self.label.grid(row=0,column=0)
 
-        self.greet_button = Button(master, text="Greet", command=self.greet)
-        self.greet_button.pack(pady=20,padx=10)
+        self.url_entry = Entry()
+        self.url_entry.grid(row=1,column=0)
 
-        self.close_button = Button(master, text="Close", command=master.quit)
-        self.close_button.pack(pady=20,padx=10)
+        self.key_entry = Entry()
+        self.key_entry.grid(row=2,column=0)
+
+        self.install_button = Button(master, text="Install", command=self.greet)
+        self.install_button.grid(row=3,column=0,sticky='E')
+
+        self.close_button = Button(master, text="Exit", command=master.quit)
+        self.close_button.grid(row=3,column=1,sticky='W')
 
     def greet(self):
         print("Greetings!")
