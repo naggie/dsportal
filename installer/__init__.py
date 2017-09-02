@@ -1,6 +1,7 @@
-from tkinter import Tk, Label, Button, Entry
+from tkinter import Tk, Label, Button, Entry, StringVar
 
 # Ask user for key and URL
+# Validate URL (no path, https)
 # Validate above by connection attempt
 # Create install directory
 # Extract winsw.exe
@@ -16,14 +17,19 @@ class Installer:
         self.master = master
         master.title("dsportal worker installer")
 
-        Label(master, text="Welcome to the dsportal worker windows service installer.").grid(row=0,column=0,columnspan=2,pady=20,padx=20)
+        Label(master,
+                text="Welcome to the dsportal worker windows service installer."
+                ).grid(row=0,column=0,columnspan=2,pady=20,padx=20)
 
         Label(master, text="Server URL:").grid(row=1,column=0)
-        self.url_entry = Entry()
+        self.url_entry = Entry(
+                textvariable=StringVar(master,"https://"),
+                )
         self.url_entry.grid(row=1,column=1)
 
         Label(master, text="Server key:").grid(row=2,column=0)
-        self.key_entry = Entry()
+        self.key_entry = Entry(
+            )
         self.key_entry.grid(row=2,column=1)
 
         self.install_button = Button(master,
