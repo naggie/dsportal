@@ -16,7 +16,7 @@ class Installer:
         self.master = master
         master.title("dsportal worker installer")
 
-        Label(master, text="Welcome to the dsportal worker windows service installer.").grid(row=0,column=0)
+        Label(master, text="Welcome to the dsportal worker windows service installer.").grid(row=0,column=0,columnspan=2,pady=20,padx=20)
 
         Label(master, text="Server URL:").grid(row=1,column=0)
         self.url_entry = Entry()
@@ -26,11 +26,19 @@ class Installer:
         self.key_entry = Entry()
         self.key_entry.grid(row=2,column=1)
 
-        self.install_button = Button(master, text="Install", command=self.greet)
-        self.install_button.grid(row=3,column=0,sticky='E')
+        self.install_button = Button(master,
+                text="Install dsportal worker",
+                command=self.greet,
+                state='disabled',
+                )
 
-        self.close_button = Button(master, text="Exit", command=master.quit)
-        self.close_button.grid(row=3,column=1,sticky='W')
+        self.install_button.grid(row=3,column=0,pady=20)
+
+        Button(
+                master,
+                text="Cancel",
+                command=master.quit,
+                ).grid(row=3,column=1)
 
     def greet(self):
         print("Greetings!")
