@@ -152,10 +152,10 @@ def slug(string):
     return re.sub(r'\W+','_',string).lower()
 
 def human_bytes(num):
-    for unit in ['B','KB','MB','GB','TB','PB','EB','ZB']:
-        if abs(num) < 1024.0:
+    for unit in ['B','kB','MB','GB','TB','PB','EB','ZB']:
+        if abs(num) < 1000.0:
             return "%3.1f %s" % (num, unit)
-        num /= 1024.0
+        num /= 1000.0
 
     return "%.1f %s" % (num, 'YiB')
 
