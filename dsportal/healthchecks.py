@@ -285,7 +285,7 @@ class HttpStatus(HealthCheck):
         self.check_kwargs['url'] = kwargs.get('url',self.entity.url)
 
     @staticmethod
-    def check(url,status_code=200,timeout=10,contains=None):
+    def check(url,status_code=200,timeout=10,contains=None,client_crt=None,client_key=None):
         # N.B. doublecheck mechanism will try one more time upon connection
         # problem as a mitigation against transient local network issues that
         # cause a false-positive. Intermittent "ReadTimeout" errors
@@ -297,6 +297,9 @@ class HttpStatus(HealthCheck):
                 "timeout" : timeout,
                 "headers" : { "User-Agent": ua, },
                 }
+
+        if client_crt:
+            kwargs['cert'] = (client_crt,client_key,)
 
         try:
             r = requests.get(**kwargs)
