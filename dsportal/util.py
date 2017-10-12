@@ -54,9 +54,6 @@ def setup_logging(debug=False):
     logging.getLogger('botocore').setLevel(logging.CRITICAL)
 
 
-def human_bytes(b):
-    return b
-
 class ItemExpired(Exception):
     def __init__(self,item,*args,**kwargs):
         super(ItemExpired,self).__init__(*args,**kwargs)
