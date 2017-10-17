@@ -23,7 +23,7 @@
                 <th>Entity</th>
                 <th>Healthcheck</th>
                 <th>Interval</th>
-                <th>Healthy</th>
+                <th>Status</th>
                 <th>Reason</th>
             </tr>
         </thead>
@@ -38,11 +38,11 @@
                 <td>{{h.interval|human_seconds}}</td>
                 <td>
                 {% if h.result['healthy'] == True %}
-                    <span style="color:#00dd00">&#x2714;</span>
+                    <span style="color:#00dd00">OK</span>
                 {% elif h.result['healthy'] == None %}
                     ?
                 {% else %}
-                    <span style="color:#dd0000">&#x2718;</span>
+                    <span style="color:#dd0000">FAILED</span>
                 {% endif %}
                 </td>
                 <td>{{h.result['reason']}}</td>

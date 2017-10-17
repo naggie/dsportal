@@ -314,12 +314,6 @@ table.metrics tr.bad div.meter div.bar {
     color:#00dd00 !important;
 }
 
-.number-healthy::before {
-    color:#00dd00;
-    content: '\2714';
-    padding-right:3px;
-}
-
 .number-healthy::after {
     content: ' ok';
 }
@@ -334,12 +328,6 @@ table.metrics tr.bad div.meter div.bar {
 
 .number-unhealthy {
     color:#dd0000 !important;
-}
-
-.number-unhealthy::before {
-    color:#dd0000;
-    content: '\2718';
-    padding-right:3px;
 }
 
 .number-unhealthy::after {
