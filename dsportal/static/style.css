@@ -315,7 +315,7 @@ table.metrics tr.bad div.meter div.bar {
 }
 
 .number-healthy::after {
-    content: ' ok';
+    content: ' OK';
 }
 
 .number-unknown {
@@ -323,7 +323,7 @@ table.metrics tr.bad div.meter div.bar {
 }
 
 .number-unknown::after {
-    content: ' unknown';
+    content: ' UNKNOWN';
 }
 
 .number-unhealthy {
@@ -331,7 +331,7 @@ table.metrics tr.bad div.meter div.bar {
 }
 
 .number-unhealthy::after {
-    content: ' failed';
+    content: ' FAILED';
 }
 
 .tab-warning::before {
