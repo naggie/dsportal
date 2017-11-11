@@ -180,6 +180,7 @@ def human_seconds(num,max_sf=2):
     return notation
 
 def machine_seconds(notation):
+    ''' convert human notation to seconds, eg 1m -> 60 '''
     notation = str(notation)
     if notation[-1] not in time_mags.keys():
         notation +='s'

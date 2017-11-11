@@ -5,6 +5,7 @@ from dsportal.util import human_bytes
 from dsportal.util import human_seconds
 from dsportal.util import machine_seconds
 from dsportal import __version__ as version
+from whois import whois
 import socket
 import re
 import os
@@ -582,3 +583,25 @@ class SimpleResolverCheck(HealthCheck):
                     "reason" : "Resolved IP does not match expected IP",
                     }
 
+
+class DomainExpiryCheck(HealthCheck):
+    """Checks a domain is not about to expire"""
+    label = "Domain expiry check"
+    interval = 3600 * 24 * 7
+
+    def __init__(self,**kwargs):
+        super(self.__class__,self).__init__(**kwargs)
+        # inherit host from URL from entity by default
+        domain = urllib.parse.urlparse(self.entity.url).netloc
+        self.check_kwargs['domain'] = kwargs.get('domain',domain)
+
+    @staticmethod
+    def check(domain, margin="4w"):
+        expiry = whois(domain)['expiration_date'].timestamp()
+        remaining = expiry - time()
+        margin = machine_seconds(margin)
+
+        return {
+                "healthy" : remaining > margin,
+                "reason" : "Expires in %s" % human_seconds(remaining),
+                }
