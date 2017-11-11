@@ -9,6 +9,16 @@
             <a href="/healthchecks">All checks</a>
         {% endif %}
     </li>
+
+    <li class="right hud">
+        <a href="/healthchecks">
+            <div class="hud-percent">{{percent_healthy|round|int}}</div>
+            <div class="hud-health">
+                <div class="hud-bar-healthy" style="width:{{percent_healthy}}%"></div>
+                <div class="hud-bar-unhealthy" style="width:{{percent_unhealthy}}%"></div>
+            </div>
+        </a>
+    </li>
     {% for t in tabs %}
     <li class="{{'selected' if t == tab else ''}}">
         <a href="/{{'' if t == tabs[0] else t}}">{{t}}</a>
@@ -26,14 +36,5 @@
     {% endif %}
 </ul>
 
-<div class="hud">
-    <a href="/healthchecks">
-        <div class="hud-percent">{{percent_healthy|round|int}}</div>
-        <div class="hud-health">
-            <div class="hud-bar-unhealthy" style="height:{{percent_unhealthy}}%;bottom:{{percent_healthy}}%"></div>
-            <div class="hud-bar-healthy" style="height:{{percent_healthy}}%;"></div>
-        </div>
-    </a>
-</div>
 
 {% endblock content %}
