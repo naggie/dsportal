@@ -597,7 +597,13 @@ class DomainExpiryCheck(HealthCheck):
 
     @staticmethod
     def check(domain, margin="4w"):
-        expiry = whois(domain)['expiration_date'].timestamp()
+        expiry = whois(domain)['expiration_date']
+
+        if isinstance(expiry,list):
+            expiry.sort()
+            expiry = expiry[0]
+
+        expiry = expiry.timestamp()
         remaining = expiry - time()
         margin = machine_seconds(margin)
 
