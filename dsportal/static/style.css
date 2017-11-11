@@ -339,7 +339,7 @@ table.metrics tr.bad div.meter div.bar {
     position:absolute;
     color:#dd0000;
     content: '\26a0';
-    top:-55px;
+    top:-50px;
     margin-left:-20px;
     left:50%;
 }

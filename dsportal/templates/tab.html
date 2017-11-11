@@ -13,9 +13,9 @@
     <li class="right hud">
         <a href="/healthchecks">
             <div class="hud-percent">{{percent_healthy|round|int}}</div>
-            <div class="hud-health">
-                <div class="hud-bar-healthy" style="width:{{percent_healthy}}%"></div>
-                <div class="hud-bar-unhealthy" style="width:{{percent_unhealthy}}%"></div>
+            <div class="hud-health" title="Unknown">
+                <div class="hud-bar-healthy" style="width:{{percent_healthy}}%" title="OK"></div>
+                <div class="hud-bar-unhealthy" style="width:{{percent_unhealthy}}%" title="Failed"></div>
             </div>
         </a>
     </li>
