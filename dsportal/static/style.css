@@ -380,8 +380,3 @@ div.hud-bar-unhealthy {
     height:100%;
 }
 
-@media (max-height: 500px), (max-width: 1400px) {
-    div.hud {
-        display:none;
-    }
-}
