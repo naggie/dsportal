@@ -98,14 +98,16 @@ class DiskUsage(HealthCheck):
         free = s.f_bsize * s.f_bavail
         total = s.f_bsize * s.f_blocks
         usage = total - free
+        percent = bar_percent(usage, total)
 
         return {
                 "value": human_bytes(usage),
                 "bytes": usage,
                 "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
-                "bar_percent": bar_percent(usage,total),
+                "bar_percent": percent,
                 "healthy": usage < 0.9*total,
+                "reason": "%s%% full" % percent,
                 }
 
 
