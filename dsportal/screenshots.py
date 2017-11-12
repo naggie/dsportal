@@ -13,7 +13,7 @@ from dsportal.config import ASSET_DIR
 from dsportal.entities import WebApp
 import sys
 from dsportal.util import setup_logging
-setup_logging(debug=False)
+setup_logging()
 
 
 def main():

@@ -20,7 +20,7 @@ from dsportal.util import setup_logging
 from dsportal.util import human_seconds
 from dsportal import base
 
-setup_logging(debug=True)
+setup_logging()
 log = logging.getLogger(__name__)
 
 async def worker_websocket(request):

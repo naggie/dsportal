@@ -10,7 +10,7 @@ from dsportal.base import Worker
 import logging
 from dsportal.util import setup_logging
 
-setup_logging(debug=False)
+setup_logging()
 log = logging.getLogger(__name__)
 
 async def websocket_client(loop,worker,host,key):

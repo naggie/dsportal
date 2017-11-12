@@ -7,6 +7,7 @@ import importlib
 import inspect
 import re
 from collections import OrderedDict
+from os import getenv
 
 def get_ups_data(max_age=120):
     "Get UPS stats from apcupsd via /var/log/apcupsd.status"
@@ -43,10 +44,13 @@ def bar_percent(value,_max,_min=0):
     return val
 
 
-def setup_logging(debug=False):
+def setup_logging():
     handler = colorlog.StreamHandler()
     handler.setFormatter(colorlog.ColoredFormatter('%(asctime)s  %(log_color)s%(levelname)s%(reset)s %(name)s: %(message)s'))
     logger = colorlog.getLogger()
+
+    debug = getenv('DSPORTAL_DEBUG',False)
+
     logger.setLevel(logging.DEBUG if debug else logging.INFO)
     logger.addHandler(handler)
 
