@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+
+message EntityStatus {
+
+}
+
+//// follow logging levels here?
+
+enum Status {
+    UNKNOWN = 0; // could mean test has expired, invalid or unhandled exception
+    OK = 1;
+    FAILED = 2;
+    WARNING = 3;
+    // tentative -- should apply to an entity only
+    PLANNED_DOWNTIME = 4;
+}
+
+message HealthCheckResult {
+
+    enum Unit {
+        UNKNOWN = 0;
+        BYTES = 1;
+        CELSIUS = 2;
+        SECONDS = 3;
+        VOLTS = 4;
+        AMPS = 5;
+        WATTS = 6;
+        HERTZ = 7;
+    }
+
+    string name = ;
+    Unit unit = ;
+    Status status = ;
+
+
+    int64 min = ;
+    int64 max = ;
+}
+
+message HealthCheckDescription {
+    string name = 1;
+    string description = 2;
+}
+
