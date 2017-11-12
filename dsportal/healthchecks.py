@@ -125,7 +125,7 @@ class DiskUsage(HealthCheck):
         }
 
 
-        if value < 0.9*total:
+        if usage < 0.9*total:
             status["healthy"] = True
             status["reason"] = "Disk usage nominal"
         else:
