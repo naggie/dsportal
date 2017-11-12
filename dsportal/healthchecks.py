@@ -24,7 +24,6 @@ class RamUsage(HealthCheck):
 
     label = "RAM Usage"
     description = "Checks RAM usage is less than 90%. Does not count cache and buffers."
-    nominal_failure = "RAM insufficient"
 
     @staticmethod
     def check():
@@ -47,21 +46,29 @@ class RamUsage(HealthCheck):
         # used by applications, not cache/buffers
         value = used * 1024
 
-        return {
+        status = {
                 "value": human_bytes(value),
                 "bytes": value,
                 "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
                 "bar_percent": bar_percent(value,total),
-                "healthy": value < 0.9*total,
-                }
+        }
+
+
+        if value < 0.9*total:
+            status["healthy"] = True
+            status["reason"] = "RAM usage nominal"
+        else:
+            status["healthy"] = False
+            status["reason"] = "RAM usage too high"
+
+        return status
 
 class CpuUsage(HealthCheck):
     """Checks number of waiting processes per thread is less than 3
     """
     label = "CPU Utilisation"
     description = "Checks CPU load is nominal."
-    nominal_failure = "CPU overloaded"
 
     @staticmethod
     def check(_max=300):
@@ -69,13 +76,23 @@ class CpuUsage(HealthCheck):
         load = os.getloadavg()[0]
         load = load / multiprocessing.cpu_count()
         value = int(load*100)
-        return {
+
+        status = {
                 "value": '%s%%' % value,
                 "bar_min":"0%",
                 "bar_max":"100%",
                 "bar_percent": bar_percent(value,100),
                 "healthy": value < _max,
                 }
+
+        if value < _max:
+            status["healthy"] = True
+            status["reason"] = "CPU usage nominal"
+        else:
+            status["healthy"] = False
+            status["reason"] = "CPU overloaded"
+
+        return status
 
 
 class DiskUsage(HealthCheck):
@@ -86,7 +103,6 @@ class DiskUsage(HealthCheck):
     """
     label = "Disk Usage"
     description = "Inspects used and available blocks on given mount points."
-    nominal_failure = "Disk usage too high"
 
     def __init__(self,**kwargs):
         super(DiskUsage,self).__init__(**kwargs)
@@ -100,15 +116,23 @@ class DiskUsage(HealthCheck):
         usage = total - free
         percent = bar_percent(usage, total)
 
-        return {
+        status = {
                 "value": human_bytes(usage),
                 "bytes": usage,
                 "bar_min": "0 GB",
                 "bar_max": human_bytes(total),
                 "bar_percent": percent,
-                "healthy": usage < 0.9*total,
-                "reason": "%s%% full" % percent,
-                }
+        }
+
+
+        if value < 0.9*total:
+            status["healthy"] = True
+            status["reason"] = "Disk usage nominal"
+        else:
+            status["healthy"] = False
+            status["reason"] = "Disk is nearly full"
+
+        return status
 
 
 class UpsVoltage(HealthCheck):
@@ -118,7 +142,7 @@ class UpsVoltage(HealthCheck):
             _max (int): Voltage must not rise above this level
     """
     label = "Mains Voltage"
-    nominal_failure = "Voltage outside legal limit"
+
     @staticmethod
     def check(_min=216,_max=253):
         info = get_ups_data()
@@ -135,7 +159,7 @@ class UpsLoad(HealthCheck):
     Requires apcupsd and configuration to output status to /var/log/apcupsd.status.
     """
     label = "UPS Load"
-    nominal_failure = "UPS overloaded"
+
     @staticmethod
     def check():
         info = get_ups_data()
@@ -152,7 +176,7 @@ class UpsBattery(HealthCheck):
     Requires apcupsd and configuration to output status to /var/log/apcupsd.status.
     """
     label = "UPS battery"
-    nominal_failure = "UPS battery almost fully discharged"
+
     @staticmethod
     def check():
         info = get_ups_data()
@@ -193,7 +217,7 @@ class CpuTemperature(HealthCheck):
             _max (int): Max die temperature in Celcius
     """
     label = "CPU Temperature"
-    nominal_failure = "CPU has overheated"
+
 
     @staticmethod
     def check(zone=None,slowdown=80,_max=90):
@@ -212,13 +236,22 @@ class CpuTemperature(HealthCheck):
         if not hottest:
             raise Exception('Could not find any thermal zone')
 
-        return {
+        status = {
                 "value": "%s&deg;C" % hottest,
                 "bar_min": "15&deg;C",
                 "bar_max": "%s&deg;C" % _max,
                 "bar_percent": bar_percent(hottest,_max,15),
-                "healthy": hottest < slowdown,
                 }
+
+        if hottest < slowdown:
+            status["healthy"] = True
+            status["reason"] = "CPU temperature nominal"
+        else:
+            status["healthy"] = False
+            status["reason"] = "CPU overheated"
+
+        return status
+
 
 class GpuTemperature(HealthCheck):
     """Checks GPU Temperature is nominal
@@ -231,7 +264,6 @@ class GpuTemperature(HealthCheck):
         by nvidia-smi it will be used instead.
     """
     label = "GPU Temperature"
-    nominal_failure = "GPU has overheated"
 
     @staticmethod
     def check(slowdown=88,_max=93):
@@ -255,19 +287,26 @@ class GpuTemperature(HealthCheck):
             # not specified, so dot change the defaults
             pass
 
-        return {
+        status = {
                 "value": "%s&deg;C" % value,
                 "bar_min": "15&deg;C",
                 "bar_max": "%s&deg;C" % _max,
                 "bar_percent": bar_percent(value,_max,15),
-                "healthy": value < slowdown,
                 }
+
+        if value < slowdown:
+            status["healthy"] = True
+            status["reason"] = "GPU temperature nominal"
+        else:
+            status["healthy"] = False
+            status["reason"] = "GPU overheated"
+
+        return status
 
 
 class BtrfsPool(HealthCheck):
     """Checks BTRFS health"""
     label = "BTRFS Pool"
-    nominal_failure = "Pool in degraded state"
 
 class HttpStatus(HealthCheck):
     """Checks service returns 200 OK or other.
@@ -394,7 +433,6 @@ class S3BackupChecker(HealthCheck):
             **client_kwargs (dict): additional kwargs to pass onto boto3.client
     """
     label = "Recent backup"
-    nominal_failure = "No recent backup found"
     interval = 3600
 
     @staticmethod
@@ -435,7 +473,6 @@ class PapouchTh2eTemperature(HealthCheck):
 
      """
     label = "Temperature"
-    nominal_failure = "Temperature outside acceptable range"
 
     @staticmethod
     def check(host,_min=10,_max=35):
@@ -463,7 +500,6 @@ class SsllabsReport(HealthCheck):
             min_grade (str): Minimum grade necessary (A+, A-, A-F, T, M)
     """
     label = "SSL implementation"
-    nominal_failure = "Grade achieved is below threshold"
     interval = 24*3600
 
     def __init__(self,**kwargs):
@@ -529,7 +565,6 @@ class PortScan(HealthCheck):
 class Systemd(HealthCheck):
     """Checks all systemd services are OK"""
     label = "Systemd"
-    nominal_failure = "Service failure(s)"
 
     @staticmethod
     def check():

@@ -69,7 +69,6 @@ class Entity(object):
 class HealthCheck(object):
     label = "The name of this value"
     description = "What this health check does"
-    nominal_failure = "What causes a nominal failure"
 
     interval = 60 # default in seconds, can be overridden in configuration using notation accepted by machine_seconds()
 
@@ -153,8 +152,6 @@ class HealthCheck(object):
             log.debug('Result: %s',result)
 
         if 'reason' not in result:
-            if result['healthy'] == False and CLASS.nominal_failure != HealthCheck.nominal_failure:
-                result['reason'] = CLASS.nominal_failure
             if 'value' in result:
                 if result['healthy'] == True:
                     result['reason'] = "%s is OK" % result['value']
