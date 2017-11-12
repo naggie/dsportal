@@ -1,6 +1,8 @@
 aiohttp==2.2.0
 pyyaml==3.12
 colorlog==2.10.0
+python-whois==0.6.5
+psutil==5.4.1
 
 # server only
 aiohttp-jinja2==0.13.0
@@ -13,4 +15,3 @@ selenium==3.4.3
 
 # worker only
 requests==2.14.2
-python-whois==0.6.5
