@@ -415,7 +415,7 @@ class Alerter(object):
     '''ABC for sending alerts that require human intervention. Will throttle
     events from the same given context by interval. Example contexts: worker,
     healthcheck ID'''
-    def __init__(self,name,interval='1h',deploy_snooze=3600):
+    def __init__(self,name,interval='12h',deploy_snooze=3600):
         # last notification times by context
         # time is monotonic unix timestamp
         # preloaded with now -- so alerts come at least interval after
