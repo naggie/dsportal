@@ -648,3 +648,28 @@ class DomainExpiryCheck(HealthCheck):
                 "healthy" : remaining > margin,
                 "reason" : "Expires in %s" % human_seconds(remaining),
                 }
+
+
+class ElasticSearchHealth(HealthCheck):
+    label = "Elastic search health"
+
+    @staticmethod
+    def check(base_url,client_crt=None,client_key=None):
+        url = os.path.join(base_url,'_cluster/health')
+
+        # if this fails, it will throw an exception and dsportal will treat
+        # this as UNKNOWN -- which is true. The endpoint should be monitored separately with HttpStatus
+        r = requests.get(
+                url=url,
+                timeout=10,
+                cert=(client_crt,client_key,) if client_crt else None,
+                )
+        r.raise_for_status()
+        j = r.json()
+
+        return {
+            # warning would be yellow, and fail red.
+            "healthy" : j["status"] == "green",
+            "reason": "Cluster status is \"{status}\"".format(**j),
+            "value": j["status"],
+                }
