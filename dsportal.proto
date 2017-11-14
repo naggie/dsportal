@@ -5,15 +5,27 @@ message EntityStatus {
 
 }
 
-//// follow logging levels here?
+// see syslog levels. Could use or correspond to them. Some services/entities
+//could be marked as critical to elevate level.
 
 enum Status {
-    UNKNOWN = 0; // could mean test has expired, invalid or unhandled exception
+    // could mean test has expired, invalid or unhandled exception
+    UNKNOWN = 0;
     OK = 1;
     FAILED = 2;
+    // about to fail but not failed yet
     WARNING = 3;
     // tentative -- should apply to an entity only
     PLANNED_DOWNTIME = 4;
+}
+
+enum Priority {
+    // for secondary/backup systems
+    NORMAL = 0;
+    // for primary production systems
+    CRITICAL = 1;
+    // for intentional downtime
+    SUPPRESSED = 2;
 }
 
 message HealthCheckResult {
