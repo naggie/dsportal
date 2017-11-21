@@ -422,10 +422,6 @@ class BrokenLinks(HealthCheck):
 # run time -- 5 mins or so for small website
 # run every 5 hours
 
-class CertificateExpiry(HealthCheck):
-    "Checks certificate isn't near expiry"
-    # https://stackoverflow.com/questions/7689941/how-can-i-retrieve-the-tls-ssl-peer-certificate-of-a-remote-host-using-python
-
 class S3BackupChecker(HealthCheck):
     """Checks to see that a backup was made recently
 
@@ -648,6 +644,7 @@ class DomainExpiryCheck(HealthCheck):
 
         return {
                 "healthy" : remaining > margin,
+                "value" : human_seconds(remaining),
                 "reason" : "Domain expires in %s" % human_seconds(remaining),
                 }
 
@@ -680,6 +677,7 @@ class CertificateExpiryCheck(HealthCheck):
 
         return {
                 "healthy" : remaining > margin,
+                "value" : human_seconds(remaining),
                 "reason" : "SSL certificate expires in %s" % human_seconds(remaining),
                 }
 
