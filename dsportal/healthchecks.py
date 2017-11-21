@@ -622,7 +622,8 @@ class SimpleResolverCheck(HealthCheck):
 class DomainExpiryCheck(HealthCheck):
     """Checks a domain is not about to expire"""
     label = "Domain expiry"
-    interval = 3600 * 24 * 7
+    # TODO  -- shorter interval when failing (and longer when OK)
+    interval = 3600
 
     def __init__(self,**kwargs):
         super(self.__class__,self).__init__(**kwargs)
@@ -653,7 +654,7 @@ class DomainExpiryCheck(HealthCheck):
 class CertificateExpiryCheck(HealthCheck):
     """Checks an SSL certificate is not about to expire"""
     label = "Domain expiry"
-    interval = 3600 * 24
+    interval = 3600
 
     def __init__(self,**kwargs):
         super(self.__class__,self).__init__(**kwargs)
