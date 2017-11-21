@@ -7,6 +7,7 @@ from dsportal.util import machine_seconds
 from dsportal import __version__ as version
 from whois import whois
 import socket
+from datetime import datetime
 import re
 import os
 import multiprocessing
@@ -17,6 +18,7 @@ from time import sleep,mktime,time
 import boto3
 import xml.etree.ElementTree as ET
 import urllib
+import ssl
 
 class RamUsage(HealthCheck):
     """Checks RAM usage is less than 90%. Does not count cache and buffers.
@@ -646,7 +648,39 @@ class DomainExpiryCheck(HealthCheck):
 
         return {
                 "healthy" : remaining > margin,
-                "reason" : "Expires in %s" % human_seconds(remaining),
+                "reason" : "Domain expires in %s" % human_seconds(remaining),
+                }
+
+
+# see https://serverlesscode.com/post/ssl-expiration-alerts-with-lambda/
+class CertificateExpiryCheck(HealthCheck):
+    """Checks an SSL certificate is not about to expire"""
+    label = "Domain expiry check"
+    interval = 3600 * 24
+
+    def __init__(self,**kwargs):
+        super(self.__class__,self).__init__(**kwargs)
+        # inherit host from URL from entity by default
+        domain = urllib.parse.urlparse(self.entity.url).netloc
+        self.check_kwargs['domain'] = kwargs.get('domain',domain)
+
+    @staticmethod
+    def check(domain, margin="4w"):
+        margin = machine_seconds(margin)
+        context = ssl.create_default_context()
+        conn = context.wrap_socket(
+                socket.socket(socket.AF_INET),
+                server_hostname=domain,
+                )
+        conn.settimeout(5)
+        conn.connect((domain, 443))
+        ssl_info = conn.getpeercert()
+        expiry = datetime.strptime(ssl_info['notAfter'], r'%b %d %H:%M:%S %Y %Z').timestamp()
+        remaining = expiry - time()
+
+        return {
+                "healthy" : remaining > margin,
+                "reason" : "SSL certificate expires in %s" % human_seconds(remaining),
                 }
 
 
