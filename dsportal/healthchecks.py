@@ -653,7 +653,7 @@ class DomainExpiryCheck(HealthCheck):
 # see https://serverlesscode.com/post/ssl-expiration-alerts-with-lambda/
 class CertificateExpiryCheck(HealthCheck):
     """Checks an SSL certificate is not about to expire"""
-    label = "Domain expiry"
+    label = "Certificate expiry"
     interval = 3600
 
     def __init__(self,**kwargs):
