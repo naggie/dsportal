@@ -598,7 +598,7 @@ class WorkerVersion(HealthCheck):
 
 class SimpleResolverCheck(HealthCheck):
     """Checks a hostname resolves to a particular IP. Very basic."""
-    label = "DNS record check"
+    label = "DNS record integrity"
     interval = 600
 
     def __init__(self,**kwargs):
@@ -625,7 +625,7 @@ class SimpleResolverCheck(HealthCheck):
 
 class DomainExpiryCheck(HealthCheck):
     """Checks a domain is not about to expire"""
-    label = "Domain expiry check"
+    label = "Domain expiry"
     interval = 3600 * 24 * 7
 
     def __init__(self,**kwargs):
@@ -655,7 +655,7 @@ class DomainExpiryCheck(HealthCheck):
 # see https://serverlesscode.com/post/ssl-expiration-alerts-with-lambda/
 class CertificateExpiryCheck(HealthCheck):
     """Checks an SSL certificate is not about to expire"""
-    label = "Domain expiry check"
+    label = "Domain expiry"
     interval = 3600 * 24
 
     def __init__(self,**kwargs):

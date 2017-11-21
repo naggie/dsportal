@@ -7,7 +7,7 @@ message EntityStatus {
 
 // see syslog levels. Could use or correspond to them. Some services/entities
 //could be marked as critical to elevate level.
-
+// tests should be TRUE POSITIVES -- unhandled exception is uncertain
 enum Status {
     // could mean test has expired, invalid or unhandled exception
     UNKNOWN = 0;
