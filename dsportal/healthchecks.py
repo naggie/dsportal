@@ -663,7 +663,7 @@ class CertificateExpiryCheck(HealthCheck):
         self.check_kwargs['domain'] = kwargs.get('domain',domain)
 
     @staticmethod
-    def check(domain, margin="4w"):
+    def check(domain, margin="2w"):
         margin = machine_seconds(margin)
         context = ssl.create_default_context()
         conn = context.wrap_socket(
