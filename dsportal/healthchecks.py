@@ -705,4 +705,34 @@ class ElasticSearchHealth(HealthCheck):
             "healthy" : j["status"] == "green",
             "reason": "Cluster status is \"{status}\"".format(**j),
             "value": j["status"],
+        }
+
+class GithubExposureCheck(HealthCheck):
+    """Checks a github user or organisation has only the given public repositories.
+
+        Args:
+            username (str): username or github organisation
+            expected_repos (list): a list of expected (short) repository names without org/user/or .git.
+
+     """
+    label = "Github exposure"
+    interval = 84600
+
+    @staticmethod
+    def check(username, expected_repos=[]):
+        r = requests.get('https://api.github.com/users/%s/repos' % username, timeout=5)
+        r.raise_for_status()
+
+        repos_exposed = [repo["name"] for repo in r.json()]
+
+        for repo in repos_exposed:
+            if repo not in expected_repos:
+                return {
+                    "healthy" : True,
+                    "reason" : "%s repo is unexpectedly public",
                 }
+
+        return {
+            "healthy" : True,
+            "reason" : "No unexpected repositories are public",
+        }
