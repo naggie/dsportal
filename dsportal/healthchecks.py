@@ -736,3 +736,35 @@ class GithubExposureCheck(HealthCheck):
             "healthy" : True,
             "reason" : "No unexpected repositories are public",
         }
+
+
+class PortCheck(HealthCheck):
+    """Checks a given port is listening. Good to check an internet connection from outside.
+        Args:
+            host (str): Host or IP address to scan
+            port (int): Port to check
+    """
+    label = "Internet connection"
+    interval = 600
+
+    @staticmethod
+    def check(host, port):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        try:
+            sock.settimeout(5)
+            result = sock.connect_ex((host, port))
+            if result == 0:
+                return {
+                    "healthy" : True,
+                    "reason" : "Network is responding",
+                    "value": "Online",
+                }
+            else:
+                return {
+                    "healthy" : True,
+                    "reason" : "Network is down",
+                    "value": "Offline",
+                }
+
+        finally:
+            sock.close()
