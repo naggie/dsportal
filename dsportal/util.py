@@ -9,17 +9,43 @@ import re
 from collections import OrderedDict
 from os import getenv
 
-def get_ups_data(max_age=120):
-    "Get UPS stats from apcupsd via /var/log/apcupsd.status"
-    fp = '/var/log/apcupsd.status'
+APCUPSD_CONF_FILE = "/etc/apcupsd/apcupsd.conf"
+APCUPSD_STATFILE = None
+APCUPSD_STATTIME = 60
 
-    mtime = path.getmtime(fp)
+try:
+    with open(APCUPSD_CONF_FILE) as f:
+        for line in f:
+            parts = line.split(None, 1)
 
-    if time() - mtime > max_age:
+            if len(parts) != 2:
+                continue
+
+            k, v = parts
+
+            if k == "STATFILE":
+                APCUPSD_STATFILE = v.strip()
+
+            if k == "STATTIME":
+                APCUPSD_STATTIME = int(v)
+
+except FileNotFoundError:
+    pass
+
+
+def get_ups_data():
+    "Get UPS stats from apcupsd via STATFILE"
+
+    if not APCUPSD_STATFILE:
+        raise Exception("Could not parse location of STATFILE. Is it configured?")
+
+    mtime = path.getmtime(APCUPSD_STATFILE)
+
+    if time() - mtime > APCUPSD_STATTIME * 4:
         raise Exception("UPS data isn't being updated")
 
     info = {}
-    with open(fp) as f:
+    with open(APCUPSD_STATFILE) as f:
         for line in f:
             m = re.search('(\w+)\s*:\s*((\d|\w)+)', line)
             if m:
