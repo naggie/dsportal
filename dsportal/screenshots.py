@@ -13,6 +13,7 @@ from dsportal.config import ASSET_DIR
 from dsportal.entities import WebApp
 import sys
 from dsportal.util import setup_logging
+
 setup_logging()
 
 
@@ -21,10 +22,9 @@ def main():
         print(__doc__ % sys.argv[0])
         sys.exit(1)
 
-
-    for e in USER_CONFIG['entities']:
-        if e['cls'] == 'WebApp':
-            del e['cls']
+    for e in USER_CONFIG["entities"]:
+        if e["cls"] == "WebApp":
+            del e["cls"]
             webApp = WebApp(**e)
 
             if not webApp.screenshot_exists:

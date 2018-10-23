@@ -13,14 +13,12 @@ from dsportal.util import setup_logging
 setup_logging()
 log = logging.getLogger(__name__)
 
-async def websocket_client(loop,worker,host,key):
-    url = path.join(host,'worker-websocket')
+
+async def websocket_client(loop, worker, host, key):
+    url = path.join(host, "worker-websocket")
     session = aiohttp.ClientSession(
-            loop=loop,
-            headers={
-                'Authorization':'Token ' + key,
-                },
-            )
+        loop=loop, headers={"Authorization": "Token " + key}
+    )
 
     # check auth
     while True:
@@ -28,15 +26,11 @@ async def websocket_client(loop,worker,host,key):
             # https://github.com/aio-libs/aiohttp/issues/1955 is now fixed
             # check auth, worker lock, etc
             async with session.get(url) as resp:
-                if resp.status != 400: # upgrade to ws pls
+                if resp.status != 400:  # upgrade to ws pls
                     log.error(await resp.text())
                     sys.exit(1)
 
-            connection = session.ws_connect(
-                    url=url,
-                    autoping=True,
-                    heartbeat=10,
-                )
+            connection = session.ws_connect(url=url, autoping=True, heartbeat=10)
 
             log.info("Connected to server")
 
@@ -46,14 +40,19 @@ async def websocket_client(loop,worker,host,key):
                 try:
                     async for msg in ws:
                         if msg.type == aiohttp.WSMsgType.TEXT:
-                            cls,id,kwargs = msg.json()
-                            worker.enqueue(cls,id,**kwargs)
+                            cls, id, kwargs = msg.json()
+                            worker.enqueue(cls, id, **kwargs)
                 finally:
                     task.cancel()
-        except (aiohttp.client_exceptions.ClientConnectorError,asyncio.TimeoutError,aiohttp.client_exceptions.ServerDisconnectedError):
-            log.error('No connection to server. Will retry in 10 seconds.')
+        except (
+            aiohttp.client_exceptions.ClientConnectorError,
+            asyncio.TimeoutError,
+            aiohttp.client_exceptions.ServerDisconnectedError,
+        ):
+            log.error("No connection to server. Will retry in 10 seconds.")
 
         await asyncio.sleep(10)
+
 
 def main():
     # run as executable, must be remote worker
@@ -68,10 +67,9 @@ def main():
     worker.start()
 
     loop = asyncio.get_event_loop()
-    client = websocket_client(loop,worker,host,key)
+    client = websocket_client(loop, worker, host, key)
     loop.run_until_complete(client)
+
 
 if __name__ == "__main__":
     main()
-
-
