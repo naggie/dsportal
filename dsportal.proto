@@ -15,10 +15,11 @@ enum Status {
     FAILED = 2;
     // about to fail but not failed yet
     WARNING = 3;
-    // tentative -- should apply to an entity only
-    PLANNED_DOWNTIME = 4;
+    // tentative
+    DISABLED = 4;
 }
 
+// controls notification severity
 enum Priority {
     // for secondary/backup systems
     NORMAL = 0;
@@ -50,7 +51,8 @@ message HealthCheckResult {
     Unit unit = 2;
     Status status = 3;
     string reason = 4;
-    bool no_metric = 5; // is there a numeric value associated?
+
+    bool metric = 5; // is there a numeric value associated?
     int64 value = 6;
     int64 min = 7;
     int64 max = 8;
