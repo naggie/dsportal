@@ -14,4 +14,4 @@ pillow==4.1.1
 selenium==3.4.3
 
 # worker only
-requests==2.14.2
+requests==2.20.0
