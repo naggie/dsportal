@@ -3,9 +3,6 @@ Grab WebApp screenshots if they don't already exist.
 
 Usage: %s <dsportal.yml>
 
-
-To set chrome profile directory, do something like:
-    export CHROME_PROFILE="/Users/$USER/Library/Application Support/Google/Chrome/"
 """
 
 from dsportal.config import USER_CONFIG

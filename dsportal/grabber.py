@@ -7,15 +7,16 @@ from dsportal.util import slug
 from base64 import b64decode
 from dsportal.config import ASSET_DIR
 import logging
+from os import environ
 
 log = logging.getLogger(__name__)
 
-# chrome://version/ remove /Default/
-from os import getenv
+capabilities = {
+    "browserName": "firefox",
+    "enableVNC": True,
+    "enableVideo": False
+}
 
-chrome_profile = getenv("CHROME_PROFILE")
-
-# brew install chromedriver
 
 
 class ScreenshotGrabber(object):
@@ -25,15 +26,9 @@ class ScreenshotGrabber(object):
         self.height = int(width * ratio)
 
     def __enter__(self):
-        # use current profile so user is logged in
-        chrome_options = Options()
-
-        if chrome_profile:
-            chrome_options.add_argument("user-data-dir=%s" % chrome_profile)
-
-        chrome_options.add_argument("disable-infobars")
-        # self.driver = webdriver.Chrome(chrome_options=chrome_options)
-        self.driver = webdriver.Firefox()
+        self.driver = webdriver.Remote(
+            command_executor=environ["SELENIUM_URL"],
+            desired_capabilities=capabilities)
         self.driver.set_window_size(self.width, self.height)
         self.driver.set_window_position(0, 0)
 
