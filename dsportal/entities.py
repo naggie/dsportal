@@ -17,9 +17,9 @@ class Host(Entity):
 class WebApp(Entity):
     "Web application"
 
-    def __init__(self, url, powered_by, settle_time=2, *args, **kwargs):
+    def __init__(self, url, powered_by, settle_time=2, screenshot_url=None, *args, **kwargs):
         self.url = url
-        self.screenshot_url = kwargs.get("screenshot_url", url)
+        self.screenshot_url = screenshot_url or url
         self.settle_time = settle_time
         self.powered_by = powered_by
 
