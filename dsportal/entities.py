@@ -19,7 +19,7 @@ class WebApp(Entity):
 
     def __init__(self, url, powered_by, settle_time=2, screenshot_url=None, *args, **kwargs):
         self.url = url
-        self.screenshot_url = screenshot_url or url
+        self.screenshot_capture_url = screenshot_url or url
         self.settle_time = settle_time
         self.powered_by = powered_by
 
@@ -47,7 +47,7 @@ class WebApp(Entity):
         width = self.screenshot_display_width * self.screenshot_oversample
 
         with ScreenshotGrabber(width * 2) as s:
-            img = s.grab_screenshot(self.screenshot_url, self.settle_time)
+            img = s.grab_screenshot(self.screenshot_capture_url, self.settle_time)
             img = s.resize(img, width)
             img.save(self.screenshot_file)
 
